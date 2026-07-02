@@ -109,7 +109,7 @@ export function BetaLayout({
               </svg>
             </div>
             <div className="brand__name">
-              CA <em>Governor</em> 2026
+              TX <em>Governor</em> 2026
               <small>POLLS · DONORS · IE</small>
             </div>
           </Link>

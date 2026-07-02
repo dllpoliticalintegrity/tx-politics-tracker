@@ -212,7 +212,7 @@ export default function CandidateDetail() {
               <TrendingUp className="h-3.5 w-3.5" /> POLLING HISTORY
             </h2>
             <span className="font-mono text-[10px] text-muted-foreground tracking-wider">
-              SOURCE: RCP AGGREGATE
+              SOURCE: 270TOWIN AGGREGATE
             </span>
           </div>
           <CandidatePollingChart

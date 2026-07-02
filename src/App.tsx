@@ -8,7 +8,6 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { MobileTabBar } from "@/components/MobileTabBar";
 import FloatingDonateFab from "@/components/FloatingDonateFab";
-import SiteRetiredDialog from "@/components/SiteRetiredDialog";
 import { ThemeProvider } from "next-themes";
 import Index from "./pages/Index";
 import Candidates from "./pages/Candidates";
@@ -63,7 +62,6 @@ function AppShell() {
       {!isBeta && <MobileTabBar />}
       {!isBeta && <div className="md:hidden h-14" aria-hidden />}
       {!isBeta && <FloatingDonateFab />}
-      {!isBeta && <SiteRetiredDialog />}
     </>
   );
 }

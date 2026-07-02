@@ -106,7 +106,7 @@ function CandHeader({
           <CandPhoto candidate={candidate} className="cand-photo" />
           <div className="cand-bio">
             <div className="cand-bio__role">
-              {wd ? "Withdrew" : pct != null ? "Polled in RCP avg" : "Not currently polled"}
+              {wd ? "Withdrew" : pct != null ? "Polled in poll avg" : "Not currently polled"}
             </div>
             <h1>{candidate.name}{wd && <WithdrewTag status={candidate.status} />}</h1>
             <div className="cand-bio__meta">
@@ -130,7 +130,7 @@ function CandHeader({
 
           <aside className="pos-card">
             <div className="pos-card__head">
-              <span>RCP avg</span>
+              <span>poll avg</span>
               {pct != null && <span className="pos-card__rank">CYCLE TO DATE</span>}
             </div>
             <div className="pos-card__pct">
@@ -221,7 +221,7 @@ function PollingForCandidate({ candidateName, pct }: { candidateName: string; pc
             <h2 className="section__title">
               {candidateName.split(" ").pop()}'s <em>polling</em>, since launch
             </h2>
-            <div className="section__sub">{series.length} POLLS INCLUDE THIS CANDIDATE · CURRENT RCP AVG {pct?.toFixed(1) ?? "—"}%</div>
+            <div className="section__sub">{series.length} POLLS INCLUDE THIS CANDIDATE · CURRENT POLL AVG {pct?.toFixed(1) ?? "—"}%</div>
           </div>
         </div>
         <CandPollingChart series={series} />

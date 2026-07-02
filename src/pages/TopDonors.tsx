@@ -119,7 +119,7 @@ export default function TopDonors() {
           TOP DONORS
         </div>
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-          Aggregated Donors // 2026 CA Governor
+          Aggregated Donors // 2026 TX Governor
         </h1>
         <p className="text-sm text-muted-foreground font-mono">
           Donors ranked by total dollars given. Toggle between money into candidate campaigns and

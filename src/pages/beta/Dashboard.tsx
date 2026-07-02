@@ -239,7 +239,7 @@ function Leaderboard({ leader, rest }: { leader: LeaderboardRow | undefined; res
       <aside className="hero__leader">
         <div className="hero__leader-head">
           <span className="hero__leader-kicker">
-            <span className="live-dot" /> Leaderboard · RCP avg
+            <span className="live-dot" /> Leaderboard · poll avg
           </span>
         </div>
         <div style={{ padding: 24, fontFamily: "var(--f-mono)", color: "var(--ink-3)" }}>Loading…</div>
@@ -254,7 +254,7 @@ function Leaderboard({ leader, rest }: { leader: LeaderboardRow | undefined; res
     <aside className="hero__leader">
       <div className="hero__leader-head">
         <span className="hero__leader-kicker">
-          <span className="live-dot" /> Leaderboard · RCP avg
+          <span className="live-dot" /> Leaderboard · poll avg
         </span>
         <span className="hero__leader-id">{updated}</span>
       </div>
@@ -277,7 +277,7 @@ function Leaderboard({ leader, rest }: { leader: LeaderboardRow | undefined; res
       </div>
 
       <div className="hero__leader-stat-row">
-        <span className="hero__leader-stat-label">RCP avg</span>
+        <span className="hero__leader-stat-label">poll avg</span>
         <span className="hero__leader-stat-value">
           {leader.pct == null ? "—" : leader.pct.toFixed(1)}
           <span style={{ fontSize: 16, fontWeight: 600, color: "var(--ink-3)" }}>%</span>
@@ -413,7 +413,7 @@ function PollingChartLeaderboard({
     <aside className="pollchart__leaderboard">
       <div className="pollchart__leaderboard-head">
         <span>
-          <span className="live-dot" /> RCP avg · {rows.length} polled
+          <span className="live-dot" /> poll avg · {rows.length} polled
         </span>
         <span className="updated">{updated.toUpperCase()}</span>
       </div>
@@ -491,7 +491,7 @@ function buildRollingAvg(
 
   const surnameOf = (name: string) => name.trim().split(/\s+/).pop() ?? "";
 
-  // Top N candidates by current RCP avg
+  // Top N candidates by current poll avg
   const ranked = candidates
     .map((c) => ({ c, surname: surnameOf(c.name), pct: readCandidatePct(polling.average, c.name) ?? 0 }))
     .filter((x) => x.pct > 0)
@@ -965,7 +965,7 @@ function FieldStandings() {
             </h2>
             <div className="section__sub">
               <span className="live-dot" />
-              {candidates.length} CANDIDATES · SORTED BY RCP AVG
+              {candidates.length} CANDIDATES · SORTED BY POLL AVG
             </div>
           </div>
         </div>
@@ -976,7 +976,7 @@ function FieldStandings() {
           <tr>
             <th>#</th>
             <th>Candidate</th>
-            <th className="right">RCP avg</th>
+            <th className="right">poll avg</th>
             <th className="right">Raised</th>
             <th className="right">Cash on hand</th>
             <th className="right">IE for / against</th>

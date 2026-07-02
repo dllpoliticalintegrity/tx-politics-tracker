@@ -73,10 +73,10 @@ export default function Candidates() {
           ALL CANDIDATES
         </div>
         <h1 className="font-display text-3xl md:text-4xl tracking-tight">
-          2026 <span className="text-primary">CA Governor</span> Candidates
+          2026 <span className="text-primary">TX Governor</span> Candidates
         </h1>
         <p className="text-sm text-muted-foreground font-mono">
-          Ranked by RCP polling average, then total raised.
+          Ranked by polling average, then total raised.
         </p>
       </section>
 
