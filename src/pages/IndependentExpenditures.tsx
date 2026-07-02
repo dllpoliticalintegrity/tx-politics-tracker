@@ -48,7 +48,7 @@ export default function IndependentExpenditures() {
           INDEPENDENT EXPENDITURES
         </div>
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-          Outside Spending // 2026 CA Governor
+          Outside Spending // 2026 TX Governor
         </h1>
         <p className="text-sm text-muted-foreground font-mono">
           Independent expenditures by PACs and committees supporting or opposing gubernatorial

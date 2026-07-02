@@ -24,7 +24,7 @@ export function Footer() {
               team@politicalintegrity.us
             </a>
           </div>
-          <div>© 2026 · Data from RCP &amp; TEC</div>
+          <div>© 2026 · Data from 270toWin &amp; TEC</div>
         </div>
       </div>
     </footer>

@@ -28,7 +28,7 @@ export default function Polling() {
           POLLING
         </div>
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-          Polling // 2026 CA Governor
+          Polling // 2026 TX Governor
         </h1>
         <p className="text-sm text-muted-foreground font-mono">
           270toWin aggregate and individual polls. Synced nightly from 270toWin.

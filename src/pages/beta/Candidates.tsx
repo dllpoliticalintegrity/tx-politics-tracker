@@ -157,7 +157,7 @@ export default function BetaCandidates() {
               <tr>
                 <th>#</th>
                 <th>Candidate</th>
-                <th className="right">RCP avg</th>
+                <th className="right">poll avg</th>
                 <th className="right">Raised</th>
                 <th className="right">Cash on hand</th>
                 <th className="right">IE for / against</th>
@@ -260,7 +260,7 @@ function SortBtn({
 
 function sortLabel(s: SortKey): string {
   switch (s) {
-    case "pct": return "RCP AVG";
+    case "pct": return "POLL AVG";
     case "raised": return "TOTAL RAISED";
     case "cash": return "CASH ON HAND";
     case "ie": return "TOTAL IE EXPOSURE";

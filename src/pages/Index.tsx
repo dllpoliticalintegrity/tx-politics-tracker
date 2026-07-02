@@ -12,7 +12,7 @@ import PollingAveragesList from "@/components/PollingAveragesList";
 import CandidateCard, { type CandidateCardStats } from "@/components/CandidateCard";
 import { formatCurrency } from "@/lib/finance";
 
-const PRIMARY_DATE = new Date("2026-06-02T00:00:00");
+const GENERAL_DATE = new Date("2026-11-03T00:00:00");
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 export default function Index() {
@@ -95,9 +95,9 @@ export default function Index() {
     );
 
   // ---------- Hero stats ----------
-  const daysToPrimary = Math.max(
+  const daysToGeneral = Math.max(
     0,
-    Math.ceil((PRIMARY_DATE.getTime() - today.getTime()) / DAY_MS),
+    Math.ceil((GENERAL_DATE.getTime() - today.getTime()) / DAY_MS),
   );
   const totalCandidates = candidates?.length ?? 0;
   const demCount = (candidates ?? []).filter((c) => c.party === "D").length;
@@ -127,7 +127,7 @@ export default function Index() {
       {/* Hero stat strip — 4 cards with green accent bar */}
       <section className="container pt-4 pb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <LiveCountdown target={PRIMARY_DATE} />
+          <LiveCountdown target={GENERAL_DATE} />
           <HeroStat
             label="Total Raised (Cycle)"
             value={formatCurrency(totalRaised)}
@@ -266,7 +266,7 @@ function LiveCountdown({ target }: { target: Date }) {
       <div className="absolute top-0 left-0 h-full w-[3px] bg-primary" />
       <div className="flex items-center justify-between mb-2">
         <div className="font-mono font-bold text-[10px] tracking-[0.18em] uppercase text-muted-foreground">
-          Primary Countdown
+          General Election Countdown
         </div>
         <div className="flex items-center gap-1.5 font-mono text-[9px] tracking-[0.18em] uppercase text-primary">
           <span className="relative flex h-1.5 w-1.5">
