@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import Sparkline from "@/components/Sparkline";
-import type { CaCandidate } from "@/hooks/useCandidates";
+import type { TxCandidate } from "@/hooks/useCandidates";
 import { formatCurrency, partyColor, partyLabel } from "@/lib/finance";
 
 export type CandidateCardStats = {
@@ -11,7 +11,7 @@ export type CandidateCardStats = {
 };
 
 type Props = {
-  candidate: CaCandidate;
+  candidate: TxCandidate;
   stats: CandidateCardStats;
   rank: number;
 };

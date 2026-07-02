@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://cagovtracker.com/sitemap.xml
+Sitemap: https://txgovtracker.com/sitemap.xml

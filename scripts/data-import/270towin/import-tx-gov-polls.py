@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Import 2026 California Governor polls from 270toWin.
+Import 2026 Texas Governor polls from 270toWin.
 
-Source:   https://www.270towin.com/2026-governor-polls/california
+Source:   https://www.270towin.com/2026-governor-polls/texas
 Tables:   race_polls           (one row per candidate per poll)
           race_polling         (top-2 aggregate per race, source = '270towin')
 
@@ -25,11 +25,11 @@ from supabase import create_client
 SUPABASE_URL = os.getenv("SUPABASE_URL") or os.getenv("VITE_SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 SOURCE = "270towin"
-RACE_SLUG = "california-governor-2026"
-SOURCE_URL = "https://www.270towin.com/2026-governor-polls/california"
+RACE_SLUG = "texas-governor-2026"
+SOURCE_URL = "https://www.270towin.com/2026-governor-polls/texas"
 USER_AGENT = (
-    "Mozilla/5.0 (compatible; cagovtracker-importer/1.0; "
-    "+https://cagovtracker.com)"
+    "Mozilla/5.0 (compatible; txgovtracker-importer/1.0; "
+    "+https://txgovtracker.com)"
 )
 
 GENERIC_CHOICE = {
@@ -94,7 +94,7 @@ def normalize_candidate_label(label: str) -> str:
 
 
 def classify_matchup(heading: str, candidate_labels: list[str]) -> str:
-    """California has a jungle/'All Party' primary, so we treat every table
+    """Texas has a jungle/'All Party' primary, so we treat every table
     as a single 'general' matchup unless 270toWin starts publishing party-
     specific primary tables (in which case we tag dem_primary / rep_primary).
     """
@@ -186,7 +186,7 @@ def parse_polls(html: str) -> list[dict]:
 def load_candidate_roster(supabase) -> dict[str, tuple[str, Optional[str]]]:
     """Map last-name (lower) -> (full_name, party) for active CA Gov candidates."""
     cands = (
-        supabase.table("ca_candidates")
+        supabase.table("tx_candidates")
         .select("name,party,status")
         .execute()
     )

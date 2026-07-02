@@ -1,9 +1,6 @@
--- TX campaign finance schema (TEC data), mirroring the ca_* tables this repo
--- uses so the frontend port is a mechanical ca_ → tx_ rename.
---
--- NOTE: this file lives under scripts/ on purpose — it must NOT run against
--- the CA Supabase project. When bootstrapping the tx-gov-polling repo, move it
--- to supabase/migrations/<timestamp>_tx_campaign_finance.sql.
+-- TX campaign finance schema (TEC data), mirroring the ca_* tables the CA
+-- repo used so the frontend port is a mechanical ca_ → tx_ rename.
+-- Populated by scripts/data-import/tec/import_tx_finance.py.
 
 -- ---------------------------------------------------------------------------
 -- Candidates (seeded manually; use `import_tx_finance.py --discover` to find

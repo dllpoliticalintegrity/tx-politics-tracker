@@ -6,7 +6,7 @@ import {
   useCandidates,
   useCandidateTotals,
 } from "@/hooks/useCandidates";
-import { useCaGovPolling, useCaGovRacePolls } from "@/hooks/usePolling";
+import { useTxGovPolling, useTxGovRacePolls } from "@/hooks/usePolling";
 import PollingChart from "@/components/PollingChart";
 import PollingAveragesList from "@/components/PollingAveragesList";
 import CandidateCard, { type CandidateCardStats } from "@/components/CandidateCard";
@@ -18,8 +18,8 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 export default function Index() {
   const { data: candidates, isLoading } = useCandidates();
   const { data: totalsMap } = useCandidateTotals();
-  const { data: polling } = useCaGovPolling();
-  const { data: racePolls } = useCaGovRacePolls();
+  const { data: polling } = useTxGovPolling();
+  const { data: racePolls } = useTxGovRacePolls();
 
   // ---------- Per-candidate polling stats ----------
   const today = new Date();
@@ -113,14 +113,14 @@ export default function Index() {
       <section className="container pt-10 md:pt-12 pb-4 text-center space-y-3">
         <div className="hidden md:inline-flex items-center gap-2 px-3 py-1 rounded-sm border border-primary/20 bg-primary/5 text-primary font-mono text-xs tracking-wider">
           <Activity className="h-3.5 w-3.5" />
-          LIVE // 2026 CALIFORNIA GUBERNATORIAL RACE
+          LIVE // 2026 TEXAS GUBERNATORIAL RACE
         </div>
         <h1 className="font-orbitron font-bold uppercase md:text-6xl leading-tight tracking-tight text-4xl">
-          TRACKING THE <span className="terminal-glow text-[#fdb417]">CALIFORNIA</span> GOVERNOR'S RACE
+          TRACKING THE <span className="terminal-glow text-[#fdb417]">TEXAS</span> GOVERNOR'S RACE
         </h1>
         <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto font-mono">
           Polling averages, campaign finance, and independent expenditures — synced nightly from
-          270toWin and CAL-ACCESS.
+          270toWin and the Texas Ethics Commission.
         </p>
       </section>
 
@@ -149,7 +149,7 @@ export default function Index() {
                 <span>LEADING: {polling.spread.toUpperCase()}</span>
               )}
               <a
-                href="https://www.270towin.com/2026-governor-polls/california"
+                href="https://www.270towin.com/2026-governor-polls/texas"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary hover:underline"

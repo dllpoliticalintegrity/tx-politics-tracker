@@ -1,6 +1,6 @@
-// Edge function: scrape 2026 California Governor polls from 270toWin and
+// Edge function: scrape 2026 Texas Governor polls from 270toWin and
 // upsert them into race_polls + race_polling (source='270towin').
-// Mirrors scripts/data-import/270towin/import-ca-gov-polls.py.
+// Mirrors scripts/data-import/270towin/import-tx-gov-polls.py.
 // v3: redeploy trigger 2026-04-26.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -15,10 +15,10 @@ const corsHeaders = {
 };
 
 const SOURCE = "270towin";
-const RACE_SLUG = "california-governor-2026";
-const SOURCE_URL = "https://www.270towin.com/2026-governor-polls/california";
+const RACE_SLUG = "texas-governor-2026";
+const SOURCE_URL = "https://www.270towin.com/2026-governor-polls/texas";
 const UA =
-  "Mozilla/5.0 (compatible; cagovtracker-importer/1.0; +https://cagovtracker.com)";
+  "Mozilla/5.0 (compatible; txgovtracker-importer/1.0; +https://txgovtracker.com)";
 
 const GENERIC_CHOICE = new Set([
   "other","someone else","undecided","neither","none","nobody",
@@ -188,9 +188,9 @@ Deno.serve(async (req) => {
 
     const raw = parsePolls(html);
 
-    // Build candidate roster from ca_candidates: surname -> {name, party}
+    // Build candidate roster from tx_candidates: surname -> {name, party}
     const { data: cands, error: candErr } = await supabase
-      .from("ca_candidates")
+      .from("tx_candidates")
       .select("name,party");
     if (candErr) throw candErr;
     const roster = new Map<string, { name: string; party: string | null }>();

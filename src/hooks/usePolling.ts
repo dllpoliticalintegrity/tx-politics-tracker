@@ -18,7 +18,7 @@ export type PollingBundle = {
   polls: PollRow[]; // everything except the average, sorted by Date desc
 };
 
-const GOV_RACE_SLUG = "california-governor-2026";
+const GOV_RACE_SLUG = "texas-governor-2026";
 
 async function fetchRacePolling(slug: string): Promise<PollingBundle | null> {
   const { data: race, error: raceErr } = await (supabase as any)
@@ -93,7 +93,7 @@ export function parsePollDate(d: string | undefined | null): string {
   return rangeEnd;
 }
 
-export function useCaGovPolling() {
+export function useTxGovPolling() {
   return useQuery({
     queryKey: ["race_polling", GOV_RACE_SLUG],
     queryFn: () => fetchRacePolling(GOV_RACE_SLUG),
@@ -116,7 +116,7 @@ export type RacePollRow = {
   matchup: string | null;
 };
 
-export function useCaGovRacePolls() {
+export function useTxGovRacePolls() {
   return useQuery({
     queryKey: ["race_polls", GOV_RACE_SLUG],
     queryFn: async (): Promise<RacePollRow[]> => {

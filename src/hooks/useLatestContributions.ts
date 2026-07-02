@@ -10,7 +10,7 @@ export type LatestContribution = {
   id: string;
   amount: number;
   contribution_date: string | null;
-  contributor_type: string | null; // IND / COM / PAC / etc.
+  contributor_type: string | null; // INDIVIDUAL / ENTITY
   contributor_first_name: string | null;
   contributor_last_name: string | null;
   employer: string | null;
@@ -21,16 +21,16 @@ export type LatestContribution = {
   candidate_party: string | null; // 'D' / 'R' / 'I' / etc., normalized
 };
 
-const PAC_TYPES = ["COM", "PAC", "PTY", "SCC", "IND_PAC"];
+const PAC_TYPES = ["ENTITY"];
 
 export function useLatestContributions(limit = 20, minAmount = 30_000) {
   return useQuery({
     queryKey: ["ca_latest_contributions", limit, minAmount],
     queryFn: async (): Promise<LatestContribution[]> => {
       const { data, error } = await (supabase as any)
-        .from("ca_contributions")
+        .from("tx_contributions")
         .select(
-          "id,amount,contribution_date,contributor_type,contributor_first_name,contributor_last_name,employer,city,state,candidate_id,ca_candidates(name,party)",
+          "id,amount,contribution_date,contributor_type,contributor_first_name,contributor_last_name,employer,city,state,candidate_id,tx_candidates(name,party)",
         )
         .not("contribution_date", "is", null)
         .gte("amount", minAmount)
@@ -48,8 +48,8 @@ export function useLatestContributions(limit = 20, minAmount = 30_000) {
         city: r.city,
         state: r.state,
         candidate_id: r.candidate_id,
-        candidate_name: r.ca_candidates?.name ?? null,
-        candidate_party: normalizeParty(r.ca_candidates?.party),
+        candidate_name: r.tx_candidates?.name ?? null,
+        candidate_party: normalizeParty(r.tx_candidates?.party),
       }));
     },
     staleTime: 60_000,
@@ -71,10 +71,10 @@ export function contributionVerb(c: LatestContribution): {
   label: "IND" | "PAC" | "LOAN" | "COM";
 } {
   const t = (c.contributor_type ?? "").toUpperCase();
-  if (t === "IND") return { verb: "ind", label: "IND" };
+  if (t === "INDIVIDUAL") return { verb: "ind", label: "IND" };
   if (PAC_TYPES.includes(t)) return { verb: "pac", label: "PAC" };
-  // SLF / loans typically come from Schedule B; we don't have form-type here,
-  // so any non-IND, non-PAC contributor_type falls through to COM.
+  // Loans come from Schedule E; we don't have form-type here, so any
+  // unexpected contributor_type falls through to COM.
   return { verb: "com", label: "COM" };
 }
 
@@ -120,6 +120,6 @@ export function donorContext(c: LatestContribution): string {
 export function candidateShort(name: string | null): string {
   if (!name) return "";
   const parts = name.trim().split(/\s+/);
-  // For "Lt. Gov. Gavin Newsom" -> "NEWSOM"; for "Steve Hilton" -> "HILTON"
+  // For "Gov. Greg Abbott" -> "ABBOTT"; for "Gina Hinojosa" -> "HINOJOSA"
   return (parts[parts.length - 1] || name).toUpperCase();
 }

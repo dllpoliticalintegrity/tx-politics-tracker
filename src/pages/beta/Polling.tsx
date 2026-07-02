@@ -2,11 +2,11 @@ import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { BetaLayout } from "@/components/beta/BetaLayout";
 import { candidateShort } from "@/components/beta/shared";
-import { useCandidates, type CaCandidate } from "@/hooks/useCandidates";
-import { useCaGovPolling, parsePollDate, readCandidatePct, type PollRow } from "@/hooks/usePolling";
+import { useCandidates, type TxCandidate } from "@/hooks/useCandidates";
+import { useTxGovPolling, parsePollDate, readCandidatePct, type PollRow } from "@/hooks/usePolling";
 
 export default function BetaPolling() {
-  const { data: polling } = useCaGovPolling();
+  const { data: polling } = useTxGovPolling();
   const { data: candidates = [] } = useCandidates();
 
   const pollsterCount = useMemo(() => {
@@ -21,7 +21,7 @@ export default function BetaPolling() {
     if (!polling?.average || candidates.length === 0) return [];
     return candidates
       .map((c) => ({ c, surname: c.name.trim().split(/\s+/).pop() ?? "", pct: readCandidatePct(polling.average, c.name) }))
-      .filter((x): x is { c: CaCandidate; surname: string; pct: number } => x.pct != null && x.pct > 0)
+      .filter((x): x is { c: TxCandidate; surname: string; pct: number } => x.pct != null && x.pct > 0)
       .sort((a, b) => b.pct - a.pct)
       .slice(0, 5);
   }, [polling, candidates]);
@@ -44,9 +44,9 @@ function PageHero({
   pollsterCount,
   leader,
 }: {
-  polling: ReturnType<typeof useCaGovPolling>["data"];
+  polling: ReturnType<typeof useTxGovPolling>["data"];
   pollsterCount: number;
-  leader: { c: CaCandidate; surname: string; pct: number } | undefined;
+  leader: { c: TxCandidate; surname: string; pct: number } | undefined;
 }) {
   const pollCount = polling?.polls.length ?? 0;
   const latest = polling?.polls?.[0];
@@ -112,8 +112,8 @@ function ChartSection({
   polling,
   cands,
 }: {
-  polling: ReturnType<typeof useCaGovPolling>["data"];
-  cands: { c: CaCandidate; surname: string; pct: number }[];
+  polling: ReturnType<typeof useTxGovPolling>["data"];
+  cands: { c: TxCandidate; surname: string; pct: number }[];
 }) {
   const chart = useMemo(() => buildRollingChart(polling, cands), [polling, cands]);
 
@@ -167,8 +167,8 @@ function PollsTable({
   polling,
   cands,
 }: {
-  polling: ReturnType<typeof useCaGovPolling>["data"];
-  cands: { c: CaCandidate; surname: string; pct: number }[];
+  polling: ReturnType<typeof useTxGovPolling>["data"];
+  cands: { c: TxCandidate; surname: string; pct: number }[];
 }) {
   const rows = useMemo(() => {
     if (!polling) return [];
@@ -263,8 +263,8 @@ type Series = { slug: string; name: string; color: string; values: (number | nul
 type ChartData = { dates: string[]; series: Series[] };
 
 function buildRollingChart(
-  polling: ReturnType<typeof useCaGovPolling>["data"],
-  cands: { c: CaCandidate; surname: string; pct: number }[],
+  polling: ReturnType<typeof useTxGovPolling>["data"],
+  cands: { c: TxCandidate; surname: string; pct: number }[],
 ): ChartData | null {
   if (!polling || cands.length === 0) return null;
 
@@ -290,7 +290,7 @@ function buildRollingChart(
   const uniqueDates = Array.from(new Set(normalized.map((p) => p.iso))).sort();
   const WINDOW_DAYS = 30;
   const msDay = 86_400_000;
-  const colors = ["var(--c-newsom)", "var(--c-bianco)", "var(--c-rivera)", "var(--c-kounalakis)", "var(--c-hilton)"];
+  const colors = ["var(--c-abbott)", "var(--c-hinojosa)", "var(--c-chambers)", "var(--c-cole)", "var(--c-white)"];
 
   const series: Series[] = cands.map(({ c, surname }, idx) => ({
     slug: c.slug,

@@ -1,6 +1,6 @@
-# CA Gov Tracker
+# TX Gov Tracker
 
-> Public-interest dashboard tracking money and polling in the 2026 California Gubernatorial Race. Campaign-finance filings sourced nightly from California's CAL-ACCESS database, plus aggregated public polling and independent-expenditure spending.
+> Public-interest dashboard tracking money and polling in the 2026 Texas Gubernatorial Race. Campaign-finance filings sourced nightly from the Texas Ethics Commission's campaign-finance filings, plus aggregated public polling and independent-expenditure spending.
 
 ## Pages
 

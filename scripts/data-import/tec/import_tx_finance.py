@@ -416,7 +416,6 @@ def import_contributions(
         rec = {
             "report_info_ident": int(row["reportInfoIdent"]),
             "contribution_info_id": int(row["contributionInfoId"]),
-            "filer_ident": fid,
             "contributor_type": ptype,
             "contributor_last_name": last,
             "contributor_first_name": first,
@@ -432,8 +431,11 @@ def import_contributions(
             "source_form_type": (row.get("formTypeCd") or "").strip(),
         }
         if ident_to_candidate is not None:
+            # tx_ie_contributions keys the committee by ie_filer_ident and has
+            # no filer_ident column.
             rec["ie_filer_ident"] = fid
         else:
+            rec["filer_ident"] = fid
             rec["candidate_id"] = seeds[fid].id
         writer.add(rec)
     writer.flush()

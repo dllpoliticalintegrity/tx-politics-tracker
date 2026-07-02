@@ -21,7 +21,7 @@ import {
   useIEByCandidate,
   useCandidateLoans,
 } from "@/hooks/useCandidates";
-import { useCaGovPolling, readCandidatePct } from "@/hooks/usePolling";
+import { useTxGovPolling, readCandidatePct } from "@/hooks/usePolling";
 import CandidatePollingChart from "@/components/CandidatePollingChart";
 import {
   formatCurrency,
@@ -44,7 +44,7 @@ export default function CandidateDetail() {
   const { data: expn } = useExpenditureTotals(candidate?.id);
   const { data: ieRows } = useIEForCandidate(candidate?.id, 10);
   const { data: ieByCand } = useIEByCandidate();
-  const { data: polling } = useCaGovPolling();
+  const { data: polling } = useTxGovPolling();
 
   if (candLoading) {
     return (
@@ -60,8 +60,7 @@ export default function CandidateDetail() {
     (acc, s) => {
       acc.totalRaised += Number(s.total_raised ?? 0);
       acc.individual += Number(s.individual_contributions ?? 0);
-      acc.pac += Number(s.pac_contributions ?? 0);
-      acc.party += Number(s.party_contributions ?? 0);
+      acc.pac += Number(s.entity_contributions ?? 0);
       acc.smallDollar += Number(s.small_dollar_contributions ?? 0);
       acc.smallDollarCount += Number(s.small_dollar_count ?? 0);
       acc.individualCount += Number(s.individual_donor_count ?? 0);
@@ -72,7 +71,6 @@ export default function CandidateDetail() {
       totalRaised: 0,
       individual: 0,
       pac: 0,
-      party: 0,
       smallDollar: 0,
       smallDollarCount: 0,
       individualCount: 0,
@@ -119,8 +117,6 @@ export default function CandidateDetail() {
       : 0;
   const pacPct =
     totals.totalRaised > 0 ? Math.round((totals.pac / totals.totalRaised) * 100) : 0;
-  const partyPct =
-    totals.totalRaised > 0 ? Math.round((totals.party / totals.totalRaised) * 100) : 0;
   const smallDollarPct =
     totals.totalRaised > 0
       ? Math.round((totals.smallDollar / totals.totalRaised) * 100)
@@ -227,7 +223,7 @@ export default function CandidateDetail() {
         {!hasFinanceData && (
           <Card className="p-8 rounded-sm border-dashed border-border">
             <p className="font-mono text-xs text-muted-foreground text-center">
-              No filings yet for this candidate. Data will appear after the next CAL-ACCESS sync.
+              No filings yet for this candidate. Data will appear after the next TEC sync.
             </p>
           </Card>
         )}
@@ -258,16 +254,10 @@ export default function CandidateDetail() {
                   color="hsl(var(--chart-5))"
                 />
                 <SourceBar
-                  label="Committee / PAC contributions"
+                  label="Entity contributions (PACs, firms)"
                   value={totals.pac}
                   pct={pacPct}
                   color="hsl(var(--chart-3))"
-                />
-                <SourceBar
-                  label="Party contributions"
-                  value={totals.party}
-                  pct={partyPct}
-                  color="hsl(var(--chart-4))"
                 />
                 {totalLoans > 0 && (
                   <SourceBar
@@ -539,7 +529,7 @@ export default function CandidateDetail() {
         )}
 
         <p className="text-[10px] font-mono text-muted-foreground text-center pt-2">
-          SOURCE: CAL-ACCESS // CALIFORNIA SECRETARY OF STATE
+          SOURCE: TEXAS ETHICS COMMISSION
         </p>
       </div>
     </div>

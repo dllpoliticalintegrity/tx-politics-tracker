@@ -1,5 +1,5 @@
 import { useState } from "react";
-import CaGovSpendStat from "./CaGovSpendStat";
+import TxGovSpendStat from "./TxGovSpendStat";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 const ORG_NAME = "Political Integrity PAC";
@@ -12,14 +12,14 @@ const DonationPanel = () => {
   return (
     <div className="bg-white text-gray-900">
       <div className="max-w-lg mx-auto px-4 py-6">
-        <CaGovSpendStat />
+        <TxGovSpendStat />
 
         <div className="mb-6 text-gray-600 text-[15px] leading-relaxed space-y-3">
           <p className="text-center">
-            California's governor's race will be the most expensive election in the state's history.
+            Texas' governor's race will be one of the most expensive elections in the state's history.
           </p>
           <p className="text-center">
-            Help us follow the money across the Golden State by becoming a monthly supporter of our work.
+            Help us follow the money across the Lone Star State by becoming a monthly supporter of our work.
           </p>
         </div>
 

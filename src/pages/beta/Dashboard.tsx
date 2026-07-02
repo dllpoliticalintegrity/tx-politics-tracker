@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { BetaLayout, PRIMARY_TARGET, PRIMARY_DATE_LABEL } from "@/components/beta/BetaLayout";
+import { BetaLayout, ELECTION_TARGET, ELECTION_DATE_LABEL } from "@/components/beta/BetaLayout";
 import {
   useCandidates,
   useCandidateTotals,
@@ -8,10 +8,10 @@ import {
   useTopIECommittees,
   useTopAggregatedDonors,
   useAllSummaries,
-  type CaCandidate,
-  type CaIeByCandidate,
+  type TxCandidate,
+  type TxIeByCandidate,
 } from "@/hooks/useCandidates";
-import { useCaGovPolling, parsePollDate, readCandidatePct } from "@/hooks/usePolling";
+import { useTxGovPolling, parsePollDate, readCandidatePct } from "@/hooks/usePolling";
 
 function pad(n: number) {
   return String(n).padStart(2, "0");
@@ -53,7 +53,7 @@ function CandPhoto({
   candidate,
   className,
 }: {
-  candidate: CaCandidate;
+  candidate: TxCandidate;
   className: string;
 }) {
   const src = candidate.photo_url_thumb ?? candidate.photo_url ?? null;
@@ -106,7 +106,7 @@ export default function BetaDashboard() {
 // ─── HERO ──────────────────────────────────────────────────
 function Hero() {
   const { data: candidates = [] } = useCandidates();
-  const { data: polling } = useCaGovPolling();
+  const { data: polling } = useTxGovPolling();
   const { data: totals } = useCandidateTotals();
   const { data: ieByCand } = useIEByCandidate();
 
@@ -125,15 +125,15 @@ function Hero() {
         <div className="hero__main">
           <div className="hero__kicker kicker">
             <span className="pulse" />
-            2026 California Governor · {candidates.length || "—"} candidates · primary{" "}
-            <strong style={{ color: "var(--periwinkle-deep)", margin: "0 4px" }}>Jun 2, 2026</strong>
+            2026 Texas Governor · {candidates.length || "—"} candidates · general{" "}
+            <strong style={{ color: "var(--periwinkle-deep)", margin: "0 4px" }}>Nov 3, 2026</strong>
           </div>
           <h1 className="hero__title">
-            California's race for <em>governor</em>, in <span className="cal">real time.</span>
+            Texas' race for <em>governor</em>, in <span className="cal">real time.</span>
           </h1>
           <p className="hero__deck">
             Polling averages, <strong>every donor, every dollar of independent spending</strong> &mdash; synced
-            nightly from RCP and CAL-ACCESS for all {candidates.length || "—"} declared candidates.
+            nightly from 270toWin and the Texas Ethics Commission for all {candidates.length || "—"} declared candidates.
           </p>
           <CountdownBlock />
         </div>
@@ -150,7 +150,7 @@ function CountdownBlock() {
     const id = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(id);
   }, []);
-  let diff = Math.max(0, PRIMARY_TARGET - now);
+  let diff = Math.max(0, ELECTION_TARGET - now);
   const days = Math.floor(diff / 86_400_000);
   diff -= days * 86_400_000;
   const hours = Math.floor(diff / 3_600_000);
@@ -160,10 +160,10 @@ function CountdownBlock() {
   const secs = Math.floor(diff / 1000);
 
   return (
-    <div className="hero__countdown" aria-label="Time until California gubernatorial primary">
+    <div className="hero__countdown" aria-label="Time until Texas gubernatorial general election">
       <div className="hero__countdown-label">
         <span>
-          <span className="live-dot blue" /> Primary &middot; <span className="when">{PRIMARY_DATE_LABEL}</span>
+          <span className="live-dot blue" /> General &middot; <span className="when">{ELECTION_DATE_LABEL}</span>
         </span>
         <span style={{ color: "var(--ink-3)" }}>Polls open in</span>
       </div>
@@ -191,7 +191,7 @@ function CountdownBlock() {
 
 // ─── LEADERBOARD CARD ───────────────────────────────────────
 type LeaderboardRow = {
-  candidate: CaCandidate;
+  candidate: TxCandidate;
   pct: number | null;
   raised: number;
   cash: number;
@@ -201,14 +201,14 @@ type LeaderboardRow = {
 };
 
 function buildLeaderboard(
-  candidates: CaCandidate[],
-  polling: ReturnType<typeof useCaGovPolling>["data"] | undefined,
+  candidates: TxCandidate[],
+  polling: ReturnType<typeof useTxGovPolling>["data"] | undefined,
   totals: ReturnType<typeof useCandidateTotals>["data"] | undefined,
-  ieByCand: CaIeByCandidate[] | undefined,
+  ieByCand: TxIeByCandidate[] | undefined,
   limit: number,
 ): LeaderboardRow[] {
   if (!candidates.length) return [];
-  const ieMap = new Map<string, CaIeByCandidate>();
+  const ieMap = new Map<string, TxIeByCandidate>();
   (ieByCand ?? []).forEach((r) => ieMap.set(r.candidate_id, r));
   const rows: LeaderboardRow[] = candidates.map((c) => {
     const pct = polling?.average ? readCandidatePct(polling.average, c.name) : null;
@@ -229,7 +229,7 @@ function buildLeaderboard(
 }
 
 function Leaderboard({ leader, rest }: { leader: LeaderboardRow | undefined; rest: LeaderboardRow[] }) {
-  const { data: polling } = useCaGovPolling();
+  const { data: polling } = useTxGovPolling();
   if (!leader) {
     return (
       <aside className="hero__leader">
@@ -332,7 +332,7 @@ function Leaderboard({ leader, rest }: { leader: LeaderboardRow | undefined; res
 
 // ─── POLLING CHART (simple inline rolling avg) ──────────────────
 function PollingChartSection() {
-  const { data: polling } = useCaGovPolling();
+  const { data: polling } = useTxGovPolling();
   const { data: candidates = [] } = useCandidates();
 
   const chart = useMemo(() => buildRollingAvg(polling, candidates, 5), [polling, candidates]);
@@ -368,8 +368,8 @@ function PollingChartLeaderboard({
   polling,
 }: {
   chart: ChartData | null;
-  candidates: CaCandidate[];
-  polling: ReturnType<typeof useCaGovPolling>["data"] | undefined;
+  candidates: TxCandidate[];
+  polling: ReturnType<typeof useTxGovPolling>["data"] | undefined;
 }) {
   const updated = polling?.last_updated
     ? `Updated ${new Date(polling.last_updated).toLocaleDateString("en-US", { month: "short", day: "numeric" })}`
@@ -479,8 +479,8 @@ type ChartData = {
 };
 
 function buildRollingAvg(
-  polling: ReturnType<typeof useCaGovPolling>["data"] | undefined,
-  candidates: CaCandidate[],
+  polling: ReturnType<typeof useTxGovPolling>["data"] | undefined,
+  candidates: TxCandidate[],
   topN: number,
 ): ChartData | null {
   if (!polling || !polling.average || !candidates.length) return null;
@@ -520,7 +520,7 @@ function buildRollingAvg(
   const msDay = 86_400_000;
 
   const series = ranked.map(({ c, surname }, idx) => {
-    const colors = ["var(--c-newsom)", "var(--c-bianco)", "var(--c-rivera)", "var(--c-kounalakis)", "var(--c-hilton)"];
+    const colors = ["var(--c-abbott)", "var(--c-hinojosa)", "var(--c-chambers)", "var(--c-cole)", "var(--c-white)"];
     const values = uniqueDates.map((iso) => {
       const end = new Date(iso).getTime();
       const start = end - WINDOW_DAYS * msDay;
@@ -839,7 +839,7 @@ function RollingAvgSvg({ chart }: { chart: ChartData }) {
 
 // ─── KPI STRIP ──────────────────────────────────────────────
 function KpiStrip() {
-  const { data: polling } = useCaGovPolling();
+  const { data: polling } = useTxGovPolling();
   const { data: totals } = useCandidateTotals();
   const { data: ieCmts } = useTopIECommittees(50);
   const { data: candidates = [] } = useCandidates();
@@ -874,13 +874,13 @@ function KpiStrip() {
       .slice(0, 3);
   }, [latestPoll, candidates]);
 
-  // Days to primary
+  // Days to the general election
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     const id = window.setInterval(() => setNow(Date.now()), 60_000);
     return () => window.clearInterval(id);
   }, []);
-  const days = Math.max(0, Math.floor((PRIMARY_TARGET - now) / 86_400_000));
+  const days = Math.max(0, Math.floor((ELECTION_TARGET - now) / 86_400_000));
 
   return (
     <section className="kpis">
@@ -926,10 +926,10 @@ function KpiStrip() {
         </div>
 
         <div className="kpi">
-          <div className="kpi__label">Days to primary</div>
+          <div className="kpi__label">Days to general</div>
           <div className="kpi__value blue">{days}</div>
           <div className="kpi__delta">
-            <strong>Jun 2, 2026</strong> · top-2 advance to general
+            <strong>Nov 3, 2026</strong> · Abbott vs. Hinojosa
           </div>
         </div>
       </div>
@@ -940,7 +940,7 @@ function KpiStrip() {
 // ─── FIELD STANDINGS (top 10) ──────────────────────────────
 function FieldStandings() {
   const { data: candidates = [] } = useCandidates();
-  const { data: polling } = useCaGovPolling();
+  const { data: polling } = useTxGovPolling();
   const { data: totals } = useCandidateTotals();
   const { data: ieByCand } = useIEByCandidate();
 
@@ -1038,7 +1038,7 @@ function FieldStandings() {
       </table>
 
       <div className="dt-foot">
-        <span>SOURCE: useCandidates · useCaGovPolling · useCandidateTotals · useIEByCandidate</span>
+        <span>SOURCE: useCandidates · useTxGovPolling · useCandidateTotals · useIEByCandidate</span>
         <Link to="/beta/candidates">See all {candidates.length} →</Link>
       </div>
     </section>
@@ -1131,7 +1131,7 @@ function DonorsSection() {
       </div>
 
       <div className="dt-foot">
-        <span>SOURCE: useTopAggregatedDonors · ca_top_donors view re-aggregated client-side</span>
+        <span>SOURCE: useTopAggregatedDonors · tx_top_donors view re-aggregated client-side</span>
         <Link to="/beta/top-donors">Browse all donors →</Link>
       </div>
     </section>
@@ -1149,7 +1149,7 @@ function IeSection() {
             <h2 className="section__title">
               Independent <em>expenditures</em>
             </h2>
-            <div className="section__sub">TOP COMMITTEES BY CYCLE TOTAL · CAL-ACCESS</div>
+            <div className="section__sub">TOP COMMITTEES BY CYCLE TOTAL · TEC</div>
           </div>
         </div>
       </div>
@@ -1203,7 +1203,7 @@ function IeSection() {
       </div>
 
       <div className="dt-foot">
-        <span>SOURCE: useTopIECommittees · ca_independent_expenditures aggregated by committee</span>
+        <span>SOURCE: useTopIECommittees · tx_independent_expenditures aggregated by committee</span>
         <Link to="/beta/ie">Full IE breakdown →</Link>
       </div>
     </section>
@@ -1222,10 +1222,10 @@ function MethodologyPanel() {
           </h2>
           <p className="methodology__deck">
             We follow RealClearPolitics: trailing public polls, normalized by methodology and recency.
-            <strong> The polling pipeline runs nightly.</strong> Campaign-finance data is mirrored from CAL-ACCESS continuously.
+            <strong> The polling pipeline runs nightly.</strong> Campaign-finance data is mirrored from the Texas Ethics Commission bulk data daily.
           </p>
           <div className="methodology__sources">
-            <span>RealClearPolitics</span>·<span>Wikipedia</span>·<span>CAL-ACCESS</span>·<span>FEC (federal-side IE)</span>
+            <span>270toWin</span>·<span>Wikipedia</span>·<span>Texas Ethics Commission</span>
           </div>
         </div>
         <ol className="methodology__steps">
@@ -1242,7 +1242,7 @@ function MethodologyPanel() {
           <li className="methodology__step">
             <span className="methodology__num">03</span>
             <span className="methodology__step-title">FINANCE MIRRORED</span>
-            <span className="methodology__step-desc">CAL-ACCESS RCPT_CD, EXP_CD, IE filings synced; donors normalized</span>
+            <span className="methodology__step-desc">TEC contributions, expenditures, and DCE filings synced; donors normalized</span>
           </li>
           <li className="methodology__step">
             <span className="methodology__num">04</span>

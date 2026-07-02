@@ -1,6 +1,6 @@
 import { Users } from "lucide-react";
 import { useCandidates, useCandidateTotals } from "@/hooks/useCandidates";
-import { useCaGovPolling, useCaGovRacePolls } from "@/hooks/usePolling";
+import { useTxGovPolling, useTxGovRacePolls } from "@/hooks/usePolling";
 import CandidateCard, { type CandidateCardStats } from "@/components/CandidateCard";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -8,8 +8,8 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 export default function Candidates() {
   const { data: candidates, isLoading, error } = useCandidates();
   const { data: totalsMap } = useCandidateTotals();
-  const { data: polling } = useCaGovPolling();
-  const { data: racePolls } = useCaGovRacePolls();
+  const { data: polling } = useTxGovPolling();
+  const { data: racePolls } = useTxGovRacePolls();
 
   const today = new Date();
   const todayIso = today.toISOString().slice(0, 10);

@@ -10,7 +10,7 @@ import {
 } from "recharts";
 import { useMemo } from "react";
 import { useCandidates } from "@/hooks/useCandidates";
-import { parsePollDate, useCaGovPolling, useCaGovRacePolls } from "@/hooks/usePolling";
+import { parsePollDate, useTxGovPolling, useTxGovRacePolls } from "@/hooks/usePolling";
 import { partyColor } from "@/lib/finance";
 
 // Color-blind-safe categorical palette based on Okabe-Ito (CUD) — each pair
@@ -38,8 +38,8 @@ const CANDIDATE_COLORS: Record<string, string> = {
 const WINDOW_DAYS = 30;
 
 export default function PollingChart() {
-  const { data: polling, isLoading } = useCaGovPolling();
-  const { data: racePolls } = useCaGovRacePolls();
+  const { data: polling, isLoading } = useTxGovPolling();
+  const { data: racePolls } = useTxGovRacePolls();
   const { data: candidates } = useCandidates();
 
   const { series, data } = useMemo(() => {

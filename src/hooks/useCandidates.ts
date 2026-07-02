@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
-export type CaCandidate = {
+export type TxCandidate = {
   id: string;
   slug: string;
   name: string;
@@ -13,30 +13,29 @@ export type CaCandidate = {
   photo_url_large: string | null;
   photo_url_thumb: string | null;
   website: string | null;
-  candidate_filer_id: number;
-  committee_filer_id: number | null;
+  filer_ident: string;
+  committee_filer_ident: string | null;
   committee_name: string | null;
   status: string | null;
   featured: boolean;
 };
 
-export type CaContributionSummary = {
+export type TxContributionSummary = {
   candidate_id: string;
   slug: string;
   name: string;
-  committee_filer_id: number | null;
+  filer_ident: string | null;
   cycle: string;
   individual_donor_count: number | null;
   individual_contributions: number | null;
-  pac_contributions: number | null;
-  party_contributions: number | null;
+  entity_contributions: number | null;
   small_dollar_contributions: number | null;
   small_dollar_count: number | null;
   total_raised: number | null;
   as_of: string | null;
 };
 
-export type CaIeByCandidate = {
+export type TxIeByCandidate = {
   candidate_id: string;
   slug: string;
   name: string;
@@ -49,7 +48,7 @@ export type CaIeByCandidate = {
   as_of: string | null;
 };
 
-export type CaContribution = {
+export type TxContribution = {
   id: string;
   candidate_id: string | null;
   contributor_type: string | null;
@@ -64,7 +63,7 @@ export type CaContribution = {
   cycle: string | null;
 };
 
-export type CaAggregatedDonor = {
+export type TxAggregatedDonor = {
   candidate_id: string;
   contributor_last_name: string | null;
   contributor_first_name: string | null;
@@ -78,7 +77,7 @@ export type CaAggregatedDonor = {
   last_contribution_date: string | null;
 };
 
-export type CaLoan = {
+export type TxLoan = {
   contributor_last_name: string | null;
   contributor_first_name: string | null;
   contributor_type: string | null;
@@ -90,14 +89,14 @@ export type CaLoan = {
   source: "loan" | "self";
 };
 
-export type CaExpenditureTotals = {
+export type TxExpenditureTotals = {
   totalSpent: number;
   cashOnHandEstimate: number;
 };
 
-export type CaIeRow = {
+export type TxIeRow = {
   id: string;
-  ie_committee_filer_id: number | null;
+  ie_filer_ident: string | null;
   target_candidate_id: string | null;
   support_oppose: string | null;
   amount: number;
@@ -113,34 +112,34 @@ export type CaIeRow = {
 
 export function useCandidates() {
   return useQuery({
-    queryKey: ["ca_candidates"],
-    queryFn: async (): Promise<CaCandidate[]> => {
+    queryKey: ["tx_candidates"],
+    queryFn: async (): Promise<TxCandidate[]> => {
       const { data, error } = await (supabase as any)
-        .from("ca_candidates")
+        .from("tx_candidates")
         .select(
-          "id,slug,name,party,title,bio,photo_url,photo_url_medium,photo_url_large,photo_url_thumb,website,candidate_filer_id,committee_filer_id,committee_name,status,featured",
+          "id,slug,name,party,title,bio,photo_url,photo_url_medium,photo_url_large,photo_url_thumb,website,filer_ident,committee_filer_ident,committee_name,status,featured",
         )
         .order("name");
       if (error) throw error;
-      return (data ?? []) as CaCandidate[];
+      return (data ?? []) as TxCandidate[];
     },
   });
 }
 
 export function useCandidate(slug: string | undefined) {
   return useQuery({
-    queryKey: ["ca_candidate", slug],
+    queryKey: ["tx_candidate", slug],
     enabled: !!slug,
-    queryFn: async (): Promise<CaCandidate | null> => {
+    queryFn: async (): Promise<TxCandidate | null> => {
       const { data, error } = await (supabase as any)
-        .from("ca_candidates")
+        .from("tx_candidates")
         .select(
-          "id,slug,name,party,title,bio,photo_url,photo_url_medium,photo_url_large,photo_url_thumb,website,candidate_filer_id,committee_filer_id,committee_name,status,featured",
+          "id,slug,name,party,title,bio,photo_url,photo_url_medium,photo_url_large,photo_url_thumb,website,filer_ident,committee_filer_ident,committee_name,status,featured",
         )
         .eq("slug", slug)
         .maybeSingle();
       if (error) throw error;
-      return (data ?? null) as CaCandidate | null;
+      return (data ?? null) as TxCandidate | null;
     },
   });
 }
@@ -151,28 +150,28 @@ export function useCandidate(slug: string | undefined) {
 
 export function useContributionsSummary(candidateId: string | undefined) {
   return useQuery({
-    queryKey: ["ca_contributions_summary", candidateId],
+    queryKey: ["tx_contributions_summary", candidateId],
     enabled: !!candidateId,
-    queryFn: async (): Promise<CaContributionSummary[]> => {
+    queryFn: async (): Promise<TxContributionSummary[]> => {
       const { data, error } = await (supabase as any)
-        .from("ca_contributions_summary")
+        .from("tx_contributions_summary")
         .select("*")
         .eq("candidate_id", candidateId);
       if (error) throw error;
-      return (data ?? []) as CaContributionSummary[];
+      return (data ?? []) as TxContributionSummary[];
     },
   });
 }
 
 export function useAllSummaries() {
   return useQuery({
-    queryKey: ["ca_contributions_summary", "all"],
-    queryFn: async (): Promise<CaContributionSummary[]> => {
+    queryKey: ["tx_contributions_summary", "all"],
+    queryFn: async (): Promise<TxContributionSummary[]> => {
       const { data, error } = await (supabase as any)
-        .from("ca_contributions_summary")
+        .from("tx_contributions_summary")
         .select("*");
       if (error) throw error;
-      return (data ?? []) as CaContributionSummary[];
+      return (data ?? []) as TxContributionSummary[];
     },
   });
 }
@@ -183,9 +182,10 @@ export function useAllSummaries() {
 
 export type DonorKind = "all" | "individual" | "pac";
 
-// Entities treated as "PAC / institutional": CAL-ACCESS committee types plus
-// corporations/LLCs/tribes/unions (OTH) and party committees (PTY).
-const PAC_TYPES = ["COM", "SCC", "OTH", "PTY"];
+// TEC splits contributors into INDIVIDUAL vs ENTITY; every institutional
+// donor (PACs, firms, partnerships — corporations can't give to TX candidates)
+// lands in ENTITY.
+const PAC_TYPES = ["ENTITY"];
 
 export function useTopDonors(
   candidateId: string | undefined,
@@ -193,25 +193,25 @@ export function useTopDonors(
   kind: DonorKind = "all",
 ) {
   return useQuery({
-    queryKey: ["ca_top_donors", candidateId, limit, kind],
+    queryKey: ["tx_top_donors", candidateId, limit, kind],
     enabled: !!candidateId,
-    queryFn: async (): Promise<CaAggregatedDonor[]> => {
-      // Reads from the ca_top_donors view which groups contributions by
+    queryFn: async (): Promise<TxAggregatedDonor[]> => {
+      // Reads from the tx_top_donors view which groups contributions by
       // (candidate_id, normalized name) so self-funders like Tom Steyer show
       // up as one row with their cumulative total, not N separate rows.
       let q = (supabase as any)
-        .from("ca_top_donors")
+        .from("tx_top_donors")
         .select(
           "candidate_id,contributor_last_name,contributor_first_name,contributor_type,employer,occupation,city,state,contribution_count,total_amount,last_contribution_date",
         )
         .eq("candidate_id", candidateId)
         .order("total_amount", { ascending: false })
         .limit(limit);
-      if (kind === "individual") q = q.eq("contributor_type", "IND");
+      if (kind === "individual") q = q.eq("contributor_type", "INDIVIDUAL");
       else if (kind === "pac") q = q.in("contributor_type", PAC_TYPES);
       const { data, error } = await q;
       if (error) throw error;
-      return (data ?? []) as CaAggregatedDonor[];
+      return (data ?? []) as TxAggregatedDonor[];
     },
   });
 }
@@ -220,14 +220,14 @@ export function useTopDonors(
 // Top donors aggregated across ALL candidates (cross-candidate view)
 // ---------------------------------------------------------------------------
 
-export type CaCrossCandidateDonorSplit = {
+export type TxCrossCandidateDonorSplit = {
   candidate_id: string;
   contribution_count: number;
   total_amount: number;
   last_contribution_date: string | null;
 };
 
-export type CaCrossCandidateDonor = {
+export type TxCrossCandidateDonor = {
   key: string;
   display_name: string;
   contributor_type: string | null;
@@ -238,7 +238,7 @@ export type CaCrossCandidateDonor = {
   contribution_count: number;
   total_amount: number;
   last_contribution_date: string | null;
-  splits: CaCrossCandidateDonorSplit[];
+  splits: TxCrossCandidateDonorSplit[];
 };
 
 function normalizeNamePart(s: string | null | undefined): string {
@@ -251,26 +251,26 @@ function normalizeNamePart(s: string | null | undefined): string {
 
 export function useTopAggregatedDonors(limit = 50, kind: DonorKind = "all") {
   return useQuery({
-    queryKey: ["ca_top_aggregated_donors", limit, kind],
-    queryFn: async (): Promise<CaCrossCandidateDonor[]> => {
-      // Pull the top per-candidate rows from the existing ca_top_donors view
+    queryKey: ["tx_top_aggregated_donors", limit, kind],
+    queryFn: async (): Promise<TxCrossCandidateDonor[]> => {
+      // Pull the top per-candidate rows from the existing tx_top_donors view
       // and re-aggregate client-side across candidates so the same donor
       // giving to multiple campaigns collapses into one row with a per-
       // candidate breakdown.
       let q = (supabase as any)
-        .from("ca_top_donors")
+        .from("tx_top_donors")
         .select(
           "candidate_id,contributor_last_name,contributor_first_name,contributor_type,employer,occupation,city,state,contribution_count,total_amount,last_contribution_date",
         )
         .order("total_amount", { ascending: false })
         .limit(10000);
-      if (kind === "individual") q = q.eq("contributor_type", "IND");
+      if (kind === "individual") q = q.eq("contributor_type", "INDIVIDUAL");
       else if (kind === "pac") q = q.in("contributor_type", PAC_TYPES);
       const { data, error } = await q;
       if (error) throw error;
 
-      const rows = (data ?? []) as CaAggregatedDonor[];
-      const map = new Map<string, CaCrossCandidateDonor>();
+      const rows = (data ?? []) as TxAggregatedDonor[];
+      const map = new Map<string, TxCrossCandidateDonor>();
       for (const r of rows) {
         const normLast = normalizeNamePart(r.contributor_last_name);
         const normFirst = normalizeNamePart(r.contributor_first_name);
@@ -283,7 +283,7 @@ export function useTopAggregatedDonors(limit = 50, kind: DonorKind = "all") {
           .filter((s) => !!(s ?? "").trim())
           .join(" ")
           .trim() || normLast || normFirst;
-        const split: CaCrossCandidateDonorSplit = {
+        const split: TxCrossCandidateDonorSplit = {
           candidate_id: r.candidate_id,
           contribution_count: Number(r.contribution_count ?? 0),
           total_amount: Number(r.total_amount ?? 0),
@@ -338,18 +338,13 @@ export function useTopAggregatedDonors(limit = 50, kind: DonorKind = "all") {
 // committees by normalized donor name. Cycle-scoped at the ingest layer.
 // ---------------------------------------------------------------------------
 
-export type CaIeCommittee = {
-  filer_id: number;
+export type TxIeCommittee = {
+  filer_ident: string;
   name: string;
-  filer_type: string | null;
-  status: string | null;
-  sponsor: string | null;
-  city: string | null;
-  state: string | null;
 };
 
-export type CaIeAggregatedDonorRow = {
-  ie_committee_filer_id: number;
+export type TxIeAggregatedDonorRow = {
+  ie_filer_ident: string;
   contributor_last_name: string | null;
   contributor_first_name: string | null;
   contributor_type: string | null;
@@ -362,15 +357,15 @@ export type CaIeAggregatedDonorRow = {
   last_contribution_date: string | null;
 };
 
-export type CaIeDonorSplit = {
-  ie_committee_filer_id: number;
+export type TxIeDonorSplit = {
+  ie_filer_ident: string;
   committee_name: string;
   contribution_count: number;
   total_amount: number;
   last_contribution_date: string | null;
 };
 
-export type CaIeCrossCommitteeDonor = {
+export type TxIeCrossCommitteeDonor = {
   key: string;
   display_name: string;
   contributor_type: string | null;
@@ -381,38 +376,38 @@ export type CaIeCrossCommitteeDonor = {
   contribution_count: number;
   total_amount: number;
   last_contribution_date: string | null;
-  splits: CaIeDonorSplit[];
+  splits: TxIeDonorSplit[];
 };
 
 export function useTopIeAggregatedDonors(limit = 50, kind: DonorKind = "all") {
   return useQuery({
-    queryKey: ["ca_top_ie_donors_aggregated", limit, kind],
-    queryFn: async (): Promise<CaIeCrossCommitteeDonor[]> => {
+    queryKey: ["tx_top_ie_donors_aggregated", limit, kind],
+    queryFn: async (): Promise<TxIeCrossCommitteeDonor[]> => {
       const [donorsRes, committeesRes] = await Promise.all([
         (() => {
           let q = (supabase as any)
-            .from("ca_top_ie_donors")
+            .from("tx_top_ie_donors")
             .select(
-              "ie_committee_filer_id,contributor_last_name,contributor_first_name,contributor_type,employer,occupation,city,state,contribution_count,total_amount,last_contribution_date",
+              "ie_filer_ident,contributor_last_name,contributor_first_name,contributor_type,employer,occupation,city,state,contribution_count,total_amount,last_contribution_date",
             )
             .order("total_amount", { ascending: false })
             .limit(10000);
-          if (kind === "individual") q = q.eq("contributor_type", "IND");
+          if (kind === "individual") q = q.eq("contributor_type", "INDIVIDUAL");
           else if (kind === "pac") q = q.in("contributor_type", PAC_TYPES);
           return q;
         })(),
-        (supabase as any).from("ca_ie_committees").select("filer_id,name"),
+        (supabase as any).from("tx_ie_committees").select("filer_ident,name"),
       ]);
       if (donorsRes.error) throw donorsRes.error;
       if (committeesRes.error) throw committeesRes.error;
 
-      const committeeName = new Map<number, string>();
-      for (const c of (committeesRes.data ?? []) as { filer_id: number; name: string }[]) {
-        committeeName.set(Number(c.filer_id), c.name ?? `Filer ${c.filer_id}`);
+      const committeeName = new Map<string, string>();
+      for (const c of (committeesRes.data ?? []) as { filer_ident: string; name: string }[]) {
+        committeeName.set(c.filer_ident, c.name ?? `Filer ${c.filer_ident}`);
       }
 
-      const rows = (donorsRes.data ?? []) as CaIeAggregatedDonorRow[];
-      const map = new Map<string, CaIeCrossCommitteeDonor>();
+      const rows = (donorsRes.data ?? []) as TxIeAggregatedDonorRow[];
+      const map = new Map<string, TxIeCrossCommitteeDonor>();
       for (const r of rows) {
         const normLast = normalizeNamePart(r.contributor_last_name);
         const normFirst = normalizeNamePart(r.contributor_first_name);
@@ -422,11 +417,11 @@ export function useTopIeAggregatedDonors(limit = 50, kind: DonorKind = "all") {
           .filter((s) => !!(s ?? "").trim())
           .join(" ")
           .trim() || normLast || normFirst;
-        const split: CaIeDonorSplit = {
-          ie_committee_filer_id: Number(r.ie_committee_filer_id),
+        const split: TxIeDonorSplit = {
+          ie_filer_ident: r.ie_filer_ident,
           committee_name:
-            committeeName.get(Number(r.ie_committee_filer_id)) ??
-            `Filer ${r.ie_committee_filer_id}`,
+            committeeName.get(r.ie_filer_ident) ??
+            `Filer ${r.ie_filer_ident}`,
           contribution_count: Number(r.contribution_count ?? 0),
           total_amount: Number(r.total_amount ?? 0),
           last_contribution_date: r.last_contribution_date,
@@ -476,12 +471,12 @@ export function useTopIeAggregatedDonors(limit = 50, kind: DonorKind = "all") {
 
 export function useTopIndustries(candidateId: string | undefined, limit = 10) {
   return useQuery({
-    queryKey: ["ca_contributions_industries", candidateId, limit],
+    queryKey: ["tx_contributions_industries", candidateId, limit],
     enabled: !!candidateId,
     queryFn: async (): Promise<{ name: string; amount: number }[]> => {
       // Group client-side — no RPC yet. Cap at 5000 rows to stay snappy.
       const { data, error } = await (supabase as any)
-        .from("ca_contributions")
+        .from("tx_contributions")
         .select("employer,amount")
         .eq("candidate_id", candidateId)
         .not("employer", "is", null)
@@ -504,7 +499,8 @@ export function useTopIndustries(candidateId: string | undefined, limit = 10) {
 
 // ---------------------------------------------------------------------------
 // Self-funding & loans for a candidate.
-//   - "loan": Schedule B (source_form_type starts with "B") — loans received.
+//   - "loan": TEC Schedule E loans, exposed by tx_contributions_deduped with
+//     source_form_type = 'B-LOAN' (so the LIKE 'B%' split below keeps working).
 //   - "self": Individual contributions where the contributor's first AND last
 //     name fuzzily match the candidate's. Last-name match is exact (case-
 //     insensitive); first-name match accepts common nicknames (Tom/Thomas,
@@ -647,9 +643,9 @@ export function useCandidateLoans(
   limit = 10,
 ) {
   return useQuery({
-    queryKey: ["ca_candidate_loans", candidateId, candidateName, limit],
+    queryKey: ["tx_candidate_loans", candidateId, candidateName, limit],
     enabled: !!candidateId && !!candidateName,
-    queryFn: async (): Promise<CaLoan[]> => {
+    queryFn: async (): Promise<TxLoan[]> => {
       // Strip middle initials / suffixes ("Jr.", "Sr.", "II", "III").
       const SUFFIXES = new Set(["jr", "jr.", "sr", "sr.", "ii", "iii", "iv"]);
       const parts = (candidateName ?? "")
@@ -659,21 +655,21 @@ export function useCandidateLoans(
         .filter((p) => !/^[A-Z]\.?$/.test(p)); // drop bare initials like "T."
       const candidateFirst = parts[0] ?? "";
       const candidateLast = parts[parts.length - 1] ?? "";
-      // Server-side: pull loans (Schedule B) plus any IND contribution where
+      // Server-side: pull loans plus any INDIVIDUAL contribution where
       // the contributor's last name equals the candidate's. We then apply the
       // fuzzy first-name check client-side.
       const { data, error } = await (supabase as any)
-        .from("ca_contributions_deduped")
+        .from("tx_contributions_deduped")
         .select(
           "contributor_last_name,contributor_first_name,contributor_type,employer,occupation,amount,contribution_date,source_form_type",
         )
         .eq("candidate_id", candidateId)
         .or(
-          `source_form_type.like.B%,and(contributor_type.eq.IND,contributor_last_name.ilike.${candidateLast})`,
+          `source_form_type.like.B%,and(contributor_type.eq.INDIVIDUAL,contributor_last_name.ilike.${candidateLast})`,
         )
         .limit(5000);
       if (error) throw error;
-      const map = new Map<string, CaLoan>();
+      const map = new Map<string, TxLoan>();
       for (const r of (data ?? []) as any[]) {
         const isLoan = (r.source_form_type ?? "").startsWith("B");
         if (!isLoan) {
@@ -728,15 +724,15 @@ export type CandidateTotals = { raised: number; spent: number; cash: number };
 
 /**
  * One-shot: raised + spent + cash-estimate per candidate, keyed by candidate_id.
- * Pulls ca_contributions_summary and ca_expenditures (candidate_id,amount only).
+ * Pulls tx_contributions_summary and tx_expenditures (candidate_id,amount only).
  */
 export function useCandidateTotals() {
   return useQuery({
-    queryKey: ["ca_candidate_totals"],
+    queryKey: ["tx_candidate_totals"],
     queryFn: async (): Promise<Map<string, CandidateTotals>> => {
       const [summaries, expn] = await Promise.all([
-        (supabase as any).from("ca_contributions_summary").select("candidate_id,total_raised"),
-        (supabase as any).from("ca_expenditures").select("candidate_id,amount"),
+        (supabase as any).from("tx_contributions_summary").select("candidate_id,total_raised"),
+        (supabase as any).from("tx_expenditures").select("candidate_id,amount"),
       ]);
       if (summaries.error) throw summaries.error;
       if (expn.error) throw expn.error;
@@ -770,11 +766,11 @@ export function useCandidateTotals() {
 
 export function useExpenditureTotals(candidateId: string | undefined) {
   return useQuery({
-    queryKey: ["ca_expenditures_totals", candidateId],
+    queryKey: ["tx_expenditures_totals", candidateId],
     enabled: !!candidateId,
     queryFn: async (): Promise<{ totalSpent: number }> => {
       const { data, error } = await (supabase as any)
-        .from("ca_expenditures")
+        .from("tx_expenditures")
         .select("amount")
         .eq("candidate_id", candidateId);
       if (error) throw error;
@@ -793,42 +789,41 @@ export function useExpenditureTotals(candidateId: string | undefined) {
 
 export function useIEByCandidate() {
   return useQuery({
-    queryKey: ["ca_ie_by_candidate"],
-    queryFn: async (): Promise<CaIeByCandidate[]> => {
+    queryKey: ["tx_ie_by_candidate"],
+    queryFn: async (): Promise<TxIeByCandidate[]> => {
       const { data, error } = await (supabase as any)
-        .from("ca_ie_by_candidate")
+        .from("tx_ie_by_candidate")
         .select("*");
       if (error) throw error;
-      return (data ?? []) as CaIeByCandidate[];
+      return (data ?? []) as TxIeByCandidate[];
     },
   });
 }
 
 export function useIEForCandidate(candidateId: string | undefined, limit = 50) {
   return useQuery({
-    queryKey: ["ca_ie_for_candidate", candidateId, limit],
+    queryKey: ["tx_ie_for_candidate", candidateId, limit],
     enabled: !!candidateId,
-    queryFn: async (): Promise<CaIeRow[]> => {
+    queryFn: async (): Promise<TxIeRow[]> => {
       const { data, error } = await (supabase as any)
-        .from("ca_independent_expenditures")
+        .from("tx_independent_expenditures")
         .select(
-          "id,ie_committee_filer_id,target_candidate_id,support_oppose,amount,expenditure_date,description,cycle,ca_ie_committees(name)",
+          "id,ie_filer_ident,target_candidate_id,support_oppose,amount,expenditure_date,description,cycle,tx_ie_committees(name)",
         )
         .eq("target_candidate_id", candidateId)
-        .eq("is_latest", true)
         .order("expenditure_date", { ascending: false })
         .limit(limit);
       if (error) throw error;
       return ((data ?? []) as any[]).map((r) => ({
         id: r.id,
-        ie_committee_filer_id: r.ie_committee_filer_id,
+        ie_filer_ident: r.ie_filer_ident,
         target_candidate_id: r.target_candidate_id,
         support_oppose: r.support_oppose,
         amount: Number(r.amount ?? 0),
         expenditure_date: r.expenditure_date,
         description: r.description,
         cycle: r.cycle,
-        committee_name: r.ca_ie_committees?.name ?? null,
+        committee_name: r.tx_ie_committees?.name ?? null,
       }));
     },
   });
@@ -836,10 +831,10 @@ export function useIEForCandidate(candidateId: string | undefined, limit = 50) {
 
 export function useTopIECommittees(limit = 15) {
   return useQuery({
-    queryKey: ["ca_ie_top_committees", limit],
+    queryKey: ["tx_ie_top_committees", limit],
     queryFn: async (): Promise<
       {
-        filer_id: number;
+        filer_id: string;
         name: string;
         total_amount: number;
         supporting: number;
@@ -848,19 +843,18 @@ export function useTopIECommittees(limit = 15) {
       }[]
     > => {
       const { data, error } = await (supabase as any)
-        .from("ca_independent_expenditures")
-        .select("ie_committee_filer_id,support_oppose,amount,ca_ie_committees(name)")
-        .eq("is_latest", true)
+        .from("tx_independent_expenditures")
+        .select("ie_filer_ident,support_oppose,amount,tx_ie_committees(name)")
         .limit(10000);
       if (error) throw error;
       const totals = new Map<
-        number,
+        string,
         { name: string; total: number; sup: number; opp: number; count: number }
       >();
       for (const r of (data ?? []) as any[]) {
-        const id = r.ie_committee_filer_id;
+        const id = r.ie_filer_ident;
         if (id == null) continue;
-        const name = r.ca_ie_committees?.name ?? `Filer ${id}`;
+        const name = r.tx_ie_committees?.name ?? `Filer ${id}`;
         const amount = Number(r.amount ?? 0);
         const existing = totals.get(id) ?? { name, total: 0, sup: 0, opp: 0, count: 0 };
         existing.total += amount;

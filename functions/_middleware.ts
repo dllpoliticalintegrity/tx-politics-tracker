@@ -25,7 +25,7 @@ type MiddlewareContext = {
   next: () => Promise<Response>;
 };
 
-const SITE_ORIGIN = "https://cagovtracker.com";
+const SITE_ORIGIN = "https://txgovtracker.com";
 
 type RouteMeta = {
   title: string;
@@ -36,12 +36,12 @@ type RouteMeta = {
 
 const STATIC_ROUTES: Record<string, RouteMeta> = {
   "/": {
-    title: "California Governor 2026 — Money & Polling Tracker | CA Gov Tracker",
+    title: "Texas Governor 2026 — Money & Polling Tracker | TX Gov Tracker",
     description:
-      "Follow the money and polling in the 2026 California Gubernatorial Race. Live finance data from CAL-ACCESS, polling averages, and independent expenditures across all candidates.",
-    h1: "California Governor 2026 — Follow the Money",
+      "Follow the money and polling in the 2026 Texas Gubernatorial Race. Live finance data from the Texas Ethics Commission, polling averages, and independent expenditures across all candidates.",
+    h1: "Texas Governor 2026 — Follow the Money",
     body: `
-      <p>CA Gov Tracker is a public-interest dashboard for the 2026 California Gubernatorial Race. We pull primary-source campaign-finance filings from California's CAL-ACCESS database, surface independent-expenditure spending, and aggregate public polling so you can see how money and momentum are moving in the race.</p>
+      <p>TX Gov Tracker is a public-interest dashboard for the 2026 Texas Gubernatorial Race. We pull primary-source campaign-finance filings from the Texas Ethics Commission's campaign-finance filings, surface independent-expenditure spending, and aggregate public polling so you can see how money and momentum are moving in the race.</p>
       <p>Updated nightly with the Secretary of State's filings.</p>
       <ul>
         <li><a href="/candidates">All candidates and their funding</a></li>
@@ -53,13 +53,13 @@ const STATIC_ROUTES: Record<string, RouteMeta> = {
     `,
   },
   "/candidates": {
-    title: "All Candidates — California Governor 2026 | CA Gov Tracker",
+    title: "All Candidates — Texas Governor 2026 | TX Gov Tracker",
     description:
-      "Every declared candidate in the 2026 California Governor's race, with campaign-finance totals, polling, and biographical detail. Sourced from CAL-ACCESS filings.",
-    h1: "Candidates for California Governor, 2026",
+      "Every declared candidate in the 2026 Texas Governor's race, with campaign-finance totals, polling, and biographical detail. Sourced from Texas Ethics Commission filings.",
+    h1: "Candidates for Texas Governor, 2026",
     body: `
-      <p>This page lists every declared candidate in the 2026 California Gubernatorial Race. Each entry shows total contributions, expenditures, current polling average, and links through to a detailed donor and finance profile.</p>
-      <p>Filings are pulled nightly from California's CAL-ACCESS public-disclosure system.</p>
+      <p>This page lists every declared candidate in the 2026 Texas Gubernatorial Race. Each entry shows total contributions, expenditures, current polling average, and links through to a detailed donor and finance profile.</p>
+      <p>Filings are pulled nightly from the Texas Ethics Commission's public bulk data.</p>
       <ul>
         <li><a href="/top-donors">Compare top donors across all candidates</a></li>
         <li><a href="/polling">Polling averages</a></li>
@@ -68,12 +68,12 @@ const STATIC_ROUTES: Record<string, RouteMeta> = {
     `,
   },
   "/polling": {
-    title: "Polling — California Governor 2026 | CA Gov Tracker",
+    title: "Polling — Texas Governor 2026 | TX Gov Tracker",
     description:
-      "Polling averages and individual poll results for the 2026 California Gubernatorial Race, aggregated from public sources.",
-    h1: "California Governor 2026 — Polling",
+      "Polling averages and individual poll results for the 2026 Texas Gubernatorial Race, aggregated from public sources.",
+    h1: "Texas Governor 2026 — Polling",
     body: `
-      <p>This page shows the polling picture for the 2026 California Governor's race: a rolling polling average across major surveys, individual poll-by-poll results, and trend data over the course of the cycle.</p>
+      <p>This page shows the polling picture for the 2026 Texas Governor's race: a rolling polling average across major surveys, individual poll-by-poll results, and trend data over the course of the cycle.</p>
       <p>Polling is sourced from public aggregators and individual published surveys.</p>
       <ul>
         <li><a href="/candidates">Candidate-by-candidate finance and polling</a></li>
@@ -82,12 +82,12 @@ const STATIC_ROUTES: Record<string, RouteMeta> = {
     `,
   },
   "/top-donors": {
-    title: "Top Donors — California Governor 2026 | CA Gov Tracker",
+    title: "Top Donors — Texas Governor 2026 | TX Gov Tracker",
     description:
-      "The largest individual and PAC contributors to candidates in the 2026 California Governor's race, ranked by total dollars given. Data from CAL-ACCESS.",
-    h1: "Top Donors — California Governor 2026",
+      "The largest individual and PAC contributors to candidates in the 2026 Texas Governor's race, ranked by total dollars given. Data from the Texas Ethics Commission.",
+    h1: "Top Donors — Texas Governor 2026",
     body: `
-      <p>This page ranks the largest individual and PAC contributors across all 2026 California Gubernatorial candidates. Donors are aggregated by name and recipient committee, with industry and employer where reported.</p>
+      <p>This page ranks the largest individual and PAC contributors across all 2026 Texas Gubernatorial candidates. Donors are aggregated by name and recipient committee, with industry and employer where reported.</p>
       <ul>
         <li><a href="/candidates">Candidate finance profiles</a></li>
         <li><a href="/independent-expenditures">Independent-expenditure committees</a></li>
@@ -95,12 +95,12 @@ const STATIC_ROUTES: Record<string, RouteMeta> = {
     `,
   },
   "/independent-expenditures": {
-    title: "Independent Expenditures — California Governor 2026 | CA Gov Tracker",
+    title: "Independent Expenditures — Texas Governor 2026 | TX Gov Tracker",
     description:
-      "Independent expenditures supporting or opposing 2026 California Gubernatorial candidates, with committee-level detail and target candidates. Data from CAL-ACCESS.",
-    h1: "Independent Expenditures — 2026 California Governor's Race",
+      "Independent expenditures supporting or opposing 2026 Texas Gubernatorial candidates, with committee-level detail and target candidates. Data from the Texas Ethics Commission.",
+    h1: "Independent Expenditures — 2026 Texas Governor's Race",
     body: `
-      <p>Independent expenditures are spending by committees and groups not coordinated with a candidate's campaign — typically advertising for or against a candidate. This page tracks every IE committee active in the 2026 California Governor's race, with totals, target candidates, and individual-expenditure detail.</p>
+      <p>Independent expenditures are spending by committees and groups not coordinated with a candidate's campaign — typically advertising for or against a candidate. This page tracks every IE committee active in the 2026 Texas Governor's race, with totals, target candidates, and individual-expenditure detail.</p>
       <ul>
         <li><a href="/candidates">Candidate finance profiles</a></li>
         <li><a href="/top-donors">Largest contributors to candidates and committees</a></li>
@@ -108,12 +108,12 @@ const STATIC_ROUTES: Record<string, RouteMeta> = {
     `,
   },
   "/faq": {
-    title: "FAQ — How CA Gov Tracker Works | CA Gov Tracker",
+    title: "FAQ — How TX Gov Tracker Works | TX Gov Tracker",
     description:
-      "Frequently asked questions about CA Gov Tracker — how we source campaign-finance data, how polling averages are computed, and what's included.",
+      "Frequently asked questions about TX Gov Tracker — how we source campaign-finance data, how polling averages are computed, and what's included.",
     h1: "Frequently Asked Questions",
     body: `
-      <p>CA Gov Tracker is a public-interest dashboard tracking money and polling in the 2026 California Gubernatorial Race. This page explains where our data comes from, how it's updated, and what's included.</p>
+      <p>TX Gov Tracker is a public-interest dashboard tracking money and polling in the 2026 Texas Gubernatorial Race. This page explains where our data comes from, how it's updated, and what's included.</p>
       <ul>
         <li><a href="/candidates">Candidate finance profiles</a></li>
         <li><a href="/polling">Polling averages</a></li>
@@ -166,7 +166,7 @@ async function fetchCandidateMeta(
     if (!c) return null;
 
     const partySuffix = c.party ? ` (${c.party})` : "";
-    const role = c.title || "California Gubernatorial Candidate";
+    const role = c.title || "Texas Gubernatorial Candidate";
     const bioFirst = (c.bio ?? "")
       .split(/(?<=[.!?])\s/)
       .slice(0, 2)
@@ -174,11 +174,11 @@ async function fetchCandidateMeta(
       .slice(0, 320);
 
     return {
-      title: `${c.name}${partySuffix} — Donors, Finance & Polling | CA Gov Tracker`,
-      description: `${c.name} — campaign finance, top donors, independent expenditures, and polling for the 2026 California Governor's race. Sourced from CAL-ACCESS.`,
-      h1: `${c.name}${partySuffix} — California Governor 2026`,
+      title: `${c.name}${partySuffix} — Donors, Finance & Polling | TX Gov Tracker`,
+      description: `${c.name} — campaign finance, top donors, independent expenditures, and polling for the 2026 Texas Governor's race. Sourced from the Texas Ethics Commission.`,
+      h1: `${c.name}${partySuffix} — Texas Governor 2026`,
       body: `
-        <p>${escapeHtml(role)}. Campaign-finance summary, top individual and PAC donors, independent-expenditure spending for and against, and current polling for the 2026 California Governor's race.</p>
+        <p>${escapeHtml(role)}. Campaign-finance summary, top individual and PAC donors, independent-expenditure spending for and against, and current polling for the 2026 Texas Governor's race.</p>
         ${bioFirst ? `<p>${escapeHtml(bioFirst)}</p>` : ""}
         <ul>
           <li><a href="/candidates">All candidates</a></li>

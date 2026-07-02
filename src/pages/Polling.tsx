@@ -2,11 +2,11 @@ import { Card } from "@/components/ui/card";
 import { TrendingUp, ExternalLink } from "lucide-react";
 import PollingChart from "@/components/PollingChart";
 import { useCandidates } from "@/hooks/useCandidates";
-import { useCaGovPolling, type PollRow } from "@/hooks/usePolling";
+import { useTxGovPolling, type PollRow } from "@/hooks/usePolling";
 import { partyColor } from "@/lib/finance";
 
 export default function Polling() {
-  const { data: polling, isLoading, error } = useCaGovPolling();
+  const { data: polling, isLoading, error } = useTxGovPolling();
   const { data: candidates } = useCandidates();
 
   // Candidates ordered by RCP average %, only those with an averaged %
@@ -87,7 +87,7 @@ export default function Polling() {
             </h2>
             {(
               <a
-                href="https://www.270towin.com/2026-governor-polls/california"
+                href="https://www.270towin.com/2026-governor-polls/texas"
                 target="_blank"
                 rel="noreferrer noopener"
                 className="font-mono text-[11px] text-muted-foreground hover:text-primary inline-flex items-center gap-1"

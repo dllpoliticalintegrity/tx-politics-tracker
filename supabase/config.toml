@@ -1,4 +1,4 @@
-project_id = "qjsesvdduoriofiodumm"
+project_id = "lohxdfrxnxuxjdvvyfjc"
 
 [functions.auth-email-hook]
 verify_jwt = false

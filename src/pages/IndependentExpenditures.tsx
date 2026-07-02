@@ -52,7 +52,7 @@ export default function IndependentExpenditures() {
         </h1>
         <p className="text-sm text-muted-foreground font-mono">
           Independent expenditures by PACs and committees supporting or opposing gubernatorial
-          candidates. Sourced from CAL-ACCESS Forms 496 and 461.
+          candidates. Sourced from TEC direct-campaign-expenditure (DCE) filings.
         </p>
       </section>
 

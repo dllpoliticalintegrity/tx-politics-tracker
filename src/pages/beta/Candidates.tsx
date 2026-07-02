@@ -14,17 +14,17 @@ import {
   useCandidates,
   useCandidateTotals,
   useIEByCandidate,
-  type CaCandidate,
-  type CaIeByCandidate,
+  type TxCandidate,
+  type TxIeByCandidate,
 } from "@/hooks/useCandidates";
-import { useCaGovPolling, readCandidatePct } from "@/hooks/usePolling";
+import { useTxGovPolling, readCandidatePct } from "@/hooks/usePolling";
 
 type SortKey = "pct" | "raised" | "cash" | "ie" | "name";
 type PartyFilter = "all" | "d" | "r" | "i";
 
 export default function BetaCandidates() {
   const { data: candidates = [] } = useCandidates();
-  const { data: polling } = useCaGovPolling();
+  const { data: polling } = useTxGovPolling();
   const { data: totals } = useCandidateTotals();
   const { data: ieByCand } = useIEByCandidate();
 
@@ -33,13 +33,13 @@ export default function BetaCandidates() {
   const [showWithdrawn, setShowWithdrawn] = useState(true);
 
   const ieMap = useMemo(() => {
-    const m = new Map<string, CaIeByCandidate>();
+    const m = new Map<string, TxIeByCandidate>();
     (ieByCand ?? []).forEach((r) => m.set(r.candidate_id, r));
     return m;
   }, [ieByCand]);
 
   type Row = {
-    candidate: CaCandidate;
+    candidate: TxCandidate;
     pct: number | null;
     raised: number;
     cash: number;
@@ -231,7 +231,7 @@ export default function BetaCandidates() {
             </tbody>
           </table>
           <div className="dt-foot">
-            <span>SOURCE: useCandidates · useCaGovPolling · useCandidateTotals · useIEByCandidate</span>
+            <span>SOURCE: useCandidates · useTxGovPolling · useCandidateTotals · useIEByCandidate</span>
             <Link to="/beta/polling">All polls →</Link>
           </div>
         </section>
@@ -303,7 +303,7 @@ function PageHero({
           </h1>
           <p className="page-hero__deck">
             Sortable, searchable. Each candidate's <strong>RCP polling average, total raised, cash on hand, and
-            independent-expenditure exposure</strong> &mdash; rebuilt from CAL-ACCESS and RCP.
+            independent-expenditure exposure</strong> &mdash; rebuilt from the Texas Ethics Commission and 270toWin.
           </p>
         </div>
         <div className="page-hero__stats">

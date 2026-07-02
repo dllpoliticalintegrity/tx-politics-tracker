@@ -13,8 +13,8 @@ import {
   useCandidates,
   useTopAggregatedDonors,
   useTopIeAggregatedDonors,
-  type CaCrossCandidateDonor,
-  type CaIeCrossCommitteeDonor,
+  type TxCrossCandidateDonor,
+  type TxIeCrossCommitteeDonor,
   type DonorKind,
 } from "@/hooks/useCandidates";
 import {
@@ -53,8 +53,8 @@ const SOURCE_OPTIONS: { value: Source; label: string }[] = [
 export default function TopDonors() {
   const [source, setSource] = useState<Source>("candidate");
   const [kind, setKind] = useState<DonorKind>("all");
-  const [selectedCand, setSelectedCand] = useState<CaCrossCandidateDonor | null>(null);
-  const [selectedIe, setSelectedIe] = useState<CaIeCrossCommitteeDonor | null>(null);
+  const [selectedCand, setSelectedCand] = useState<TxCrossCandidateDonor | null>(null);
+  const [selectedIe, setSelectedIe] = useState<TxIeCrossCommitteeDonor | null>(null);
 
   const { data: candidates } = useCandidates();
   const candDonors = useTopAggregatedDonors(50, kind);
@@ -398,7 +398,7 @@ export default function TopDonors() {
                 </h3>
                 {selectedIe.splits.map((s) => (
                   <Card
-                    key={s.ie_committee_filer_id}
+                    key={s.ie_filer_ident}
                     className="p-3 rounded-sm border-border"
                   >
                     <div className="flex items-center gap-3">
@@ -406,7 +406,7 @@ export default function TopDonors() {
                       <div className="flex-1 min-w-0">
                         <div className="font-bold text-sm truncate">{s.committee_name}</div>
                         <div className="text-[11px] text-muted-foreground font-mono">
-                          filer {s.ie_committee_filer_id} · {s.contribution_count} gift
+                          filer {s.ie_filer_ident} · {s.contribution_count} gift
                           {s.contribution_count === 1 ? "" : "s"}
                           {s.last_contribution_date ? ` · last ${s.last_contribution_date}` : ""}
                         </div>

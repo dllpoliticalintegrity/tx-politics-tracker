@@ -11,12 +11,12 @@ import {
   useIEByCandidate,
   useIEForCandidate,
 } from "@/hooks/useCandidates";
-import { useCaGovPolling, readCandidatePct, parsePollDate } from "@/hooks/usePolling";
+import { useTxGovPolling, readCandidatePct, parsePollDate } from "@/hooks/usePolling";
 
 export default function BetaCandidateDetail() {
   const { slug } = useParams();
   const { data: candidate, isLoading } = useCandidate(slug);
-  const { data: polling } = useCaGovPolling();
+  const { data: polling } = useTxGovPolling();
   const { data: totals } = useCandidateTotals();
   const { data: ieByCand = [] } = useIEByCandidate();
 
@@ -92,9 +92,9 @@ function CandHeader({
           <span className="crumb__sep">│</span>
           <span className="crumb__cur">{candidate.name}</span>
           <span className="crumb__right">
-            {candidate.candidate_filer_id && (
+            {candidate.filer_ident && (
               <span>
-                FILER ID <span className="id">#{candidate.candidate_filer_id}</span>
+                FILER ID <span className="id">#{candidate.filer_ident}</span>
               </span>
             )}
           </span>
@@ -170,7 +170,7 @@ function CandHeader({
           <div className="cand-stat">
             <div className="cand-stat__label">Total raised</div>
             <div className="cand-stat__value">{fmtM(raised)}</div>
-            <div className="cand-stat__delta">cycle to date · CAL-ACCESS</div>
+            <div className="cand-stat__delta">cycle to date · TEC</div>
           </div>
           <div className="cand-stat">
             <div className="cand-stat__label">Cash on hand</div>
@@ -192,7 +192,7 @@ function CandHeader({
 
 // ─── POLLING (mini chart for this candidate) ────────────────
 function PollingForCandidate({ candidateName, pct }: { candidateName: string; pct: number | null }) {
-  const { data: polling } = useCaGovPolling();
+  const { data: polling } = useTxGovPolling();
 
   const series = useMemo(() => {
     if (!polling) return [];
@@ -373,7 +373,7 @@ function DonorsForCandidate({ candidateId }: { candidateId: string }) {
       </div>
 
       <div className="dt-foot">
-        <span>SOURCE: useTopDonors · ca_top_donors view filtered to candidate</span>
+        <span>SOURCE: useTopDonors · tx_top_donors view filtered to candidate</span>
       </div>
     </section>
   );
@@ -387,22 +387,20 @@ function IndustriesAndSources({ candidateId }: { candidateId: string }) {
 
   const maxIndustry = useMemo(() => Math.max(...(industries ?? []).map((x) => x.amount), 1), [industries]);
 
-  // Source mix percentages from CaContributionSummary
+  // Source mix percentages from TxContributionSummary
   const mix = useMemo(() => {
     if (!summary) return null;
     const ind = Number(summary.individual_contributions ?? 0);
-    const pac = Number(summary.pac_contributions ?? 0);
-    const party = Number(summary.party_contributions ?? 0);
+    const entity = Number(summary.entity_contributions ?? 0);
     const small = Number(summary.small_dollar_contributions ?? 0);
-    const total = Number(summary.total_raised ?? 0) || ind + pac + party + small;
+    const total = Number(summary.total_raised ?? 0) || ind + entity;
     if (total === 0) return null;
     const indNonSmall = Math.max(0, ind - small);
     return {
       total,
       smallPct: Math.round((small / total) * 100),
       indPct: Math.round((indNonSmall / total) * 100),
-      pacPct: Math.round((pac / total) * 100),
-      partyPct: Math.round((party / total) * 100),
+      pacPct: Math.round((entity / total) * 100),
     };
   }, [summary]);
 
@@ -439,8 +437,7 @@ function IndustriesAndSources({ candidateId }: { candidateId: string }) {
                   background: `conic-gradient(
                     var(--green) 0% ${mix.smallPct}%,
                     var(--periwinkle) ${mix.smallPct}% ${mix.smallPct + mix.indPct}%,
-                    var(--sky-deep) ${mix.smallPct + mix.indPct}% ${mix.smallPct + mix.indPct + mix.pacPct}%,
-                    var(--ink) ${mix.smallPct + mix.indPct + mix.pacPct}% 100%
+                    var(--sky-deep) ${mix.smallPct + mix.indPct}% 100%
                   )`,
                 }}
               />
@@ -459,15 +456,9 @@ function IndustriesAndSources({ candidateId }: { candidateId: string }) {
                 </li>
                 <li>
                   <span className="swatch" style={{ background: "var(--sky-deep)" }} />
-                  <span className="src">PACs &amp; committees</span>
+                  <span className="src">Entities (PACs, firms)</span>
                   <span></span>
                   <span className="pct">{mix.pacPct}%</span>
-                </li>
-                <li>
-                  <span className="swatch" style={{ background: "var(--ink)" }} />
-                  <span className="src">Party</span>
-                  <span></span>
-                  <span className="pct">{mix.partyPct}%</span>
                 </li>
               </ul>
             </div>
@@ -531,7 +522,7 @@ function IeForCandidate({
                 <li key={r.id}>
                   <span className={`tx-pill ${isSupport ? "s" : "o"}`}>{isSupport ? "SUPPORT" : "OPPOSE"}</span>
                   <div>
-                    <div className="tx-cmt">{r.committee_name ?? `Filer ${r.ie_committee_filer_id}`}</div>
+                    <div className="tx-cmt">{r.committee_name ?? `Filer ${r.ie_filer_ident}`}</div>
                     <div className="tx-meta">{(r.description ?? "—").toUpperCase()} · {date}</div>
                   </div>
                   <div className="tx-amt">{fmtM(r.amount)}</div>
@@ -583,7 +574,7 @@ function IeForCandidate({
       </div>
 
       <div className="dt-foot">
-        <span>SOURCE: useIEForCandidate + useIEByCandidate · ca_independent_expenditures</span>
+        <span>SOURCE: useIEForCandidate + useIEByCandidate · tx_independent_expenditures</span>
         <Link to="/beta/ie">All IE activity →</Link>
       </div>
     </section>

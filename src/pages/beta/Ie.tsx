@@ -6,7 +6,7 @@ import {
   useCandidates,
   useIEByCandidate,
   useTopIECommittees,
-  type CaIeByCandidate,
+  type TxIeByCandidate,
 } from "@/hooks/useCandidates";
 
 export default function BetaIe() {
@@ -20,7 +20,7 @@ export default function BetaIe() {
   }, [candidates]);
 
   type Pos = {
-    row: CaIeByCandidate;
+    row: TxIeByCandidate;
     forAmt: number;
     againstAmt: number;
     net: number;
@@ -87,7 +87,7 @@ export default function BetaIe() {
           </div>
 
           <div className="dt-foot">
-            <span>SOURCE: useIEByCandidate · ca_ie_by_candidate view (total_supporting, total_opposing, committee_count)</span>
+            <span>SOURCE: useIEByCandidate · tx_ie_by_candidate view (total_supporting, total_opposing, committee_count)</span>
             <Link to="/beta/candidates">All candidates →</Link>
           </div>
         </section>
@@ -169,7 +169,7 @@ export default function BetaIe() {
           </div>
 
           <div className="dt-foot">
-            <span>SOURCE: useTopIECommittees · ca_independent_expenditures aggregated by committee</span>
+            <span>SOURCE: useTopIECommittees · tx_independent_expenditures aggregated by committee</span>
             <Link to="/beta">Back to dashboard →</Link>
           </div>
         </section>
@@ -182,7 +182,7 @@ function CandIePositions({
   positions,
   candById,
 }: {
-  positions: { row: CaIeByCandidate; forAmt: number; againstAmt: number; net: number; cmts: number }[];
+  positions: { row: TxIeByCandidate; forAmt: number; againstAmt: number; net: number; cmts: number }[];
   candById: Map<string, ReturnType<typeof useCandidates>["data"] extends (infer T)[] | undefined ? T : never>;
 }) {
   const maxAbs = Math.max(...positions.map((p) => Math.max(p.forAmt, p.againstAmt)), 1);

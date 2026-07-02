@@ -39,7 +39,7 @@ export default function BetaTopDonors() {
   return (
     <BetaLayout active="donors">
       <main>
-        <PageHero stats={cycleStats} pacCount={(donors ?? []).filter((d) => d.contributor_type !== "IND").length} />
+        <PageHero stats={cycleStats} pacCount={(donors ?? []).filter((d) => d.contributor_type !== "INDIVIDUAL").length} />
 
         {/* filter tabs */}
         <div className="donor-tabs">
@@ -93,7 +93,7 @@ export default function BetaTopDonors() {
               </div>
             )}
             {top10.map((d, i) => {
-              const isPac = (d.contributor_type ?? "").toUpperCase() !== "IND";
+              const isPac = (d.contributor_type ?? "").toUpperCase() !== "INDIVIDUAL";
               const ctxParts: string[] = [];
               if (d.employer) ctxParts.push(d.employer.toUpperCase());
               if (d.city) ctxParts.push(d.city.toUpperCase());
@@ -147,7 +147,7 @@ export default function BetaTopDonors() {
           </div>
 
           <div className="dt-foot">
-            <span>SOURCE: useTopAggregatedDonors · ca_top_donors view re-aggregated client-side</span>
+            <span>SOURCE: useTopAggregatedDonors · tx_top_donors view re-aggregated client-side</span>
             <Link to="/beta/candidates">All candidates →</Link>
           </div>
         </section>

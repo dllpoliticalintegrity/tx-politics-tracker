@@ -1,4 +1,4 @@
-import { type CaCandidate } from "@/hooks/useCandidates";
+import { type TxCandidate } from "@/hooks/useCandidates";
 
 // ─── number / string formatters ────────────────────────────
 export function pad(n: number): string {
@@ -46,7 +46,7 @@ export function CandPhoto({
   candidate,
   className,
 }: {
-  candidate: CaCandidate;
+  candidate: TxCandidate;
   className: string;
 }) {
   const src = candidate.photo_url_thumb ?? candidate.photo_url ?? null;

@@ -10,8 +10,8 @@ import {
 } from "@/hooks/useLatestContributions";
 import { useCandidates } from "@/hooks/useCandidates";
 
-const PRIMARY_TARGET_MS = new Date("2026-06-02T15:00:00Z").getTime(); // 7am PT polls open
-const PRIMARY_LABEL = "Jun 2, 2026 · 7:00 AM PT";
+const ELECTION_TARGET_MS = new Date("2026-11-03T13:00:00Z").getTime(); // 7am CT polls open, general election
+const ELECTION_LABEL = "Nov 3, 2026 · 7:00 AM CT";
 
 function pad(n: number) {
   return String(n).padStart(2, "0");
@@ -34,7 +34,7 @@ export function BetaLayout({
   children: ReactNode;
 }) {
   const now = useNowTick();
-  const diff = Math.max(0, PRIMARY_TARGET_MS - now);
+  const diff = Math.max(0, ELECTION_TARGET_MS - now);
   const days = Math.floor(diff / 86_400_000);
   const hh = Math.floor((diff % 86_400_000) / 3_600_000);
 
@@ -67,7 +67,7 @@ export function BetaLayout({
           <span>{clockText}</span>
           <span className="statusbar__sep">│</span>
           <span>
-            2026 CA GOVERNOR · PRIMARY{" "}
+            2026 TX GOVERNOR · GENERAL{" "}
             <strong style={{ color: "var(--periwinkle-deep)" }}>
               {days} DAY{days === 1 ? "" : "S"}
             </strong>
@@ -142,7 +142,7 @@ export function BetaLayout({
       {/* status line footer */}
       <footer className="statusline">
         <div className="statusline__inner">
-          <span className="statusline__source">CAL-ACCESS</span>
+          <span className="statusline__source">TEC</span>
           <span className="statusline__source">RealClearPolitics</span>
           <span className="statusline__source">Wikipedia</span>
           <span className="statusline__source warn">FEC · cached</span>
@@ -159,8 +159,8 @@ export function BetaLayout({
   );
 }
 
-export const PRIMARY_TARGET = PRIMARY_TARGET_MS;
-export const PRIMARY_DATE_LABEL = PRIMARY_LABEL;
+export const ELECTION_TARGET = ELECTION_TARGET_MS;
+export const ELECTION_DATE_LABEL = ELECTION_LABEL;
 
 function BetaNavTab({
   to,

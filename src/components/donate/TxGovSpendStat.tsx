@@ -27,18 +27,18 @@ const useCountUp = (target: number, duration = 1500) => {
   return value;
 };
 
-const fetchCaGovTotal = async (): Promise<number> => {
+const fetchTxGovTotal = async (): Promise<number> => {
   const { data: cands, error: e1 } = await supabase
-    .from("ca_candidates")
+    .from("tx_candidates")
     .select("id")
-    .eq("office", "GOV")
+    .eq("office", "GOVERNOR")
     .eq("election_year", 2026);
   if (e1) throw e1;
   const ids = (cands ?? []).map((c: { id: string }) => c.id);
   if (!ids.length) return 0;
 
   const { data, error } = await supabase
-    .from("ca_contributions_summary")
+    .from("tx_contributions_summary")
     .select("total_raised, candidate_id")
     .in("candidate_id", ids);
   if (error) throw error;
@@ -48,10 +48,10 @@ const fetchCaGovTotal = async (): Promise<number> => {
   );
 };
 
-const CaGovSpendStat = () => {
+const TxGovSpendStat = () => {
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["ca-gov-2026-total"],
-    queryFn: fetchCaGovTotal,
+    queryKey: ["tx-gov-2026-total"],
+    queryFn: fetchTxGovTotal,
     staleTime: 5 * 60 * 1000,
   });
 
@@ -61,7 +61,7 @@ const CaGovSpendStat = () => {
   return (
     <div className="rounded-xl bg-neutral-950 border border-neutral-800 shadow-lg p-5 mb-4 text-center">
       <div className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-emerald-400 font-semibold mb-2">
-        Raised in 2026 CA Governor race
+        Raised in 2026 TX Governor race
       </div>
 
       {isLoading ? (
@@ -78,10 +78,10 @@ const CaGovSpendStat = () => {
       )}
 
       <div className="text-[10px] uppercase tracking-widest text-gray-600 mt-3">
-        Source: CA Secretary of State
+        Source: Texas Ethics Commission
       </div>
     </div>
   );
 };
 
-export default CaGovSpendStat;
+export default TxGovSpendStat;

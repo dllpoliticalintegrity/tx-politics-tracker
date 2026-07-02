@@ -33,17 +33,12 @@ export function formatCurrencyFull(n: number | null | undefined): string {
 }
 
 export function contributorTypeLabel(code: string | null | undefined): string {
+  // TEC receipt-level codes: INDIVIDUAL vs ENTITY (businesses, PACs, firms).
   switch ((code ?? "").toUpperCase()) {
-    case "IND":
+    case "INDIVIDUAL":
       return "Individual";
-    case "COM":
-      return "Committee";
-    case "SCC":
-      return "Small Contributor Committee";
-    case "PTY":
-      return "Political Party";
-    case "OTH":
-      return "Other";
+    case "ENTITY":
+      return "Entity / PAC";
     default:
       return "Unknown";
   }

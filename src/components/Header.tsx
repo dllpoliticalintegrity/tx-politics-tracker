@@ -5,7 +5,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { useState } from "react";
 import { useTheme } from "next-themes";
-import caBear from "@/assets/ca-bear.png";
+import txStar from "@/assets/tx-star.svg";
 
 const navItems = [
   { to: "/", label: "HOME" },
@@ -30,12 +30,12 @@ export function Header() {
       <div className="container flex h-12 items-center justify-between">
         <Link to="/" className="flex items-center gap-2 font-mono font-bold text-sm tracking-tight">
           <span
-            aria-label="California bear"
+            aria-label="Texas lone star"
             role="img"
             className="inline-block h-5 w-5 bg-[#fdb417]"
             style={{
-              WebkitMaskImage: `url(${caBear})`,
-              maskImage: `url(${caBear})`,
+              WebkitMaskImage: `url(${txStar})`,
+              maskImage: `url(${txStar})`,
               WebkitMaskRepeat: "no-repeat",
               maskRepeat: "no-repeat",
               WebkitMaskSize: "contain",
@@ -44,7 +44,7 @@ export function Header() {
               maskPosition: "center",
             }}
           />
-          <span className="text-[#fdb417]">CAGOVTRACKER.COM</span>
+          <span className="text-[#fdb417]">TXGOVTRACKER.COM</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-0.5">
