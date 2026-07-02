@@ -38,7 +38,11 @@ export function candidateShort(name: string | null | undefined): string {
 }
 export function isWithdrawn(status: string | null | undefined): boolean {
   const s = (status ?? "").toLowerCase();
-  return s === "withdrawn" || s === "dropped_out" || s === "dropped out";
+  return s === "withdrawn" || s === "dropped_out" || s === "dropped out" || s === "eliminated";
+}
+
+export function inactiveLabel(status: string | null | undefined): string {
+  return (status ?? "").toLowerCase() === "eliminated" ? "Lost Primary" : "Withdrew";
 }
 
 // ─── shared mini-components ────────────────────────────────
@@ -57,7 +61,7 @@ export function CandPhoto({
   );
 }
 
-export function WithdrewTag() {
+export function WithdrewTag({ status }: { status?: string | null }) {
   return (
     <span
       style={{
@@ -73,7 +77,7 @@ export function WithdrewTag() {
         textTransform: "uppercase",
       }}
     >
-      Withdrew
+      {inactiveLabel(status)}
     </span>
   );
 }

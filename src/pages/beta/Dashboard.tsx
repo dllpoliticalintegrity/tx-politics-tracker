@@ -45,7 +45,11 @@ function candidateShort(name: string | null | undefined): string {
 }
 function isWithdrawn(status: string | null | undefined): boolean {
   const s = (status ?? "").toLowerCase();
-  return s === "withdrawn" || s === "dropped_out" || s === "dropped out";
+  return s === "withdrawn" || s === "dropped_out" || s === "dropped out" || s === "eliminated";
+}
+
+function inactiveLabel(status: string | null | undefined): string {
+  return (status ?? "").toLowerCase() === "eliminated" ? "Lost Primary" : "Withdrew";
 }
 
 // Render a candidate photo with the halftone-dot fallback to initials.
@@ -65,7 +69,7 @@ function CandPhoto({
 }
 
 // Tag shown next to withdrawn candidates' names.
-function WithdrewTag() {
+function WithdrewTag({ status }: { status?: string | null }) {
   return (
     <span
       style={{
@@ -81,7 +85,7 @@ function WithdrewTag() {
         textTransform: "uppercase",
       }}
     >
-      Withdrew
+      {inactiveLabel(status)}
     </span>
   );
 }
@@ -260,7 +264,7 @@ function Leaderboard({ leader, rest }: { leader: LeaderboardRow | undefined; res
         <div>
           <div className="hero__leader-name">
             {c.name}
-            {isWithdrawn(c.status) && <WithdrewTag />}
+            {isWithdrawn(c.status) && <WithdrewTag status={c.status} />}
           </div>
           <div className="hero__leader-meta">
             № 1 ·{" "}
@@ -308,7 +312,7 @@ function Leaderboard({ leader, rest }: { leader: LeaderboardRow | undefined; res
               <div>
                 <div className="lb-name">
                   {rc.name}
-                  {isWithdrawn(rc.status) && <WithdrewTag />}
+                  {isWithdrawn(rc.status) && <WithdrewTag status={rc.status} />}
                 </div>
                 <div className="lb-meta">
                   <span className={`party-${party}`}>{party.toUpperCase()}</span>
@@ -427,7 +431,7 @@ function PollingChartLeaderboard({
             <div className="body">
               <div className="name">
                 {r.candidate.name}
-                {isWithdrawn(r.candidate.status) && <WithdrewTag />}
+                {isWithdrawn(r.candidate.status) && <WithdrewTag status={r.candidate.status} />}
               </div>
               <div className="meta">
                 <span className={`party-${party}`}>{party.toUpperCase()}</span>
@@ -1009,7 +1013,7 @@ function FieldStandings() {
                     <div>
                       <div className="cell-cand__name">
                         {c.name}
-                        {isWithdrawn(c.status) && <WithdrewTag />}
+                        {isWithdrawn(c.status) && <WithdrewTag status={c.status} />}
                       </div>
                       <div className="cell-cand__meta">
                         <span className={`party-${party}`}>{party.toUpperCase()}</span>

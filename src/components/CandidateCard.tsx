@@ -32,7 +32,9 @@ export default function CandidateCard({ candidate: c, stats, rank }: Props) {
   const dSym = delta > 0 ? "▲" : delta < 0 ? "▼" : "·";
   const dColor =
     delta > 0 ? "text-primary" : delta < 0 ? "text-destructive" : "text-muted-foreground";
-  const isWithdrawn = c.status === "withdrawn" || c.status === "dropped_out";
+  const isWithdrawn =
+    c.status === "withdrawn" || c.status === "dropped_out" || c.status === "eliminated";
+  const inactiveLabel = c.status === "eliminated" ? "Lost Primary" : "Withdrawn";
 
   return (
     <Link to={`/candidates/${c.slug}`} className="block">
@@ -44,7 +46,7 @@ export default function CandidateCard({ candidate: c, stats, rank }: Props) {
       >
         {isWithdrawn && (
           <div className="absolute top-2 left-2 font-mono text-[9px] tracking-[0.2em] uppercase px-1.5 py-0.5 rounded-sm bg-muted text-muted-foreground border border-border z-10">
-            Withdrawn
+            {inactiveLabel}
           </div>
         )}
         {/* party-colored left stripe */}

@@ -108,7 +108,7 @@ function CandHeader({
             <div className="cand-bio__role">
               {wd ? "Withdrew" : pct != null ? "Polled in RCP avg" : "Not currently polled"}
             </div>
-            <h1>{candidate.name}{wd && <WithdrewTag />}</h1>
+            <h1>{candidate.name}{wd && <WithdrewTag status={candidate.status} />}</h1>
             <div className="cand-bio__meta">
               <span className={`party-${party}`}>{party === "d" ? "Democrat" : party === "r" ? "Republican" : "Independent / Other"}</span>
               {candidate.title && (

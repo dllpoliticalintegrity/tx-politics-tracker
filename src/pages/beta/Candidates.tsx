@@ -200,7 +200,7 @@ export default function BetaCandidates() {
                         <div>
                           <div className="cell-cand__name">
                             {c.name}
-                            {wd && <WithdrewTag />}
+                            {wd && <WithdrewTag status={r.candidate.status} />}
                           </div>
                           <div className="cell-cand__meta">
                             <span className={`party-${party}`}>{party.toUpperCase()}</span>
