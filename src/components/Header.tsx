@@ -44,7 +44,7 @@ export function Header() {
               maskPosition: "center",
             }}
           />
-          <span className="text-[#fdb417]">TXGOVTRACKER.COM</span>
+          <span className="text-[#fdb417]">TEXASPOLITICSTRACKER.COM</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-0.5">

@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://txgovtracker.com/sitemap.xml
+Sitemap: https://texaspoliticstracker.com/sitemap.xml

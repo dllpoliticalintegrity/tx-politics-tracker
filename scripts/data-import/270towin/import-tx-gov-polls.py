@@ -28,8 +28,8 @@ SOURCE = "270towin"
 RACE_SLUG = "texas-governor-2026"
 SOURCE_URL = "https://www.270towin.com/2026-governor-polls/texas"
 USER_AGENT = (
-    "Mozilla/5.0 (compatible; txgovtracker-importer/1.0; "
-    "+https://txgovtracker.com)"
+    "Mozilla/5.0 (compatible; texaspoliticstracker-importer/1.0; "
+    "+https://texaspoliticstracker.com)"
 )
 
 GENERIC_CHOICE = {

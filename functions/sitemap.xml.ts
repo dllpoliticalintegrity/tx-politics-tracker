@@ -14,7 +14,7 @@ interface Env {
   VITE_SUPABASE_PUBLISHABLE_KEY?: string;
 }
 
-const SITE_ORIGIN = "https://txgovtracker.com";
+const SITE_ORIGIN = "https://texaspoliticstracker.com";
 
 const STATIC_PATHS: Array<{
   path: string;

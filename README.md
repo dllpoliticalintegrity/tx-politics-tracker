@@ -1,4 +1,4 @@
-# TX Gov Tracker
+# Texas Politics Tracker
 
 Public-interest dashboard tracking money and polling in the **2026 Texas
 Governor's race** — campaign finance from the Texas Ethics Commission (TEC),

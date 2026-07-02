@@ -1,4 +1,4 @@
-# TX Gov Tracker
+# Texas Politics Tracker
 
 > Public-interest dashboard tracking money and polling in the 2026 Texas Gubernatorial Race. Campaign-finance filings sourced nightly from the Texas Ethics Commission's campaign-finance filings, plus aggregated public polling and independent-expenditure spending.
 
