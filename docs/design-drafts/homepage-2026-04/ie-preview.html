@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Independent Expenditures · 2026 California Governor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;500;600;700;800;900&family=Roboto:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="design-system.css" />
+<style>
+  /* page-specific: candidate IE position rows + committee rows */
+  .ie-pos-row {
+    display: grid;
+    grid-template-columns: 32px 36px 1fr auto auto;
+    gap: 14px;
+    padding: 16px 22px;
+    border-bottom: 1px solid var(--rule-soft);
+    align-items: center;
+    transition: background 0.1s;
+  }
+  .ie-pos-row:hover { background: var(--paper-2); }
+  .ie-pos-row .rank { font-family: var(--f-mono); font-weight: 700; font-size: 12px; color: var(--ink-4); font-feature-settings: "tnum"; }
+  .ie-pos-row .name {
+    font-family: var(--f-slab);
+    font-weight: 700; font-size: 15px;
+    color: var(--ink); letter-spacing: -0.01em;
+  }
+  .ie-pos-row .meta {
+    font-family: var(--f-mono);
+    font-size: 10px; font-weight: 600;
+    color: var(--ink-3);
+    letter-spacing: 0.06em;
+    margin-top: 2px;
+    text-transform: uppercase;
+  }
+  .ie-pos-row .meta .party-d { color: var(--sky-deep); font-weight: 800; }
+  .ie-pos-row .meta .party-r { color: var(--red-deep); font-weight: 800; }
+  .ie-pos-row .splits {
+    text-align: right;
+    font-family: var(--f-mono);
+    font-feature-settings: "tnum";
+  }
+  .ie-pos-row .for-amt {
+    color: var(--green-deep); font-weight: 800; font-size: 13px;
+  }
+  .ie-pos-row .against-amt {
+    color: var(--red-deep); font-weight: 800; font-size: 13px;
+  }
+  .ie-pos-row .net {
+    text-align: right;
+    font-family: var(--f-slab);
+    font-weight: 800; font-size: 22px;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    font-feature-settings: "tnum";
+  }
+  .ie-pos-row .net.pos { color: var(--green-deep); }
+  .ie-pos-row .net.neg { color: var(--red-deep); }
+  .ie-pos-row .net.zero { color: var(--ink-3); }
+  .ie-pos-row .net-meta {
+    font-family: var(--f-mono);
+    font-size: 9.5px; font-weight: 700;
+    color: var(--ink-3); letter-spacing: 0.08em;
+    margin-top: 4px;
+    text-transform: uppercase;
+    text-align: right;
+  }
+  .ie-pos-row .bar {
+    grid-column: 3;
+    margin-top: 8px;
+    height: 6px;
+    display: flex; gap: 1px;
+    border: 1px solid var(--rule-soft);
+  }
+  .ie-pos-row .bar > span { display: block; height: 100%; }
+  .ie-pos-row .bar .for { background: var(--green); }
+  .ie-pos-row .bar .against { background: var(--red); }
+  .ie-pos-row .bar .none { background: var(--paper-3); flex: 1; }
+
+  .ie-cmt-card {
+    display: grid;
+    grid-template-columns: 32px 1fr auto;
+    gap: 14px;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--rule-soft);
+    align-items: start;
+    transition: background 0.1s;
+  }
+  .ie-cmt-card:hover { background: var(--paper-2); }
+  .ie-cmt-card .rank { font-family: var(--f-mono); font-weight: 700; font-size: 12px; color: var(--ink-4); padding-top: 4px; font-feature-settings: "tnum"; }
+  .ie-cmt-card .body { min-width: 0; }
+  .ie-cmt-card .name {
+    font-family: var(--f-slab);
+    font-weight: 700; font-size: 16px;
+    color: var(--ink); letter-spacing: -0.01em;
+  }
+  .ie-cmt-card .meta {
+    font-family: var(--f-mono);
+    font-size: 10.5px; font-weight: 600;
+    color: var(--ink-3);
+    letter-spacing: 0.08em;
+    margin-top: 4px; text-transform: uppercase;
+  }
+  .ie-cmt-card .meta .for { color: var(--green-deep); font-weight: 800; }
+  .ie-cmt-card .meta .against { color: var(--red-deep); font-weight: 800; }
+  .ie-cmt-card .targets {
+    margin-top: 10px;
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .ie-cmt-card .target {
+    font-family: var(--f-mono);
+    font-weight: 700; font-size: 11px;
+    background: var(--paper-3);
+    color: var(--ink-2);
+    padding: 4px 8px;
+    letter-spacing: 0.04em;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .ie-cmt-card .target.for::before  { content: "+"; color: var(--green-deep); font-weight: 800; }
+  .ie-cmt-card .target.against::before { content: "−"; color: var(--red-deep); font-weight: 800; }
+  .ie-cmt-card .target .amt {
+    color: var(--ink); font-weight: 800; margin-left: 2px;
+  }
+  .ie-cmt-card .total {
+    text-align: right;
+    font-family: var(--f-slab);
+    font-weight: 800; font-size: 22px;
+    letter-spacing: -0.02em;
+    color: var(--ink); font-feature-settings: "tnum";
+    line-height: 1; padding-top: 2px;
+  }
+  .ie-cmt-card .ratio {
+    grid-column: 2;
+    margin-top: 10px;
+    height: 6px;
+    display: flex;
+    border: 1px solid var(--rule-soft);
+  }
+  .ie-cmt-card .ratio > .fpart { background: var(--green); }
+  .ie-cmt-card .ratio > .apart { background: var(--red); }
+  .ie-cmt-card .ratio > span { height: 100%; display: block; }
+</style>
+</head>
+<body>
+
+<div class="feed" aria-label="Latest contributions">
+  <div class="feed__chip">●&nbsp;&nbsp;LATEST CONTRIBUTIONS</div>
+  <div class="feed__viewport"><div class="feed__track" id="feedTrack"></div></div>
+</div>
+
+<div class="statusbar">
+  <div class="statusbar__inner">
+    <span class="statusbar__live"><span class="live-dot"></span>LIVE</span>
+    <span class="statusbar__sep">│</span><span><span id="clock">03:47:12 PT</span></span>
+    <span class="statusbar__sep">│</span><span>2026 CA GOVERNOR · PRIMARY <strong style="color: var(--periwinkle-deep);">198 DAYS</strong></span>
+    <span class="statusbar__sep">│</span><span>SYNC <strong style="color: var(--green-deep);">23 min</strong></span>
+    <span class="statusbar__right">
+      <span class="preview-tag">PREVIEW · MOCK DATA</span>
+      <a href="#">METHODOLOGY</a><a href="#">SOURCES</a>
+    </span>
+  </div>
+</div>
+
+<nav class="nav">
+  <div class="nav__inner">
+    <a class="brand" href="polling-preview.html">
+      <div class="brand__mark"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fffced" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10.2"/><path d="M7 12 l3 3 l7 -7" /></svg></div>
+      <div class="brand__name">CA <em>Governor</em> 2026<small>POLLS · DONORS · IE</small></div>
+    </a>
+    <div class="nav__tabs">
+      <a class="nav__tab" href="polling-preview.html">Dashboard</a>
+      <a class="nav__tab" href="candidates-preview.html">Candidates <span class="badge">24</span></a>
+      <a class="nav__tab live-badge" href="polling-page-preview.html">Polling <span class="badge">142</span></a>
+      <a class="nav__tab" href="top-donors-preview.html">Top donors</a>
+      <a class="nav__tab active" href="ie-preview.html">IE</a>
+      <a class="nav__tab" href="faq-preview.html">FAQ</a>
+    </div>
+    <div class="nav__util">
+      <a class="btn btn--ghost" href="#">Sign in</a>
+      <a class="btn btn--primary" href="#">Subscribe</a>
+    </div>
+  </div>
+</nav>
+
+<div class="crumb">
+  <div class="crumb__inner">
+    <a class="crumb__back" href="polling-preview.html">← Dashboard</a>
+    <span class="crumb__sep">│</span><span class="crumb__cur">Independent expenditures</span>
+    <span class="crumb__right"><span>UPDATED 03:47:12 PT</span></span>
+  </div>
+</div>
+
+<section class="page-hero">
+  <div class="page-hero__inner">
+    <div class="page-hero__main">
+      <div class="page-hero__kicker kicker">
+        <span class="pulse"></span>
+        Outside money · cycle to date · 2025–26
+      </div>
+      <h1 class="page-hero__title">Independent <em>expenditures</em>, by side.</h1>
+      <p class="page-hero__deck">
+        Every dollar spent supporting or opposing a CA governor candidate by an independent committee &mdash;
+        not coordinated with any campaign. <strong>62% of cycle IE money is opposing a candidate</strong>; almost all of it
+        is targeting the front-runner.
+      </p>
+    </div>
+    <div class="page-hero__stats">
+      <div class="stat">
+        <div class="stat-label">Total IE · cycle</div>
+        <div class="stat-value red">$8.3<span style="font-size: 16px; color: var(--ink-3);">M</span></div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Active IE committees</div>
+        <div class="stat-value">11</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">% opposing</div>
+        <div class="stat-value red">62<span style="font-size: 16px; color: var(--ink-3);">%</span></div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Candidates targeted</div>
+        <div class="stat-value">7<span style="font-size: 16px; color: var(--ink-3);">/24</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- by candidate -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__head">
+      <div>
+        <h2 class="section__title">By <em>target</em> candidate</h2>
+        <div class="section__sub">NET POSITION = TOTAL SUPPORTING − TOTAL OPPOSING · CYCLE TO DATE</div>
+      </div>
+      <div class="section__seg">
+        <button class="active">By net position</button>
+        <button>By total $</button>
+        <button>By committee count</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="candPositionsList"></div>
+
+  <div class="dt-foot">
+    <span>SOURCE: <code>useIEByCandidate</code> · <code>ca_ie_by_candidate</code> view (total_supporting, total_opposing, committee_count)</span>
+    <a href="#">All 24 candidates ↗</a>
+  </div>
+</section>
+
+<!-- by committee -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__head">
+      <div>
+        <h2 class="section__title">By <em>committee</em></h2>
+        <div class="section__sub">11 ACTIVE IE COMMITTEES · CYCLE SPENDING + TOP TARGETS</div>
+      </div>
+      <div class="section__seg">
+        <button class="active">By total $</button>
+        <button>By target count</button>
+        <button>Most recent</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="ieCmtList"></div>
+
+  <div class="dt-foot">
+    <span>SOURCE: <code>useTopIECommittees</code> + per-row <code>target_candidate_id</code> aggregation</span>
+    <a href="#">All 11 committees ↗</a>
+  </div>
+</section>
+
+<footer class="statusline">
+  <div class="statusline__inner">
+    <span class="statusline__source">CAL-ACCESS</span>
+    <span class="statusline__source">CAL-ACCESS IE</span>
+    <span class="statusline__source warn">FEC · cached 14m</span>
+    <span class="statusline__right">
+      <a href="#">© Political Integrity Project · 501(c)(4)</a>
+      <a href="#">Methodology</a><a href="#">API docs</a><a href="#">Press</a>
+    </span>
+  </div>
+</footer>
+
+<script src="design-system.js"></script>
+<script>
+  // candidate IE positions (real shape: useIEByCandidate)
+  const positions = [
+    { rank:1, party:'r', short:'CB', name:'Sheriff C. Bianco',           role:'R · RIVERSIDE COUNTY',   forAmt:1100000, againstAmt:0,       cmts:2 },
+    { rank:2, party:'d', short:'EK', name:'Lt. Gov. E. Kounalakis-Park', role:'D · LT. GOVERNOR',       forAmt:800000,  againstAmt:0,       cmts:1 },
+    { rank:3, party:'d', short:'MR', name:'Rep. M. Rivera',              role:'D · CONGRESSWOMAN',     forAmt:0,       againstAmt:0,       cmts:0 },
+    { rank:4, party:'r', short:'SH', name:'S. Hilton',                   role:'R · COMMENTATOR',       forAmt:0,       againstAmt:0,       cmts:0 },
+    { rank:5, party:'d', short:'GN', name:'Lt. Gov. G. Newsom-Cole',     role:'D · LT. GOVERNOR',       forAmt:1700000, againstAmt:4200000, cmts:5 }
+  ].sort((a,b) => (b.forAmt - b.againstAmt) - (a.forAmt - a.againstAmt));
+
+  function fmtM(n) {
+    if (n === 0) return '$0';
+    return '$' + (n/1000000).toFixed(n >= 100000 ? 1 : 2) + 'M';
+  }
+  function fmtSigned(n) {
+    if (n === 0) return '$0';
+    const s = (n > 0 ? '+' : '−') + '$' + (Math.abs(n)/1000000).toFixed(Math.abs(n) >= 100000 ? 1 : 2) + 'M';
+    return s;
+  }
+
+  // we need a max for the bar scale
+  const maxAbs = Math.max(...positions.map(p => Math.max(p.forAmt, p.againstAmt)));
+  document.getElementById('candPositionsList').innerHTML = positions.map((p, i) => {
+    const net = p.forAmt - p.againstAmt;
+    const netCls = net > 0 ? 'pos' : net < 0 ? 'neg' : 'zero';
+    const forPct = (p.forAmt / maxAbs) * 100;
+    const aPct = (p.againstAmt / maxAbs) * 100;
+    const nonePct = 100 - forPct - aPct;
+    const cmtsLine = p.cmts ? `${p.cmts} IE committee${p.cmts === 1 ? '' : 's'} active` : 'no IE activity';
+    return `
+      <div class="ie-pos-row">
+        <div class="rank">${String(i+1).padStart(2,'0')}</div>
+        <div class="cell-cand__photo party-${p.party}">${p.short}</div>
+        <div>
+          <div class="name">${p.name}</div>
+          <div class="meta">${p.role.replace(/^(\w)/, '<span class="party-'+p.party+'">$1</span>')} · ${cmtsLine}</div>
+          <div class="bar">
+            ${forPct > 0 ? `<span class="for" style="width: ${forPct}%;"></span>` : ''}
+            ${aPct > 0 ? `<span class="against" style="width: ${aPct}%;"></span>` : ''}
+            ${nonePct > 0 ? `<span class="none" style="width: ${nonePct}%;"></span>` : ''}
+          </div>
+        </div>
+        <div class="splits">
+          <span class="for-amt">+${fmtM(p.forAmt)}</span>
+          <span style="color: var(--rule-3); margin: 0 4px;">/</span>
+          <span class="against-amt">−${fmtM(p.againstAmt)}</span>
+        </div>
+        <div>
+          <div class="net ${netCls}">${fmtSigned(net)}</div>
+          <div class="net-meta">NET</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // IE committees (real shape: useTopIECommittees + targets aggregation)
+  const cmts = [
+    {
+      rank: 1, name: 'Californians for a Real Future',
+      total: 2400000, supporting: 0, opposing: 2400000,
+      targets: [['against', 'NEWSOM-COLE', '$2.4M']]
+    },
+    {
+      rank: 2, name: 'Working Families California',
+      total: 1700000, supporting: 1700000, opposing: 0,
+      targets: [['for', 'NEWSOM-COLE', '$1.7M']]
+    },
+    {
+      rank: 3, name: 'Build California PAC',
+      total: 1400000, supporting: 110000, opposing: 1290000,
+      targets: [['against', 'NEWSOM-COLE', '$1.29M'], ['for', 'BIANCO', '$0.11M']]
+    },
+    {
+      rank: 4, name: 'Conservatives for California',
+      total: 1100000, supporting: 1100000, opposing: 0,
+      targets: [['for', 'BIANCO', '$1.1M']]
+    },
+    {
+      rank: 5, name: 'CA Service Workers United IE Cmte',
+      total: 800000, supporting: 800000, opposing: 0,
+      targets: [['for', 'KOUNALAKIS-PARK', '$0.8M']]
+    },
+    {
+      rank: 6, name: 'Stop the Taxes Coalition',
+      total: 400000, supporting: 0, opposing: 400000,
+      targets: [['against', 'NEWSOM-COLE', '$0.4M']]
+    },
+    {
+      rank: 7, name: 'Reform California 2026',
+      total: 300000, supporting: 220000, opposing: 80000,
+      targets: [['for', 'BIANCO', '$0.22M'], ['against', 'NEWSOM-COLE', '$0.08M']]
+    },
+    {
+      rank: 8, name: 'Bay Area Democrats United IE',
+      total: 220000, supporting: 220000, opposing: 0,
+      targets: [['for', 'KOUNALAKIS-PARK', '$0.14M'], ['for', 'NEWSOM-COLE', '$0.08M']]
+    }
+  ];
+
+  document.getElementById('ieCmtList').innerHTML = cmts.map(c => {
+    const fpct = (c.supporting / c.total) * 100;
+    const apct = (c.opposing / c.total) * 100;
+    const targets = c.targets.map(([dir, name, amt]) =>
+      `<span class="target ${dir}">${name}<span class="amt">${amt}</span></span>`
+    ).join('');
+    const meta = c.opposing > c.supporting
+      ? `${(c.opposing / c.total * 100).toFixed(0)}% <span class="against">AGAINST</span>${c.supporting > 0 ? ' / ' + (c.supporting / c.total * 100).toFixed(0) + '% <span class="for">FOR</span>' : ''}`
+      : `${(c.supporting / c.total * 100).toFixed(0)}% <span class="for">FOR</span>${c.opposing > 0 ? ' / ' + (c.opposing / c.total * 100).toFixed(0) + '% <span class="against">AGAINST</span>' : ''}`;
+    return `
+      <article class="ie-cmt-card">
+        <div class="rank">${String(c.rank).padStart(2,'0')}</div>
+        <div class="body">
+          <div class="name">${c.name}</div>
+          <div class="meta">${meta}</div>
+          <div class="ratio">
+            ${fpct > 0 ? `<span class="fpart" style="width: ${fpct}%;"></span>` : ''}
+            ${apct > 0 ? `<span class="apart" style="width: ${apct}%;"></span>` : ''}
+          </div>
+          <div class="targets">${targets}</div>
+        </div>
+        <div>
+          <div class="total">${fmtM(c.total)}</div>
+          <div style="font-family: var(--f-mono); font-size: 9.5px; font-weight: 700; color: var(--ink-3); letter-spacing: 0.08em; margin-top: 4px; text-align: right;">CYCLE TOTAL</div>
+        </div>
+      </article>
+    `;
+  }).join('');
+</script>
+</body>
+</html>

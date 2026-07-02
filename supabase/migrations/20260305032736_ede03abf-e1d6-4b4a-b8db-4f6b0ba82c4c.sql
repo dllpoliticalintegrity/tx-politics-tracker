@@ -1,0 +1,1 @@
+UPDATE public.candidates SET status = 'withdrawn' WHERE id = '1cc89bd2-b850-41f6-8a16-873d424333ee';

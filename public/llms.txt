@@ -1,0 +1,12 @@
+# CA Gov Tracker
+
+> Public-interest dashboard tracking money and polling in the 2026 California Gubernatorial Race. Campaign-finance filings sourced nightly from California's CAL-ACCESS database, plus aggregated public polling and independent-expenditure spending.
+
+## Pages
+
+- [Home](/): Race overview — top candidates, money, and polling at a glance.
+- [Candidates](/candidates): Every declared candidate with finance totals, polling, and bio.
+- [Polling](/polling): Polling averages and individual poll results for the 2026 race.
+- [Top Donors](/top-donors): Largest individual and PAC contributors across all candidates.
+- [Independent Expenditures](/independent-expenditures): Outside spending by committee, supporting or opposing candidates.
+- [FAQ](/faq): How the data is sourced, updated, and what's included.

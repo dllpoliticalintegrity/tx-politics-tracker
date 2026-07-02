@@ -1,0 +1,782 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lt. Gov. G. Newsom-Cole · 2026 California Governor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;500;600;700;800;900&family=Roboto:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="design-system.css" />
+<style>
+  /* candidate header */
+  .cand-header { background: var(--paper); border-bottom: 1px solid var(--rule); }
+  .cand-header__inner {
+    max-width: var(--max); margin: 0 auto;
+    padding: 48px var(--gutter) 36px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 36px;
+    align-items: start;
+  }
+  .cand-photo {
+    width: 168px; height: 168px;
+    background: var(--paper-2);
+    background-image: radial-gradient(circle, var(--rule-3) 1px, transparent 1.5px);
+    background-size: 6px 6px;
+    border: 2px solid var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--f-slab);
+    font-weight: 900;
+    font-size: 84px;
+    letter-spacing: -0.04em;
+    color: var(--ink); flex-shrink: 0;
+    position: relative;
+  }
+  .cand-photo::after {
+    content: "PHOTO";
+    position: absolute; bottom: -1px; right: 0;
+    background: var(--ink); color: var(--paper);
+    font-family: var(--f-mono);
+    font-size: 9px; font-weight: 700; letter-spacing: 0.16em;
+    padding: 2px 6px;
+  }
+  .cand-bio { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .cand-bio__role {
+    font-family: var(--f-mono);
+    font-weight: 700; font-size: 11px;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--periwinkle-deep);
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .cand-bio__role::before { content: ""; width: 8px; height: 8px; background: var(--periwinkle); }
+  .cand-bio h1 {
+    font-family: var(--f-slab);
+    font-weight: 900;
+    font-size: clamp(38px, 4.4vw, 56px);
+    line-height: 0.96;
+    letter-spacing: -0.025em;
+    color: var(--ink); margin: 0;
+  }
+  .cand-bio__meta {
+    font-family: var(--f-mono);
+    font-weight: 700; font-size: 12px;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-2);
+  }
+  .cand-bio__meta .party-d { color: var(--sky-deep); font-weight: 800; }
+  .cand-bio__meta .party-r { color: var(--red-deep); font-weight: 800; }
+  .cand-bio__meta .sep { color: var(--rule-3); margin: 0 6px; }
+  .cand-bio__blurb {
+    font-family: var(--f-slab);
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--ink-2);
+    margin: 0; max-width: 60ch;
+  }
+  .cand-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+
+  .pos-card {
+    width: 240px;
+    background: var(--paper-2);
+    border: 2px solid var(--ink);
+    position: relative;
+    display: flex; flex-direction: column;
+    flex-shrink: 0;
+  }
+  .pos-card::before {
+    content: "";
+    position: absolute; top: -2px; left: -2px; right: -2px;
+    height: 5px; background: var(--periwinkle);
+  }
+  .pos-card__head {
+    font-family: var(--f-mono);
+    font-weight: 800; font-size: 11px;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--ink);
+    padding: 14px 18px 10px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .pos-card__rank { color: var(--periwinkle-deep); font-weight: 800; }
+  .pos-card__pct {
+    padding: 8px 18px;
+    font-family: var(--f-slab);
+    font-weight: 900;
+    font-size: 86px;
+    letter-spacing: -0.05em;
+    line-height: 0.85;
+    color: var(--periwinkle-deep);
+    font-feature-settings: "tnum";
+  }
+  .pos-card__pct .small { font-size: 32px; color: var(--ink-3); font-weight: 700; }
+  .pos-card__rows {
+    border-top: 1px solid var(--rule-soft);
+  }
+  .pos-card__row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    padding: 10px 18px;
+    border-bottom: 1px solid var(--rule-soft);
+    font-family: var(--f-mono);
+    font-size: 11px;
+    align-items: baseline;
+  }
+  .pos-card__row:last-child { border-bottom: 0; }
+  .pos-card__row-label {
+    font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3);
+  }
+  .pos-card__row-value {
+    font-family: var(--f-slab);
+    font-feature-settings: "tnum";
+    font-weight: 800; font-size: 18px;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+  .pos-card__row-value.red { color: var(--red-deep); }
+  .pos-card__row-value.green { color: var(--green-deep); }
+
+  /* stat strip below header */
+  .cand-stats {
+    max-width: var(--max); margin: 0 auto;
+    padding: 28px var(--gutter) 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid var(--rule-soft);
+  }
+  .cand-stat {
+    border-right: 1px solid var(--rule-soft);
+    padding: 18px 22px 24px;
+  }
+  .cand-stat:first-child { padding-left: 0; }
+  .cand-stat:last-child { padding-right: 0; border-right: 0; }
+  .cand-stat__label {
+    font-family: var(--f-mono);
+    font-weight: 700; font-size: 10.5px;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--ink-3); margin-bottom: 8px;
+  }
+  .cand-stat__value {
+    font-family: var(--f-slab);
+    font-weight: 800; font-size: 32px;
+    line-height: 1; letter-spacing: -0.025em;
+    color: var(--ink); font-feature-settings: "tnum";
+    display: flex; align-items: baseline; gap: 8px;
+  }
+  .cand-stat__value-sub {
+    font-family: var(--f-slab);
+    font-size: 14px; color: var(--ink-3); font-weight: 500;
+  }
+  .cand-stat__value.red { color: var(--red-deep); }
+  .cand-stat__value.green { color: var(--green-deep); }
+  .cand-stat__value.blue { color: var(--periwinkle-deep); }
+  .cand-stat__delta {
+    font-family: var(--f-mono);
+    font-size: 11px; font-weight: 600;
+    margin-top: 6px; color: var(--ink-3);
+    letter-spacing: 0.04em;
+  }
+  .cand-stat__delta strong { color: var(--ink); }
+
+  /* split sections */
+  .twocol {
+    display: grid; grid-template-columns: 1fr 1fr;
+    border-top: 1px solid var(--rule-soft);
+  }
+  .twocol > div { padding: 24px 22px; }
+  .twocol > div:first-child { border-right: 1px solid var(--rule-soft); }
+  .twocol__title {
+    font-family: var(--f-mono);
+    font-weight: 800; font-size: 11px;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--ink-2);
+    margin-bottom: 18px;
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .twocol__title small {
+    font-weight: 600; color: var(--ink-3);
+    letter-spacing: 0.06em;
+  }
+
+  /* polling chart on this page */
+  .cd-pollchart { padding: 24px 0 36px; }
+  #pollSvg { width: 100%; height: 320px; display: block; }
+  .cd-chart-meta {
+    font-family: var(--f-mono);
+    font-size: 11px; color: var(--ink-3);
+    letter-spacing: 0.04em; margin-top: 14px;
+    display: flex; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px;
+    padding-top: 12px; border-top: 1px solid var(--rule-soft);
+  }
+  .cd-chart-meta strong { color: var(--ink-2); }
+
+  /* IE list */
+  .ie-tx-list {
+    list-style: none; margin: 0; padding: 0;
+  }
+  .ie-tx-list li {
+    display: grid;
+    grid-template-columns: 64px 1fr auto;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--rule-soft);
+    align-items: center;
+  }
+  .ie-tx-list li:last-child { border-bottom: 0; }
+  .ie-tx-list .tx-pill {
+    font-family: var(--f-mono);
+    font-weight: 800; font-size: 10px;
+    letter-spacing: 0.16em;
+    text-align: center;
+    padding: 4px 0;
+    text-transform: uppercase;
+  }
+  .ie-tx-list .tx-pill.s { background: var(--green); color: var(--ink); }
+  .ie-tx-list .tx-pill.o { background: var(--red); color: var(--paper); }
+  .ie-tx-list .tx-cmt {
+    font-family: var(--f-slab);
+    font-weight: 700; font-size: 14px;
+    color: var(--ink); letter-spacing: -0.005em;
+  }
+  .ie-tx-list .tx-meta {
+    font-family: var(--f-mono);
+    font-size: 10.5px; font-weight: 600;
+    color: var(--ink-3);
+    letter-spacing: 0.06em;
+    margin-top: 4px;
+    text-transform: uppercase;
+  }
+  .ie-tx-list .tx-amt {
+    font-family: var(--f-mono);
+    font-weight: 800; font-size: 14px;
+    font-feature-settings: "tnum";
+    color: var(--ink);
+    text-align: right;
+  }
+
+  /* contribution mix pie */
+  .source-mix {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 18px; align-items: center;
+  }
+  .source-mix__chart {
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    background: conic-gradient(
+      var(--green) 0% 23%,
+      var(--periwinkle) 23% 49%,
+      var(--sky-deep) 49% 67%,
+      var(--ink) 67% 100%
+    );
+    border: 2px solid var(--ink);
+    flex-shrink: 0;
+  }
+  .source-mix__rows { font-family: var(--f-mono); }
+  .source-mix__rows li {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 12px auto 1fr auto;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--rule-soft);
+    align-items: baseline;
+  }
+  .source-mix__rows li:last-child { border-bottom: 0; }
+  .source-mix__rows .swatch { width: 10px; height: 10px; align-self: center; }
+  .source-mix__rows .src {
+    font-weight: 700; font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--ink-2);
+  }
+  .source-mix__rows .pct {
+    font-family: var(--f-slab); font-weight: 800;
+    font-size: 14px; color: var(--ink);
+    letter-spacing: -0.01em;
+    text-align: right;
+  }
+
+  @media (max-width: 1080px) {
+    .cand-header__inner { grid-template-columns: auto 1fr; }
+    .pos-card { grid-column: 1 / -1; width: 100%; }
+    .twocol { grid-template-columns: 1fr; }
+    .twocol > div:first-child { border-right: 0; border-bottom: 1px solid var(--rule-soft); }
+  }
+  @media (max-width: 800px) {
+    .cand-stats { grid-template-columns: 1fr 1fr; gap: 0; }
+    .cand-stat:nth-child(2) { border-right: 0; }
+    .cand-stat:nth-child(1), .cand-stat:nth-child(2) { border-bottom: 1px solid var(--rule-soft); padding-bottom: 16px; }
+    .cand-stat:nth-child(3), .cand-stat:nth-child(4) { padding-top: 16px; }
+    .source-mix { grid-template-columns: 1fr; }
+    .source-mix__chart { margin: 0 auto; }
+  }
+</style>
+</head>
+<body>
+
+<div class="feed" aria-label="Latest contributions">
+  <div class="feed__chip">●&nbsp;&nbsp;LATEST CONTRIBUTIONS</div>
+  <div class="feed__viewport"><div class="feed__track" id="feedTrack"></div></div>
+</div>
+
+<div class="statusbar">
+  <div class="statusbar__inner">
+    <span class="statusbar__live"><span class="live-dot"></span>LIVE</span>
+    <span class="statusbar__sep">│</span><span><span id="clock">03:47:12 PT</span></span>
+    <span class="statusbar__sep">│</span><span>2026 CA GOVERNOR · PRIMARY <strong style="color: var(--periwinkle-deep);">198 DAYS</strong></span>
+    <span class="statusbar__sep">│</span><span>SYNC <strong style="color: var(--green-deep);">23 min</strong></span>
+    <span class="statusbar__right">
+      <span class="preview-tag">PREVIEW · MOCK DATA</span>
+      <a href="#">METHODOLOGY</a><a href="#">SOURCES</a>
+    </span>
+  </div>
+</div>
+
+<nav class="nav">
+  <div class="nav__inner">
+    <a class="brand" href="polling-preview.html">
+      <div class="brand__mark"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fffced" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10.2"/><path d="M7 12 l3 3 l7 -7" /></svg></div>
+      <div class="brand__name">CA <em>Governor</em> 2026<small>POLLS · DONORS · IE</small></div>
+    </a>
+    <div class="nav__tabs">
+      <a class="nav__tab" href="polling-preview.html">Dashboard</a>
+      <a class="nav__tab active" href="candidates-preview.html">Candidates <span class="badge">24</span></a>
+      <a class="nav__tab live-badge" href="polling-page-preview.html">Polling <span class="badge">142</span></a>
+      <a class="nav__tab" href="top-donors-preview.html">Top donors</a>
+      <a class="nav__tab" href="ie-preview.html">IE</a>
+      <a class="nav__tab" href="faq-preview.html">FAQ</a>
+    </div>
+    <div class="nav__util">
+      <a class="btn btn--ghost" href="#">Sign in</a>
+      <a class="btn btn--primary" href="#">Subscribe</a>
+    </div>
+  </div>
+</nav>
+
+<div class="crumb">
+  <div class="crumb__inner">
+    <a class="crumb__back" href="candidates-preview.html">← All candidates</a>
+    <span class="crumb__sep">│</span><span class="crumb__cur">Lt. Gov. G. Newsom-Cole (D)</span>
+    <span class="crumb__right">
+      <span>FILER ID <span class="id">#1456789</span></span>
+      <span class="crumb__sep">│</span><span>UPDATED 23 MIN AGO</span>
+    </span>
+  </div>
+</div>
+
+<!-- candidate header -->
+<section class="cand-header">
+  <div class="cand-header__inner">
+    <div class="cand-photo" aria-label="Photo placeholder for Newsom-Cole">GN</div>
+    <div class="cand-bio">
+      <div class="cand-bio__role">Front-runner · 1st in RCP avg</div>
+      <h1>Lt. Gov. G. Newsom-Cole</h1>
+      <div class="cand-bio__meta">
+        <span class="party-d">Democrat</span>
+        <span class="sep">·</span> California Lt. Governor
+        <span class="sep">·</span> Filed Jan 2025
+        <span class="sep">·</span> Class II
+      </div>
+      <p class="cand-bio__blurb">
+        Two-term Lt. Governor; previously San Francisco mayor. Filed for Governor in January 2025
+        and has held the RCP polling lead since the field declared. Top-fundraiser of the cycle
+        with $11.4M raised and the largest IE opposition campaign of any candidate.
+      </p>
+      <div class="cand-actions">
+        <a class="btn" href="#">Polling history</a>
+        <a class="btn" href="#">Top donors</a>
+        <a class="btn" href="#">IE detail</a>
+        <a class="btn btn--ghost" href="#">Official site →</a>
+      </div>
+    </div>
+
+    <aside class="pos-card">
+      <div class="pos-card__head">
+        <span>RCP avg</span>
+        <span class="pos-card__rank">№ 1 / 24</span>
+      </div>
+      <div class="pos-card__pct">28.4<span class="small">%</span></div>
+      <div class="pos-card__rows">
+        <div class="pos-card__row">
+          <span class="pos-card__row-label">Raised</span>
+          <span class="pos-card__row-value">$11.4M</span>
+        </div>
+        <div class="pos-card__row">
+          <span class="pos-card__row-label">Cash on hand</span>
+          <span class="pos-card__row-value green">$8.7M</span>
+        </div>
+        <div class="pos-card__row">
+          <span class="pos-card__row-label">IE supporting</span>
+          <span class="pos-card__row-value green">+$1.7M</span>
+        </div>
+        <div class="pos-card__row">
+          <span class="pos-card__row-label">IE opposing</span>
+          <span class="pos-card__row-value red">−$4.2M</span>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="cand-stats">
+    <div class="cand-stat">
+      <div class="cand-stat__label">Polling avg · current</div>
+      <div class="cand-stat__value blue">28.4<span class="cand-stat__value-sub">%</span></div>
+      <div class="cand-stat__delta"><strong>42 polls</strong> include Newsom-Cole · 30-day rolling</div>
+    </div>
+    <div class="cand-stat">
+      <div class="cand-stat__label">Total raised · cycle</div>
+      <div class="cand-stat__value">$11.4<span class="cand-stat__value-sub">M</span></div>
+      <div class="cand-stat__delta"><strong>14,892</strong> individual donors · 23% small-dollar</div>
+    </div>
+    <div class="cand-stat">
+      <div class="cand-stat__label">Cash on hand</div>
+      <div class="cand-stat__value green">$8.7<span class="cand-stat__value-sub">M</span></div>
+      <div class="cand-stat__delta">$2.7M spent · 76% efficiency</div>
+    </div>
+    <div class="cand-stat">
+      <div class="cand-stat__label">Net IE position</div>
+      <div class="cand-stat__value red">−$2.5<span class="cand-stat__value-sub">M</span></div>
+      <div class="cand-stat__delta"><strong>5 IE committees</strong> active · most-targeted candidate</div>
+    </div>
+  </div>
+</section>
+
+<!-- polling section -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__head">
+      <div>
+        <h2 class="section__title">Newsom-Cole's <em>polling</em>, since launch</h2>
+        <div class="section__sub">30-DAY ROLLING AVG · GREY = OTHER TOP-5 · BLUE = NEWSOM-COLE</div>
+      </div>
+      <div class="section__seg">
+        <button class="active">Rolling avg</button>
+        <button>Raw polls</button>
+        <button>Head-to-head</button>
+      </div>
+    </div>
+
+    <div class="cd-pollchart">
+      <svg id="pollSvg" viewBox="0 0 1200 320" preserveAspectRatio="none" role="img"></svg>
+      <div class="cd-chart-meta">
+        <span><strong>SOURCE:</strong> RealClearPolitics · 42 polls include this candidate</span>
+        <span><strong>HIGH:</strong> 33% (Mar) · <strong>LOW:</strong> 28% (Nov)</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- where money came from -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__head">
+      <div>
+        <h2 class="section__title">Where the <em>money</em> came from</h2>
+        <div class="section__sub">14,892 INDIVIDUAL DONORS · 28 PAC CONTRIBUTIONS · 4 SELF / LOAN ENTRIES</div>
+      </div>
+      <div class="section__seg">
+        <button class="active">Top donors</button>
+        <button>Top PACs</button>
+        <button>Top industries</button>
+        <button>Sources</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="twocol">
+    <div>
+      <div class="twocol__title">Top 6 individual donors <small>cycle to date</small></div>
+      <ol class="donors-list">
+        <li><span class="rank">01</span><div><div class="name">M. Castelan-Wirth</div><div class="ctx">TECHCO · SAN FRANCISCO · 6 contributions</div></div><span class="amount">$165K</span></li>
+        <li><span class="rank">02</span><div><div class="name">E. Briones-Park</div><div class="ctx">VENTURE INC · MENLO PARK · 5 contributions</div></div><span class="amount">$142K</span></li>
+        <li><span class="rank">03</span><div><div class="name">L. Hartwell-Vargas</div><div class="ctx">REAL ESTATE LP · SAN DIEGO · 4 contributions</div></div><span class="amount">$110K</span></li>
+        <li><span class="rank">04</span><div><div class="name">P. Wirth-Hoff</div><div class="ctx">SALESCO · SAN FRANCISCO · 5 contributions</div></div><span class="amount">$78K</span></li>
+        <li><span class="rank">05</span><div><div class="name">S. Magnussen</div><div class="ctx">BIOTECH · SOUTH SF · 3 contributions</div></div><span class="amount">$62K</span></li>
+        <li><span class="rank">06</span><div><div class="name">D. Quan-Ouyang</div><div class="ctx">ATTORNEY · OAKLAND · 4 contributions</div></div><span class="amount">$54K</span></li>
+      </ol>
+    </div>
+
+    <div>
+      <div class="twocol__title">Top 6 PACs <small>cycle to date</small></div>
+      <ol class="donors-list">
+        <li><span class="rank">01</span><div><div class="name">Tech for California PAC</div><div class="ctx">TECH · 11 CONTRIBUTIONS</div></div><span class="amount">$162K</span></li>
+        <li><span class="rank">02</span><div><div class="name">Building &amp; Construction Trades Council PAC</div><div class="ctx">LABOR · 9 CONTRIBUTIONS</div></div><span class="amount">$140K</span></li>
+        <li><span class="rank">03</span><div><div class="name">CA Realtors Action PAC</div><div class="ctx">REAL ESTATE · 6 CONTRIBUTIONS</div></div><span class="amount">$112K</span></li>
+        <li><span class="rank">04</span><div><div class="name">CA Hospital Association PAC</div><div class="ctx">HEALTH · 4 CONTRIBUTIONS</div></div><span class="amount">$96K</span></li>
+        <li><span class="rank">05</span><div><div class="name">SF Bay Area Democrats PAC</div><div class="ctx">PARTY · 3 CONTRIBUTIONS</div></div><span class="amount">$84K</span></li>
+        <li><span class="rank">06</span><div><div class="name">Tech Workers United PAC</div><div class="ctx">TECH · 5 CONTRIBUTIONS</div></div><span class="amount">$72K</span></li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="dt-foot">
+    <span>SOURCE: <code>useTopDonors</code> · <code>ca_top_donors</code> view filtered to candidate · normalized donor names</span>
+    <a href="#">All donors ↗</a>
+  </div>
+</section>
+
+<!-- industries + source mix -->
+<section class="section">
+  <div class="twocol">
+    <div>
+      <div class="twocol__title">Top employers / industries <small>top contributing employers</small></div>
+      <div class="bar-row">
+        <span class="bar-row__label tech">Salesforce / TECHCO</span>
+        <span class="bar-row__track"><span class="bar-row__fill tech" style="width: 88%;"></span></span>
+        <span class="bar-row__num">$842K</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-row__label tech">Alphabet</span>
+        <span class="bar-row__track"><span class="bar-row__fill tech" style="width: 64%;"></span></span>
+        <span class="bar-row__num">$610K</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-row__label entertainment">Netflix / Streaming</span>
+        <span class="bar-row__track"><span class="bar-row__fill entertainment" style="width: 56%;"></span></span>
+        <span class="bar-row__num">$534K</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-row__label real-estate">Real Estate LPs</span>
+        <span class="bar-row__track"><span class="bar-row__fill real-estate" style="width: 47%;"></span></span>
+        <span class="bar-row__num">$452K</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-row__label labor">Labor unions</span>
+        <span class="bar-row__track"><span class="bar-row__fill labor" style="width: 38%;"></span></span>
+        <span class="bar-row__num">$364K</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-row__label finance">Wells Fargo / Banking</span>
+        <span class="bar-row__track"><span class="bar-row__fill finance" style="width: 27%;"></span></span>
+        <span class="bar-row__num">$258K</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-row__label other">Self-employed / retired</span>
+        <span class="bar-row__track"><span class="bar-row__fill other" style="width: 22%;"></span></span>
+        <span class="bar-row__num">$210K</span>
+      </div>
+    </div>
+
+    <div>
+      <div class="twocol__title">Contribution sources <small>$11.4M total</small></div>
+      <div class="source-mix">
+        <div class="source-mix__chart"></div>
+        <ul class="source-mix__rows" style="margin: 0; padding: 0;">
+          <li>
+            <span class="swatch" style="background: var(--green);"></span>
+            <span class="src">Small-dollar (&lt;$200)</span>
+            <span></span>
+            <span class="pct">23%</span>
+          </li>
+          <li>
+            <span class="swatch" style="background: var(--periwinkle);"></span>
+            <span class="src">Other individuals</span>
+            <span></span>
+            <span class="pct">26%</span>
+          </li>
+          <li>
+            <span class="swatch" style="background: var(--sky-deep);"></span>
+            <span class="src">PACs &amp; committees</span>
+            <span></span>
+            <span class="pct">18%</span>
+          </li>
+          <li>
+            <span class="swatch" style="background: var(--ink);"></span>
+            <span class="src">Large-dollar individuals (≥$1K)</span>
+            <span></span>
+            <span class="pct">33%</span>
+          </li>
+        </ul>
+      </div>
+      <div style="margin-top: 18px; font-family: var(--f-mono); font-size: 11px; color: var(--ink-3); letter-spacing: 0.04em;">
+        SOURCE: <code>useContributionsSummary</code> &mdash; individual_contributions, pac_contributions, party_contributions, small_dollar_contributions
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- IE breakdown -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__head">
+      <div>
+        <h2 class="section__title">Independent <em>expenditures</em></h2>
+        <div class="section__sub">5 IE COMMITTEES TARGETING NEWSOM-COLE · NET POSITION −$2.5M</div>
+      </div>
+      <div class="section__seg">
+        <button class="active">Recent transactions</button>
+        <button>By committee</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="twocol">
+    <div>
+      <div class="twocol__title">By committee <small>cycle to date</small></div>
+      <div class="ie-cmt">
+        <div>
+          <div class="ie-cmt__name">Californians for a Real Future</div>
+          <div class="ie-cmt__ctx">100% <span class="against">AGAINST</span></div>
+        </div>
+        <span class="ie-cmt__amt">$2.4M</span>
+        <span class="ie-cmt__bar"><span class="fpart" style="width: 0;"></span><span class="apart" style="width: 100%;"></span></span>
+      </div>
+      <div class="ie-cmt">
+        <div>
+          <div class="ie-cmt__name">Working Families California</div>
+          <div class="ie-cmt__ctx">100% <span class="for">FOR</span></div>
+        </div>
+        <span class="ie-cmt__amt">$1.7M</span>
+        <span class="ie-cmt__bar"><span class="fpart" style="width: 100%;"></span><span class="apart" style="width: 0;"></span></span>
+      </div>
+      <div class="ie-cmt">
+        <div>
+          <div class="ie-cmt__name">Build California PAC</div>
+          <div class="ie-cmt__ctx">100% <span class="against">AGAINST</span></div>
+        </div>
+        <span class="ie-cmt__amt">$1.29M</span>
+        <span class="ie-cmt__bar"><span class="fpart" style="width: 0;"></span><span class="apart" style="width: 100%;"></span></span>
+      </div>
+      <div class="ie-cmt">
+        <div>
+          <div class="ie-cmt__name">Stop the Taxes Coalition</div>
+          <div class="ie-cmt__ctx">100% <span class="against">AGAINST</span></div>
+        </div>
+        <span class="ie-cmt__amt">$0.4M</span>
+        <span class="ie-cmt__bar"><span class="fpart" style="width: 0;"></span><span class="apart" style="width: 100%;"></span></span>
+      </div>
+      <div class="ie-cmt">
+        <div>
+          <div class="ie-cmt__name">Reform California 2026</div>
+          <div class="ie-cmt__ctx">100% <span class="against">AGAINST</span></div>
+        </div>
+        <span class="ie-cmt__amt">$0.08M</span>
+        <span class="ie-cmt__bar"><span class="fpart" style="width: 0;"></span><span class="apart" style="width: 100%;"></span></span>
+      </div>
+    </div>
+
+    <div>
+      <div class="twocol__title">Recent IE transactions <small>most-recent first</small></div>
+      <ul class="ie-tx-list">
+        <li>
+          <span class="tx-pill o">OPPOSE</span>
+          <div>
+            <div class="tx-cmt">Californians for a Real Future</div>
+            <div class="tx-meta">TV BUY · LOS ANGELES MEDIA MARKET · 2026-11-12</div>
+          </div>
+          <div class="tx-amt">$0.6M</div>
+        </li>
+        <li>
+          <span class="tx-pill s">SUPPORT</span>
+          <div>
+            <div class="tx-cmt">Working Families California</div>
+            <div class="tx-meta">DIRECT MAIL · SF BAY AREA · 2026-11-08</div>
+          </div>
+          <div class="tx-amt">$0.5M</div>
+        </li>
+        <li>
+          <span class="tx-pill o">OPPOSE</span>
+          <div>
+            <div class="tx-cmt">Build California PAC</div>
+            <div class="tx-meta">DIGITAL · STATEWIDE · 2026-11-04</div>
+          </div>
+          <div class="tx-amt">$0.32M</div>
+        </li>
+        <li>
+          <span class="tx-pill o">OPPOSE</span>
+          <div>
+            <div class="tx-cmt">Californians for a Real Future</div>
+            <div class="tx-meta">TV BUY · CENTRAL VALLEY · 2026-10-29</div>
+          </div>
+          <div class="tx-amt">$0.45M</div>
+        </li>
+        <li>
+          <span class="tx-pill s">SUPPORT</span>
+          <div>
+            <div class="tx-cmt">Working Families California</div>
+            <div class="tx-meta">RADIO · LA MARKET · 2026-10-22</div>
+          </div>
+          <div class="tx-amt">$0.28M</div>
+        </li>
+        <li>
+          <span class="tx-pill o">OPPOSE</span>
+          <div>
+            <div class="tx-cmt">Build California PAC</div>
+            <div class="tx-meta">DIRECT MAIL · ORANGE COUNTY · 2026-10-15</div>
+          </div>
+          <div class="tx-amt">$0.22M</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="dt-foot">
+    <span>SOURCE: <code>useIEByCandidate</code> + <code>useIEForCandidate</code> · <code>ca_independent_expenditures</code></span>
+    <a href="#">All IE transactions ↗</a>
+  </div>
+</section>
+
+<footer class="statusline">
+  <div class="statusline__inner">
+    <span class="statusline__source">CAL-ACCESS</span>
+    <span class="statusline__source">CAL-ACCESS IE</span>
+    <span class="statusline__source">RealClearPolitics</span>
+    <span class="statusline__source warn">FEC · cached 14m</span>
+    <span class="statusline__right">
+      <a href="#">© Political Integrity Project · 501(c)(4)</a>
+      <a href="#">Methodology</a><a href="#">API docs</a><a href="#">Press</a>
+    </span>
+  </div>
+</footer>
+
+<script src="design-system.js"></script>
+<script>
+  // ─── single-candidate polling chart: highlight Newsom-Cole, grey out the rest
+  (function () {
+    const months = ['Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov'];
+    const focusSeries = [33,33,32,31,31,32,30,29,29,28]; // Newsom-Cole
+    const others = [
+      [12,13,14,15,16,16,17,18,19,20], // Bianco
+      [10,11,12,12,13,13,14,14,14,14], // Rivera
+      [9,10,10,11,12,12,12,13,12,12],  // Kounalakis
+      [4,5,5,6,7,7,8,8,8,8]            // Hilton
+    ];
+    const W=1200, H=320, m={l:60,r:90,t:24,b:48};
+    const pw=W-m.l-m.r, ph=H-m.t-m.b;
+    const yMax=40, yMin=0;
+    const xToPx=i=>m.l+(i/(months.length-1))*pw;
+    const yToPx=v=>m.t+ph-((v-yMin)/(yMax-yMin))*ph;
+    let html='';
+    [0,10,20,30,40].forEach(y=>{
+      const py=yToPx(y);
+      html+=`<line x1="${m.l}" y1="${py}" x2="${W-m.r}" y2="${py}" stroke="var(--rule-soft)" stroke-width="1"/>`;
+      html+=`<text x="${m.l-10}" y="${py+4}" text-anchor="end" font-family="JetBrains Mono" font-size="11" fill="#5a5a3e" font-weight="600">${y}%</text>`;
+    });
+    months.forEach((mo,i)=>{
+      const px=xToPx(i);
+      html+=`<text x="${px}" y="${H-m.b+22}" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#5a5a3e" font-weight="600">${mo}</text>`;
+    });
+    html+=`<line x1="${m.l}" y1="${H-m.b}" x2="${W-m.r}" y2="${H-m.b}" stroke="var(--rule)" stroke-width="1"/>`;
+    // grey out other lines
+    others.forEach(s=>{
+      const path=s.map((v,i)=>`${i===0?'M':'L'} ${xToPx(i).toFixed(1)} ${yToPx(v).toFixed(1)}`).join(' ');
+      html+=`<path d="${path}" fill="none" stroke="#aea986" stroke-width="1.4" opacity="0.55"/>`;
+    });
+    // focus line
+    const fpath=focusSeries.map((v,i)=>`${i===0?'M':'L'} ${xToPx(i).toFixed(1)} ${yToPx(v).toFixed(1)}`).join(' ');
+    html+=`<path d="${fpath}" fill="none" stroke="var(--periwinkle)" stroke-width="3"/>`;
+    focusSeries.forEach((v,i)=>{
+      html+=`<circle cx="${xToPx(i).toFixed(1)}" cy="${yToPx(v).toFixed(1)}" r="4" fill="var(--periwinkle)" stroke="#fffced" stroke-width="1.5"/>`;
+    });
+    // end label
+    const lastV=focusSeries[focusSeries.length-1];
+    const lx=xToPx(months.length-1)+8;
+    const ly=yToPx(lastV)+4;
+    html+=`<text x="${lx}" y="${ly}" font-family="Roboto" font-size="13" font-weight="800" fill="var(--periwinkle-deep)">NEWSOM-COLE</text>`;
+    html+=`<text x="${lx}" y="${ly+15}" font-family="JetBrains Mono" font-size="11" font-weight="700" fill="#5a5a3e">${lastV}%</text>`;
+    document.getElementById('pollSvg').innerHTML=html;
+  })();
+</script>
+</body>
+</html>

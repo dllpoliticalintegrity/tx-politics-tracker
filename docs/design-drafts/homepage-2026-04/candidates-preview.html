@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Candidates · 2026 California Governor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;500;600;700;800;900&family=Roboto:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="design-system.css" />
+<style>
+  /* page-specific */
+  .filters-bar {
+    background: var(--paper-2);
+    border-bottom: 1px solid var(--rule);
+  }
+  .filters-bar__inner {
+    max-width: var(--max); margin: 0 auto;
+    padding: 14px var(--gutter);
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  .filters-bar__label {
+    font-family: var(--f-mono);
+    font-weight: 700; font-size: 10.5px;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--ink-3);
+    margin-right: 4px;
+  }
+  .filters-bar__count {
+    margin-left: auto;
+    font-family: var(--f-mono);
+    font-weight: 700; font-size: 11px;
+    color: var(--ink-3);
+    letter-spacing: 0.06em;
+  }
+  .filters-bar__count strong { color: var(--ink); }
+</style>
+</head>
+<body>
+
+<!-- chrome: contributions ticker -->
+<div class="feed" aria-label="Latest contributions">
+  <div class="feed__chip">●&nbsp;&nbsp;LATEST CONTRIBUTIONS</div>
+  <div class="feed__viewport"><div class="feed__track" id="feedTrack"></div></div>
+</div>
+
+<!-- chrome: status bar -->
+<div class="statusbar">
+  <div class="statusbar__inner">
+    <span class="statusbar__live"><span class="live-dot"></span>LIVE</span>
+    <span class="statusbar__sep">│</span><span><span id="clock">03:47:12 PT</span></span>
+    <span class="statusbar__sep">│</span><span>2026 CA GOVERNOR · PRIMARY <strong style="color: var(--periwinkle-deep);">198 DAYS</strong></span>
+    <span class="statusbar__sep">│</span><span>SYNC <strong style="color: var(--green-deep);">23 min</strong></span>
+    <span class="statusbar__right">
+      <span class="preview-tag">PREVIEW · MOCK DATA</span>
+      <a href="#">METHODOLOGY</a><a href="#">SOURCES</a>
+    </span>
+  </div>
+</div>
+
+<!-- chrome: nav -->
+<nav class="nav">
+  <div class="nav__inner">
+    <a class="brand" href="polling-preview.html">
+      <div class="brand__mark"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fffced" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10.2"/><path d="M7 12 l3 3 l7 -7" /></svg></div>
+      <div class="brand__name">CA <em>Governor</em> 2026<small>POLLS · DONORS · IE</small></div>
+    </a>
+    <div class="nav__tabs">
+      <a class="nav__tab" href="polling-preview.html">Dashboard</a>
+      <a class="nav__tab active" href="candidates-preview.html">Candidates <span class="badge">24</span></a>
+      <a class="nav__tab live-badge" href="polling-page-preview.html">Polling <span class="badge">142</span></a>
+      <a class="nav__tab" href="top-donors-preview.html">Top donors</a>
+      <a class="nav__tab" href="ie-preview.html">IE</a>
+      <a class="nav__tab" href="faq-preview.html">FAQ</a>
+    </div>
+    <div class="nav__util">
+      <a class="btn btn--ghost" href="#">Sign in</a>
+      <a class="btn btn--primary" href="#">Subscribe</a>
+    </div>
+  </div>
+</nav>
+
+<!-- breadcrumb -->
+<div class="crumb">
+  <div class="crumb__inner">
+    <a class="crumb__back" href="polling-preview.html">← Dashboard</a>
+    <span class="crumb__sep">│</span><span class="crumb__cur">All candidates</span>
+    <span class="crumb__right">
+      <span>UPDATED 03:47:12 PT</span>
+    </span>
+  </div>
+</div>
+
+<!-- page hero -->
+<section class="page-hero">
+  <div class="page-hero__inner">
+    <div class="page-hero__main">
+      <div class="page-hero__kicker kicker">
+        <span class="pulse"></span>
+        24 declared candidates · top-2 advance from primary
+      </div>
+      <h1 class="page-hero__title">Every candidate in the <em>field</em>.</h1>
+      <p class="page-hero__deck">
+        Sortable, searchable. Each candidate's <strong>RCP polling average, total raised, cash on hand,
+        and independent-expenditure exposure</strong> &mdash; rebuilt nightly from CAL-ACCESS and RCP.
+      </p>
+    </div>
+    <div class="page-hero__stats">
+      <div class="stat">
+        <div class="stat-label">Total raised · cycle</div>
+        <div class="stat-value">$42<span style="font-size: 16px; color: var(--ink-3);">M</span></div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Total IE spending</div>
+        <div class="stat-value red">$8.3<span style="font-size: 16px; color: var(--ink-3);">M</span></div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Polled by RCP</div>
+        <div class="stat-value">12<span style="font-size: 16px; color: var(--ink-3);">/24</span></div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Withdrawn</div>
+        <div class="stat-value" style="color: var(--ink-3);">2</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- filters -->
+<div class="filters-bar">
+  <div class="filters-bar__inner">
+    <span class="filters-bar__label">Filter</span>
+    <button class="tag-chip active">All <span style="color: var(--paper); margin-left: 4px;">24</span></button>
+    <button class="tag-chip"><span class="tag-chip__dot d"></span>Democrat <span style="color: var(--ink-3); margin-left: 4px;">14</span></button>
+    <button class="tag-chip"><span class="tag-chip__dot r"></span>Republican <span style="color: var(--ink-3); margin-left: 4px;">7</span></button>
+    <button class="tag-chip"><span class="tag-chip__dot i"></span>Independent / other <span style="color: var(--ink-3); margin-left: 4px;">3</span></button>
+    <span class="crumb__sep" style="margin: 0 8px;">│</span>
+    <button class="tag-chip">Polled by RCP</button>
+    <button class="tag-chip">Has IE activity</button>
+    <button class="tag-chip">Withdrawn</button>
+    <span class="filters-bar__count">SHOWING <strong>24</strong> · SORTED BY RCP AVG</span>
+  </div>
+</div>
+
+<!-- standings table -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__head">
+      <div>
+        <h2 class="section__title">All <em>24</em> candidates</h2>
+        <div class="section__sub">RANKED BY RCP AVG · UPDATED 23 MIN AGO · ↓ DESCENDING</div>
+      </div>
+      <div class="section__seg">
+        <button class="active">Poll avg</button>
+        <button>Raised</button>
+        <button>Cash on hand</button>
+        <button>IE exposure</button>
+        <button>Alphabetical</button>
+      </div>
+    </div>
+  </div>
+
+  <table class="dt">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Candidate</th>
+        <th class="right">RCP avg</th>
+        <th class="right">Raised</th>
+        <th class="right">Cash on hand</th>
+        <th class="right">IE for / against</th>
+        <th class="right">Polls</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="allBody"></tbody>
+  </table>
+  <div class="dt-foot">
+    <span>SOURCE: CAL-ACCESS (raised, spent, cash, IE) · RCP (polling) · refreshed 03:24 PT</span>
+    <a href="#">Download CSV ↗</a>
+  </div>
+</section>
+
+<!-- footer status -->
+<footer class="statusline">
+  <div class="statusline__inner">
+    <span class="statusline__source">CAL-ACCESS</span>
+    <span class="statusline__source">RealClearPolitics</span>
+    <span class="statusline__source">Wikipedia</span>
+    <span class="statusline__source warn">FEC · cached 14m</span>
+    <span class="statusline__right">
+      <a href="#">© Political Integrity Project · 501(c)(4)</a>
+      <a href="#">Methodology</a><a href="#">API docs</a><a href="#">Press</a>
+    </span>
+  </div>
+</footer>
+
+<script src="design-system.js"></script>
+<script>
+  const candidates = [
+    { rank:1,  initials:'GN', party:'d', name:'Lt. Gov. G. Newsom-Cole',     role:'D · LT. GOVERNOR',          pct:28.4, raised:'$11.4M', cash:'$8.7M', ieFor:'$1.7M', ieAgainst:'$4.2M', polls:42, status:null },
+    { rank:2,  initials:'CB', party:'r', name:'Sheriff C. Bianco',            role:'R · RIVERSIDE COUNTY',     pct:19.6, raised:'$3.2M',  cash:'$1.4M', ieFor:'$1.1M', ieAgainst:'$0',    polls:38, status:null },
+    { rank:3,  initials:'MR', party:'d', name:'Rep. M. Rivera',               role:'D · CONGRESSWOMAN',        pct:14.1, raised:'$5.4M',  cash:'$3.8M', ieFor:'$0',    ieAgainst:'$0',    polls:35, status:null },
+    { rank:4,  initials:'EK', party:'d', name:'Lt. Gov. E. Kounalakis-Park',  role:'D · LT. GOVERNOR',         pct:12.0, raised:'$8.6M',  cash:'$5.2M', ieFor:'$0.8M', ieAgainst:'$0',    polls:32, status:null },
+    { rank:5,  initials:'SH', party:'r', name:'S. Hilton',                    role:'R · COMMENTATOR',          pct:8.0,  raised:'$2.1M',  cash:'$0.9M', ieFor:'$0',    ieAgainst:'$0',    polls:28, status:null },
+    { rank:6,  initials:'TA', party:'d', name:'Sen. T. Atkins-Hahn',          role:'D · STATE SENATOR',        pct:5.4,  raised:'$2.4M',  cash:'$1.1M', ieFor:'$0',    ieAgainst:'$0',    polls:18, status:null },
+    { rank:7,  initials:'AR', party:'d', name:'A. Rendon-Vargas',             role:'D · FMR. ASM. SPEAKER',    pct:4.1,  raised:'$1.8M',  cash:'$0.6M', ieFor:'$0',    ieAgainst:'$0',    polls:14, status:null },
+    { rank:8,  initials:'KB', party:'r', name:'K. Brulte',                    role:'R · BUSINESSMAN',          pct:3.0,  raised:'$1.2M',  cash:'$0.3M', ieFor:'$0',    ieAgainst:'$0',    polls:9,  status:null },
+    { rank:9,  initials:'JC', party:'d', name:'Mayor J. Caballero',           role:'D · LONG BEACH',           pct:2.6,  raised:'$1.0M',  cash:'$0.4M', ieFor:'$0',    ieAgainst:'$0',    polls:8,  status:null },
+    { rank:10, initials:'TM', party:'i', name:'T. Mosier',                    role:'I · ACTIVIST',             pct:1.2,  raised:'$0.3M',  cash:'$0.1M', ieFor:'$0',    ieAgainst:'$0',    polls:5,  status:null },
+    { rank:11, initials:'PB', party:'d', name:'Mayor P. Briones',             role:'D · OAKLAND',              pct:0.9,  raised:'$0.6M',  cash:'$0.2M', ieFor:'$0',    ieAgainst:'$0',    polls:3,  status:null },
+    { rank:12, initials:'EW', party:'r', name:'E. Wirth',                     role:'R · FMR. ASSEMBLYMEMBER',  pct:0.7,  raised:'$0.4M',  cash:'$0.1M', ieFor:'$0',    ieAgainst:'$0',    polls:2,  status:null },
+    { rank:13, initials:'NS', party:'d', name:'N. Sandoval-Lee',              role:'D · TREASURER',            pct:null, raised:'$1.4M',  cash:'$0.9M', ieFor:'$0',    ieAgainst:'$0',    polls:0,  status:null },
+    { rank:14, initials:'JK', party:'d', name:'Atty. Gen. J. Kewa',           role:'D · ATTORNEY GENERAL',     pct:null, raised:'$0.9M',  cash:'$0.5M', ieFor:'$0',    ieAgainst:'$0',    polls:0,  status:null },
+    { rank:15, initials:'RA', party:'r', name:'R. Anvari',                    role:'R · COUNTY SUPERVISOR',    pct:null, raised:'$0.7M',  cash:'$0.2M', ieFor:'$0',    ieAgainst:'$0',    polls:0,  status:null },
+    { rank:16, initials:'EH', party:'d', name:'Sen. E. Hartwell',             role:'D · STATE SENATOR',        pct:null, raised:'$0.5M',  cash:'$0.2M', ieFor:'$0',    ieAgainst:'$0',    polls:0,  status:null },
+    { rank:17, initials:'BR', party:'r', name:'B. Reichert',                  role:'R · ENTREPRENEUR',         pct:null, raised:'$0.3M',  cash:'$0.1M', ieFor:'$0',    ieAgainst:'$0',    polls:0,  status:null },
+    { rank:18, initials:'KO', party:'d', name:'K. Okafor-Lin',                role:'D · ENVIRONMENTAL LAWYER', pct:null, raised:'$0.2M',  cash:'$0.1M', ieFor:'$0',    ieAgainst:'$0',    polls:0,  status:null },
+    { rank:19, initials:'TS', party:'r', name:'T. Sweeney',                   role:'R · MAYOR · BAKERSFIELD',  pct:null, raised:'$0.2M',  cash:'$0.1M', ieFor:'$0',    ieAgainst:'$0',    polls:0,  status:null },
+    { rank:20, initials:'LV', party:'d', name:'L. Voss',                      role:'D · ASSEMBLYMEMBER',       pct:null, raised:'$0.1M',  cash:'$0.05M',ieFor:'$0',    ieAgainst:'$0',    polls:0,  status:null },
+    { rank:21, initials:'MO', party:'i', name:'M. Ostrowski',                 role:'I · ENGINEER',             pct:null, raised:'$0.05M', cash:'$0.02M',ieFor:'$0',    ieAgainst:'$0',    polls:0,  status:null },
+    { rank:22, initials:'LM', party:'i', name:'L. Mendez-Cole',               role:'I · TEACHER',              pct:null, raised:'$0.04M', cash:'$0.01M',ieFor:'$0',    ieAgainst:'$0',    polls:0,  status:null },
+    { rank:23, initials:'JT', party:'d', name:'Sen. J. Tilman',               role:'D · STATE SENATOR',        pct:null, raised:'$0.6M',  cash:'$0.3M', ieFor:'$0',    ieAgainst:'$0',    polls:0,  status:'withdrawn' },
+    { rank:24, initials:'CK', party:'r', name:'C. Kingsbury III',             role:'R · BUSINESS EXEC',        pct:null, raised:'$0.2M',  cash:'$0.0M', ieFor:'$0',    ieAgainst:'$0',    polls:0,  status:'withdrawn' }
+  ];
+
+  document.getElementById('allBody').innerHTML = candidates.map(c => {
+    const ieCell = (c.ieFor === '$0' && c.ieAgainst === '$0')
+      ? `<span style="color: var(--ink-3);">none</span>`
+      : `<span class="for">${c.ieFor}</span> / <span class="against">${c.ieAgainst}</span>`;
+    const pollCell = c.pct == null
+      ? `<span style="color: var(--ink-3); font-family: var(--f-mono); font-weight: 600; font-size: 12px;">— not polled</span>`
+      : `<span class="cell-pct">${c.pct.toFixed(1)}<span class="small">%</span></span>`;
+    const statusBadge = c.status === 'withdrawn'
+      ? ` <span style="background: var(--paper-3); color: var(--ink-3); font-family: var(--f-mono); font-weight: 700; font-size: 9px; letter-spacing: 0.14em; padding: 2px 6px; margin-left: 6px;">WITHDREW</span>`
+      : '';
+    return `
+      <tr${c.status === 'withdrawn' ? ' style="opacity: 0.55;"' : ''}>
+        <td><span class="cell-rank">${String(c.rank).padStart(2,'0')}</span></td>
+        <td>
+          <div class="cell-cand">
+            <div class="cell-cand__photo party-${c.party}">${c.initials}</div>
+            <div>
+              <div class="cell-cand__name">${c.name}${statusBadge}</div>
+              <div class="cell-cand__meta">${c.role.replace(/^(\w)/, '<span class="party-'+c.party+'">$1</span>')}</div>
+            </div>
+          </div>
+        </td>
+        <td class="right">${pollCell}</td>
+        <td class="right cell-money">${c.raised}</td>
+        <td class="right cell-money">${c.cash}</td>
+        <td class="right cell-ie">${ieCell}</td>
+        <td class="right cell-money muted">${c.polls}</td>
+        <td class="right"><span class="row-chev">→</span></td>
+      </tr>
+    `;
+  }).join('');
+</script>
+</body>
+</html>

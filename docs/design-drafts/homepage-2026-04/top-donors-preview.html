@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Top donors · 2026 California Governor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;500;600;700;800;900&family=Roboto:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="design-system.css" />
+<style>
+  /* page-specific: donor card list with splits */
+  .donor-card {
+    display: grid;
+    grid-template-columns: 32px auto 1fr auto;
+    gap: 14px;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--rule-soft);
+    align-items: start;
+    transition: background 0.1s;
+  }
+  .donor-card:hover { background: var(--paper-2); }
+  .donor-card .rank {
+    font-family: var(--f-mono); font-weight: 700; font-size: 12px;
+    color: var(--ink-4); font-feature-settings: "tnum";
+    padding-top: 4px;
+  }
+  .donor-card .type-pill {
+    font-family: var(--f-mono);
+    font-weight: 800; font-size: 9.5px;
+    letter-spacing: 0.16em;
+    padding: 4px 8px; height: fit-content;
+    background: var(--green); color: var(--ink);
+  }
+  .donor-card .type-pill.pac { background: var(--periwinkle); color: var(--paper); }
+  .donor-card .type-pill.com { background: var(--orange); color: var(--ink); }
+  .donor-card .type-pill.loan { background: var(--yellow); color: var(--ink); }
+  .donor-card .body { min-width: 0; }
+  .donor-card .name {
+    font-family: var(--f-slab); font-weight: 700;
+    font-size: 17px; color: var(--ink); letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  .donor-card .ctx {
+    font-family: var(--f-mono); font-size: 11px; font-weight: 600;
+    letter-spacing: 0.06em; color: var(--ink-3);
+    margin-top: 4px; text-transform: uppercase;
+  }
+  .donor-card .splits {
+    margin-top: 10px;
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .donor-card .split {
+    font-family: var(--f-mono);
+    font-weight: 700; font-size: 11px;
+    background: var(--paper-3);
+    color: var(--ink-2);
+    padding: 4px 8px;
+    letter-spacing: 0.04em;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .donor-card .split::before { content: ""; width: 5px; height: 5px; }
+  .donor-card .split.party-d::before { background: var(--periwinkle); }
+  .donor-card .split.party-r::before { background: var(--red); }
+  .donor-card .split.party-i::before { background: var(--green); }
+  .donor-card .split .pct { color: var(--ink); font-weight: 800; margin-left: 2px; }
+  .donor-card .total {
+    text-align: right;
+    font-family: var(--f-slab);
+    font-weight: 800; font-size: 22px;
+    letter-spacing: -0.02em;
+    color: var(--ink); font-feature-settings: "tnum";
+    line-height: 1; padding-top: 2px;
+  }
+  .donor-card .total-meta {
+    font-family: var(--f-mono);
+    font-size: 10px; font-weight: 700;
+    color: var(--ink-3); letter-spacing: 0.06em;
+    margin-top: 4px; text-transform: uppercase;
+  }
+
+  .donor-tabs {
+    background: var(--paper-2);
+    border-bottom: 1px solid var(--rule);
+  }
+  .donor-tabs__inner {
+    max-width: var(--max); margin: 0 auto;
+    padding: 14px var(--gutter);
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  .donor-tabs__label {
+    font-family: var(--f-mono);
+    font-weight: 700; font-size: 10.5px;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--ink-3);
+    margin-right: 4px;
+  }
+  .donor-tabs__count {
+    margin-left: auto;
+    font-family: var(--f-mono);
+    font-weight: 700; font-size: 11px;
+    color: var(--ink-3); letter-spacing: 0.06em;
+  }
+  .donor-tabs__count strong { color: var(--ink); }
+</style>
+</head>
+<body>
+
+<div class="feed" aria-label="Latest contributions">
+  <div class="feed__chip">●&nbsp;&nbsp;LATEST CONTRIBUTIONS</div>
+  <div class="feed__viewport"><div class="feed__track" id="feedTrack"></div></div>
+</div>
+
+<div class="statusbar">
+  <div class="statusbar__inner">
+    <span class="statusbar__live"><span class="live-dot"></span>LIVE</span>
+    <span class="statusbar__sep">│</span><span><span id="clock">03:47:12 PT</span></span>
+    <span class="statusbar__sep">│</span><span>2026 CA GOVERNOR · PRIMARY <strong style="color: var(--periwinkle-deep);">198 DAYS</strong></span>
+    <span class="statusbar__sep">│</span><span>SYNC <strong style="color: var(--green-deep);">23 min</strong></span>
+    <span class="statusbar__right">
+      <span class="preview-tag">PREVIEW · MOCK DATA</span>
+      <a href="#">METHODOLOGY</a><a href="#">SOURCES</a>
+    </span>
+  </div>
+</div>
+
+<nav class="nav">
+  <div class="nav__inner">
+    <a class="brand" href="polling-preview.html">
+      <div class="brand__mark"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fffced" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10.2"/><path d="M7 12 l3 3 l7 -7" /></svg></div>
+      <div class="brand__name">CA <em>Governor</em> 2026<small>POLLS · DONORS · IE</small></div>
+    </a>
+    <div class="nav__tabs">
+      <a class="nav__tab" href="polling-preview.html">Dashboard</a>
+      <a class="nav__tab" href="candidates-preview.html">Candidates <span class="badge">24</span></a>
+      <a class="nav__tab live-badge" href="polling-page-preview.html">Polling <span class="badge">142</span></a>
+      <a class="nav__tab active" href="top-donors-preview.html">Top donors</a>
+      <a class="nav__tab" href="ie-preview.html">IE</a>
+      <a class="nav__tab" href="faq-preview.html">FAQ</a>
+    </div>
+    <div class="nav__util">
+      <a class="btn btn--ghost" href="#">Sign in</a>
+      <a class="btn btn--primary" href="#">Subscribe</a>
+    </div>
+  </div>
+</nav>
+
+<div class="crumb">
+  <div class="crumb__inner">
+    <a class="crumb__back" href="polling-preview.html">← Dashboard</a>
+    <span class="crumb__sep">│</span><span class="crumb__cur">Top donors</span>
+    <span class="crumb__right"><span>UPDATED 03:47:12 PT</span></span>
+  </div>
+</div>
+
+<section class="page-hero">
+  <div class="page-hero__inner">
+    <div class="page-hero__main">
+      <div class="page-hero__kicker kicker">
+        <span class="pulse"></span>
+        Aggregated across all 24 candidates · 2025–26 cycle
+      </div>
+      <h1 class="page-hero__title">Every <em>donor</em>, ranked.</h1>
+      <p class="page-hero__deck">
+        Cross-candidate aggregation: when one donor backs multiple candidates, their contributions are
+        rolled into a single row. <strong>Search by name, employer, or city</strong> &mdash; or browse the top of the list below.
+      </p>
+      <label class="searchbar" style="margin-top: 22px;" for="donorSearch">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="donorSearch" placeholder="Search donor name, employer, or city&hellip;" />
+        <span class="kbd">⌘ K</span>
+      </label>
+    </div>
+    <div class="page-hero__stats">
+      <div class="stat">
+        <div class="stat-label">Cycle total</div>
+        <div class="stat-value">$42<span style="font-size: 16px; color: var(--ink-3);">M</span></div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Individual donors</div>
+        <div class="stat-value">87.4<span style="font-size: 16px; color: var(--ink-3);">K</span></div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">PAC contributions</div>
+        <div class="stat-value blue">$11<span style="font-size: 16px; color: var(--ink-3);">M</span></div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Small-dollar (&lt;$200)</div>
+        <div class="stat-value green">23<span style="font-size: 16px; color: var(--ink-3);">%</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- filter tabs -->
+<div class="donor-tabs">
+  <div class="donor-tabs__inner">
+    <span class="donor-tabs__label">Type</span>
+    <button class="tag-chip active">All <span style="color: var(--paper); margin-left: 4px;">87.5K</span></button>
+    <button class="tag-chip"><span class="tag-chip__dot" style="background: var(--green);"></span>Individuals <span style="color: var(--ink-3); margin-left: 4px;">87.4K</span></button>
+    <button class="tag-chip"><span class="tag-chip__dot" style="background: var(--periwinkle);"></span>PACs <span style="color: var(--ink-3); margin-left: 4px;">93</span></button>
+    <button class="tag-chip"><span class="tag-chip__dot" style="background: var(--orange);"></span>Committees <span style="color: var(--ink-3); margin-left: 4px;">28</span></button>
+    <button class="tag-chip"><span class="tag-chip__dot" style="background: var(--yellow);"></span>Loans / self <span style="color: var(--ink-3); margin-left: 4px;">14</span></button>
+    <span class="donor-tabs__count">SHOWING TOP <strong>10</strong> · SORTED BY $ TOTAL</span>
+  </div>
+</div>
+
+<section class="section">
+  <div class="section__inner">
+    <div class="section__head">
+      <div>
+        <h2 class="section__title">Top <em>10</em> donors · cycle</h2>
+        <div class="section__sub">CROSS-CANDIDATE AGGREGATION · TOTAL $ ACROSS ALL 24 CAMPAIGNS</div>
+      </div>
+      <div class="section__seg">
+        <button class="active">By total $</button>
+        <button>Most candidates</button>
+        <button>Most recent</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="donorList"></div>
+
+  <div class="dt-foot">
+    <span>SOURCE: <code>useTopAggregatedDonors</code> · <code>ca_top_donors</code> view re-aggregated client-side</span>
+    <a href="#">Download top 500 CSV ↗</a>
+  </div>
+</section>
+
+<footer class="statusline">
+  <div class="statusline__inner">
+    <span class="statusline__source">CAL-ACCESS</span>
+    <span class="statusline__source">CAL-ACCESS IE</span>
+    <span class="statusline__source warn">FEC · cached 14m</span>
+    <span class="statusline__right">
+      <a href="#">© Political Integrity Project · 501(c)(4)</a>
+      <a href="#">Methodology</a><a href="#">API docs</a><a href="#">Press</a>
+    </span>
+  </div>
+</footer>
+
+<script src="design-system.js"></script>
+<script>
+  const donors = [
+    {
+      rank: 1, type: 'PAC', typeCls: 'pac', name: 'California Service Workers United PAC',
+      ctx: 'LABOR · TRADE GROUP · 14 contributions · last Nov 8',
+      splits: [['d','KOUNALAKIS-PARK','$210K','55%'],['d','RIVERA','$78K','21%'],['d','NEWSOM-COLE','$45K','12%']],
+      total: '$378K'
+    },
+    {
+      rank: 2, type: 'PAC', typeCls: 'pac', name: 'CA Apartment Association IE Cmte',
+      ctx: 'REAL ESTATE · TRADE GROUP · 9 contributions · last Oct 28',
+      splits: [['r','BIANCO','$185K','58%'],['r','HILTON','$84K','26%'],['r','BRULTE','$50K','16%']],
+      total: '$319K'
+    },
+    {
+      rank: 3, type: 'IND', typeCls: 'ind', name: 'M. Castelan-Wirth',
+      ctx: 'TECHCO · SAN FRANCISCO · 6 contributions · last Sep 12',
+      splits: [['d','NEWSOM-COLE','$165K','57%'],['d','RIVERA','$78K','27%'],['d','KOUNALAKIS-PARK','$45K','16%']],
+      total: '$288K'
+    },
+    {
+      rank: 4, type: 'PAC', typeCls: 'pac', name: 'Tech for California PAC',
+      ctx: 'TECH · 11 contributions · last Nov 3',
+      splits: [['d','NEWSOM-COLE','$162K','60%'],['d','RIVERA','$54K','20%'],['d','KOUNALAKIS-PARK','$54K','20%']],
+      total: '$270K'
+    },
+    {
+      rank: 5, type: 'IND', typeCls: 'ind', name: 'C. Olafson',
+      ctx: 'INVESTOR · ATHERTON · 8 contributions · last Oct 22',
+      splits: [['r','BIANCO','$128K','55%'],['r','HILTON','$80K','35%'],['r','BRULTE','$24K','10%']],
+      total: '$232K'
+    },
+    {
+      rank: 6, type: 'IND', typeCls: 'ind', name: 'E. Briones-Park',
+      ctx: 'VENTURE INC · MENLO PARK · 5 contributions · last Aug 30',
+      splits: [['d','NEWSOM-COLE','$142K','71%'],['d','KOUNALAKIS-PARK','$58K','29%']],
+      total: '$200K'
+    },
+    {
+      rank: 7, type: 'PAC', typeCls: 'pac', name: 'Building &amp; Construction Trades Council PAC',
+      ctx: 'LABOR · 12 contributions · last Oct 14',
+      splits: [['d','NEWSOM-COLE','$140K','73%'],['d','RIVERA','$36K','19%'],['d','HARTWELL','$16K','8%']],
+      total: '$192K'
+    },
+    {
+      rank: 8, type: 'IND', typeCls: 'ind', name: 'L. Hartwell-Vargas',
+      ctx: 'REAL ESTATE LP · SAN DIEGO · 4 contributions · last Jul 18',
+      splits: [['d','NEWSOM-COLE','$110K','61%'],['d','KOUNALAKIS-PARK','$70K','39%']],
+      total: '$180K'
+    },
+    {
+      rank: 9, type: 'IND', typeCls: 'ind', name: 'R. Sandoval-Quan',
+      ctx: 'MEDIA HOLDINGS · LOS ANGELES · 3 contributions · last Sep 4',
+      splits: [['d','KOUNALAKIS-PARK','$96K','58%'],['d','RIVERA','$70K','42%']],
+      total: '$166K'
+    },
+    {
+      rank:10, type: 'IND', typeCls: 'ind', name: 'P. Wirth-Hoff',
+      ctx: 'SALESCO · SAN FRANCISCO · 5 contributions · last Aug 9',
+      splits: [['d','NEWSOM-COLE','$78K','51%'],['d','RIVERA','$54K','35%'],['d','HARTWELL','$22K','14%']],
+      total: '$154K'
+    }
+  ];
+
+  document.getElementById('donorList').innerHTML = donors.map(d => {
+    const splitsHtml = d.splits.map(([party, name, amt, pct]) =>
+      `<span class="split party-${party}">${name} <span class="pct">${amt} · ${pct}</span></span>`
+    ).join('');
+    return `
+      <article class="donor-card">
+        <div class="rank">${String(d.rank).padStart(2,'0')}</div>
+        <span class="type-pill ${d.typeCls}">${d.type}</span>
+        <div class="body">
+          <div class="name">${d.name}</div>
+          <div class="ctx">${d.ctx}</div>
+          <div class="splits">${splitsHtml}</div>
+        </div>
+        <div>
+          <div class="total">${d.total}</div>
+          <div class="total-meta">CYCLE TOTAL</div>
+        </div>
+      </article>
+    `;
+  }).join('');
+
+  document.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      document.getElementById('donorSearch').focus();
+    }
+  });
+</script>
+</body>
+</html>
