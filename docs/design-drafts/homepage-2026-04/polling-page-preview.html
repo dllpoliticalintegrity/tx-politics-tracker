@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Polling · 2026 California Governor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;500;600;700;800;900&family=Roboto:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="design-system.css" />
+<style>
+  /* page-specific */
+  .pollchart__inner {
+    max-width: var(--max); margin: 0 auto;
+    padding: 0 var(--gutter) 36px;
+  }
+  .pollchart__head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 28px 0 12px; gap: 24px; flex-wrap: wrap;
+  }
+  .pollchart__legend {
+    display: flex; flex-wrap: wrap; gap: 12px 18px;
+    font-family: var(--f-mono);
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--ink-2);
+    align-items: center;
+    margin-top: 12px;
+  }
+  .pollchart__legend-item { display: inline-flex; align-items: center; gap: 8px; }
+  .pollchart__legend-dot { width: 14px; height: 6px; display: inline-block; }
+  #pollSvg { width: 100%; height: 380px; display: block; margin-top: 12px; }
+  #pollSvg .axis-line { stroke: var(--rule); stroke-width: 1; }
+  #pollSvg .grid-line { stroke: var(--rule-soft); stroke-width: 1; }
+  .pollchart__caption {
+    font-family: var(--f-mono);
+    font-size: 11px; color: var(--ink-3);
+    letter-spacing: 0.04em; margin-top: 14px;
+    display: flex; justify-content: space-between;
+    flex-wrap: wrap; gap: 12px;
+    padding-top: 12px; border-top: 1px solid var(--rule-soft);
+  }
+  .pollchart__caption strong { color: var(--ink-2); }
+
+  /* polls table */
+  .polls-table { width: 100%; border-collapse: collapse; }
+  .polls-table thead th {
+    font-family: var(--f-mono);
+    font-weight: 700; font-size: 10.5px;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-3); text-align: right;
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--rule);
+    white-space: nowrap; background: var(--paper);
+  }
+  .polls-table thead th.left { text-align: left; }
+  .polls-table thead th:first-child { padding-left: 22px; text-align: left; }
+  .polls-table thead th:last-child { padding-right: 22px; }
+  .polls-table tbody tr {
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .polls-table tbody tr:hover { background: var(--paper-2); }
+  .polls-table tbody tr.rcp {
+    background: var(--paper-2);
+    border-bottom: 2px solid var(--ink);
+  }
+  .polls-table tbody tr.rcp:hover { background: var(--paper-3); }
+  .polls-table tbody td {
+    padding: 14px 10px;
+    font-size: 13px;
+    text-align: right;
+    white-space: nowrap;
+    font-family: var(--f-mono);
+    font-feature-settings: "tnum";
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .polls-table tbody td.left { text-align: left; }
+  .polls-table tbody td:first-child { padding-left: 22px; text-align: left; }
+  .polls-table tbody td:last-child { padding-right: 22px; }
+  .polls-table .poll-name {
+    font-family: var(--f-slab);
+    font-weight: 700; font-size: 14px;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .polls-table .poll-meta {
+    font-family: var(--f-mono);
+    font-size: 10px; font-weight: 600;
+    color: var(--ink-3);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .polls-table .pct-cell {
+    font-family: var(--f-mono);
+    font-weight: 700;
+    color: var(--ink-2);
+  }
+  .polls-table .pct-cell.lead {
+    color: var(--ink);
+    font-weight: 800;
+    background: rgba(57, 202, 102, 0.12);
+  }
+  .polls-table .pct-cell.dash {
+    color: var(--ink-4);
+    font-weight: 500;
+  }
+  .polls-table .spread {
+    font-family: var(--f-mono);
+    font-weight: 700;
+    color: var(--ink-2);
+  }
+  .polls-table tbody tr.rcp .poll-name {
+    font-family: var(--f-slab);
+    font-weight: 800;
+    color: var(--green-deep);
+    font-size: 15px;
+  }
+  .polls-table tbody tr.rcp .poll-meta {
+    color: var(--ink-2); font-weight: 700;
+  }
+  .polls-table tbody tr.rcp td {
+    font-weight: 800;
+    color: var(--ink);
+  }
+</style>
+</head>
+<body>
+
+<div class="feed" aria-label="Latest contributions">
+  <div class="feed__chip">●&nbsp;&nbsp;LATEST CONTRIBUTIONS</div>
+  <div class="feed__viewport"><div class="feed__track" id="feedTrack"></div></div>
+</div>
+
+<div class="statusbar">
+  <div class="statusbar__inner">
+    <span class="statusbar__live"><span class="live-dot"></span>LIVE</span>
+    <span class="statusbar__sep">│</span><span><span id="clock">03:47:12 PT</span></span>
+    <span class="statusbar__sep">│</span><span>2026 CA GOVERNOR · PRIMARY <strong style="color: var(--periwinkle-deep);">198 DAYS</strong></span>
+    <span class="statusbar__sep">│</span><span>SYNC <strong style="color: var(--green-deep);">23 min</strong></span>
+    <span class="statusbar__right">
+      <span class="preview-tag">PREVIEW · MOCK DATA</span>
+      <a href="#">METHODOLOGY</a><a href="#">SOURCES</a>
+    </span>
+  </div>
+</div>
+
+<nav class="nav">
+  <div class="nav__inner">
+    <a class="brand" href="polling-preview.html">
+      <div class="brand__mark"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fffced" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10.2"/><path d="M7 12 l3 3 l7 -7" /></svg></div>
+      <div class="brand__name">CA <em>Governor</em> 2026<small>POLLS · DONORS · IE</small></div>
+    </a>
+    <div class="nav__tabs">
+      <a class="nav__tab" href="polling-preview.html">Dashboard</a>
+      <a class="nav__tab" href="candidates-preview.html">Candidates <span class="badge">24</span></a>
+      <a class="nav__tab active live-badge" href="polling-page-preview.html">Polling <span class="badge">142</span></a>
+      <a class="nav__tab" href="top-donors-preview.html">Top donors</a>
+      <a class="nav__tab" href="ie-preview.html">IE</a>
+      <a class="nav__tab" href="faq-preview.html">FAQ</a>
+    </div>
+    <div class="nav__util">
+      <a class="btn btn--ghost" href="#">Sign in</a>
+      <a class="btn btn--primary" href="#">Subscribe</a>
+    </div>
+  </div>
+</nav>
+
+<div class="crumb">
+  <div class="crumb__inner">
+    <a class="crumb__back" href="polling-preview.html">← Dashboard</a>
+    <span class="crumb__sep">│</span><span class="crumb__cur">Polling · all polls</span>
+    <span class="crumb__right">
+      <span><span class="live-dot"></span> RCP last update <span class="id">23 MIN AGO</span></span>
+    </span>
+  </div>
+</div>
+
+<section class="page-hero">
+  <div class="page-hero__inner">
+    <div class="page-hero__main">
+      <div class="page-hero__kicker kicker">
+        <span class="pulse"></span>
+        Every public poll · primary in 198 days
+      </div>
+      <h1 class="page-hero__title">142 polls, <em>one</em> picture.</h1>
+      <p class="page-hero__deck">
+        Every public horse-race poll in the RCP feed since launch &mdash; aggregated into a
+        <strong>30-day rolling RCP average</strong>, plus the raw rows so you can audit the math.
+      </p>
+    </div>
+    <div class="page-hero__stats">
+      <div class="stat">
+        <div class="stat-label">Polls collected</div>
+        <div class="stat-value">142</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Pollsters</div>
+        <div class="stat-value">23</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Latest poll</div>
+        <div class="stat-value">PPIC<span style="font-family: var(--f-mono); font-size: 11px; color: var(--ink-3); margin-left: 6px; letter-spacing: 0.06em;">3D AGO</span></div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Front-runner</div>
+        <div class="stat-value blue">28.4<span style="font-size: 16px; color: var(--ink-3);">%</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- chart -->
+<section class="section">
+  <div class="pollchart__inner">
+    <div class="pollchart__head">
+      <div>
+        <h2 class="section__title">Rolling <em>average</em>, since launch</h2>
+        <div class="section__sub">30-DAY TRAILING WINDOW · RCP AVG · TOP 5 BY CURRENT POSITION</div>
+      </div>
+    </div>
+
+    <svg id="pollSvg" viewBox="0 0 1200 380" preserveAspectRatio="none" role="img" aria-label="Polling averages over time"></svg>
+
+    <div class="pollchart__legend" id="pollLegend"></div>
+
+    <div class="pollchart__caption">
+      <span><strong>SOURCE:</strong> RealClearPolitics · 142 polls aggregated · derived in <code>PollingChart</code> via 30-day rolling mean per surname</span>
+      <span><strong>SCOPE:</strong> top 5 of 12 polled candidates</span>
+    </div>
+  </div>
+</section>
+
+<!-- per-poll table -->
+<section class="section">
+  <div class="section__inner">
+    <div class="section__head">
+      <div>
+        <h2 class="section__title">Every <em>poll</em>, every row</h2>
+        <div class="section__sub">RCP RAW DATA · MOST-RECENT FIRST · TOP 5 CANDIDATES</div>
+      </div>
+      <div class="section__seg">
+        <button class="active">All polls</button>
+        <button>Last 30d</button>
+        <button>By pollster</button>
+        <button>By methodology</button>
+      </div>
+    </div>
+  </div>
+
+  <table class="polls-table">
+    <thead>
+      <tr>
+        <th>Poll</th>
+        <th class="right">Date</th>
+        <th class="right">Sample</th>
+        <th class="right">MoE</th>
+        <th class="right">Newsom-Cole</th>
+        <th class="right">Bianco</th>
+        <th class="right">Rivera</th>
+        <th class="right">Kounalakis</th>
+        <th class="right">Hilton</th>
+        <th class="right">Spread</th>
+      </tr>
+    </thead>
+    <tbody id="pollsBody"></tbody>
+  </table>
+  <div class="dt-foot">
+    <span>SOURCE: <code>race_polling.raw_data</code> · Poll · Date · Sample · MoE · per-surname columns · refreshed nightly</span>
+    <a href="#">RCP page ↗</a>
+  </div>
+</section>
+
+<footer class="statusline">
+  <div class="statusline__inner">
+    <span class="statusline__source">RealClearPolitics</span>
+    <span class="statusline__source">Wikipedia</span>
+    <span class="statusline__source warn">CAL-ACCESS · 23m ago</span>
+    <span class="statusline__right">
+      <a href="#">© Political Integrity Project · 501(c)(4)</a>
+      <a href="#">Methodology</a><a href="#">API docs</a><a href="#">Press</a>
+    </span>
+  </div>
+</footer>
+
+<script src="design-system.js"></script>
+<script>
+  // ─── POLLING TIME-SERIES CHART (same visual as homepage)
+  (function () {
+    const months = ['Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov'];
+    const candidates = [
+      { name: 'Newsom-Cole',     color: 'var(--c-newsom)',     series: [33,33,32,31,31,32,30,29,29,28] },
+      { name: 'Bianco',          color: 'var(--c-bianco)',     series: [12,13,14,15,16,16,17,18,19,20] },
+      { name: 'Rivera',          color: 'var(--c-rivera)',     series: [10,11,12,12,13,13,14,14,14,14] },
+      { name: 'Kounalakis-Park', color: 'var(--c-kounalakis)', series: [9,10,10,11,12,12,12,13,12,12] },
+      { name: 'Hilton',          color: 'var(--c-hilton)',     series: [4,5,5,6,7,7,8,8,8,8] }
+    ];
+    const W=1200, H=380, m={l:60,r:90,t:24,b:48};
+    const pw=W-m.l-m.r, ph=H-m.t-m.b;
+    const yMax=40, yMin=0;
+    const xToPx=i=>m.l+(i/(months.length-1))*pw;
+    const yToPx=v=>m.t+ph-((v-yMin)/(yMax-yMin))*ph;
+    let html='';
+    [0,10,20,30,40].forEach(y=>{
+      const py=yToPx(y);
+      html+=`<line class="grid-line" x1="${m.l}" y1="${py}" x2="${W-m.r}" y2="${py}"/>`;
+      html+=`<text x="${m.l-10}" y="${py+4}" text-anchor="end" font-family="JetBrains Mono" font-size="11" fill="#5a5a3e" font-weight="600">${y}%</text>`;
+    });
+    months.forEach((mo,i)=>{
+      const px=xToPx(i);
+      html+=`<text x="${px}" y="${H-m.b+22}" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="#5a5a3e" font-weight="600">${mo}</text>`;
+    });
+    html+=`<line class="axis-line" x1="${m.l}" y1="${H-m.b}" x2="${W-m.r}" y2="${H-m.b}"/>`;
+    candidates.forEach(c=>{
+      const path=c.series.map((v,i)=>`${i===0?'M':'L'} ${xToPx(i).toFixed(1)} ${yToPx(v).toFixed(1)}`).join(' ');
+      html+=`<path d="${path}" fill="none" stroke="${c.color}" stroke-width="2.4"/>`;
+      c.series.forEach((v,i)=>{
+        html+=`<circle cx="${xToPx(i).toFixed(1)}" cy="${yToPx(v).toFixed(1)}" r="3" fill="${c.color}" stroke="#fffced" stroke-width="1"/>`;
+      });
+      const lastV=c.series[c.series.length-1];
+      const lx=xToPx(months.length-1)+8;
+      const ly=yToPx(lastV)+4;
+      html+=`<text x="${lx}" y="${ly}" font-family="Roboto" font-size="12" font-weight="700" fill="${c.color}">${c.name.split('-')[0].toUpperCase()}</text>`;
+      html+=`<text x="${lx}" y="${ly+14}" font-family="JetBrains Mono" font-size="10" font-weight="600" fill="#5a5a3e">${lastV}%</text>`;
+    });
+    document.getElementById('pollSvg').innerHTML=html;
+    document.getElementById('pollLegend').innerHTML=candidates.map(c=>
+      `<span class="pollchart__legend-item"><span class="pollchart__legend-dot" style="background: ${c.color};"></span>${c.name}</span>`
+    ).join('');
+  })();
+
+  // ─── per-poll table data
+  const polls = [
+    { rcp:true, name:'RCP Average', date:'Nov 12', sample:'—',     moe:'—',  v:[28.4,19.6,14.1,12.0,8.0],  spread:'+8.8' },
+    { name:'PPIC',                  date:'Nov 9',  sample:'1,612', moe:'3.2', v:[28,19,14,11,7],            spread:'+9' },
+    { name:'Berkeley IGS',          date:'Nov 4',  sample:'2,234', moe:'2.8', v:[27,21,15,12,8],            spread:'+6' },
+    { name:'Emerson',               date:'Nov 1',  sample:'880',   moe:'3.3', v:[30,18,14,12,9],            spread:'+12' },
+    { name:'YouGov',                date:'Oct 29', sample:'1,030', moe:'3.0', v:[26,22,15,11,9],            spread:'+4' },
+    { name:'PPIC',                  date:'Oct 18', sample:'1,540', moe:'3.1', v:[29,18,13,12,8],            spread:'+11' },
+    { name:'SF Chronicle / IGS',    date:'Oct 11', sample:'1,910', moe:'2.9', v:[28,17,14,13,7],            spread:'+11' },
+    { name:'Survey USA',            date:'Oct 7',  sample:'780',   moe:'3.5', v:[29,18,14,11,8],            spread:'+11' },
+    { name:'Berkeley IGS',          date:'Sep 28', sample:'2,011', moe:'2.7', v:[30,16,13,12,8],            spread:'+14' },
+    { name:'Emerson',               date:'Sep 22', sample:'910',   moe:'3.2', v:[31,16,12,12,8],            spread:'+15' },
+    { name:'PPIC',                  date:'Sep 14', sample:'1,580', moe:'3.0', v:[31,15,13,12,8],            spread:'+16' },
+    { name:'YouGov',                date:'Sep 9',  sample:'1,040', moe:'3.0', v:[28,17,15,11,9],            spread:'+11' },
+    { name:'Berkeley IGS',          date:'Aug 30', sample:'2,120', moe:'2.7', v:[30,15,14,11,7],            spread:'+15' },
+    { name:'Emerson',               date:'Aug 21', sample:'870',   moe:'3.4', v:[31,16,13,11,7],            spread:'+15' },
+    { name:'PPIC',                  date:'Aug 11', sample:'1,665', moe:'3.0', v:[32,15,13,12,7],            spread:'+17' }
+  ];
+  document.getElementById('pollsBody').innerHTML = polls.map(p => {
+    const lead = Math.max(...p.v);
+    const cells = p.v.map(n => {
+      if (n == null) return `<td class="pct-cell dash">—</td>`;
+      return `<td class="pct-cell ${n === lead ? 'lead' : ''}">${n}</td>`;
+    }).join('');
+    return `
+      <tr class="${p.rcp ? 'rcp' : ''}">
+        <td>
+          <div class="poll-name">${p.name}</div>
+          <div class="poll-meta">${p.rcp ? 'TRAILING 30-DAY MEAN' : 'PUBLIC POLL'}</div>
+        </td>
+        <td>${p.date}</td>
+        <td>${p.sample}</td>
+        <td>${p.moe}</td>
+        ${cells}
+        <td><span class="spread">${p.spread}</span></td>
+      </tr>
+    `;
+  }).join('');
+</script>
+</body>
+</html>

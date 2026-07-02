@@ -1,0 +1,16 @@
+project_id = "lohxdfrxnxuxjdvvyfjc"
+
+[functions.auth-email-hook]
+verify_jwt = false
+
+[functions.request-password-reset]
+verify_jwt = false
+
+[functions.reset-password]
+verify_jwt = false
+
+[functions.request-signup]
+verify_jwt = false
+
+[functions.import-towin-polling]
+verify_jwt = false
