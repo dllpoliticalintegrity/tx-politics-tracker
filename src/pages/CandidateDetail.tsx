@@ -2,15 +2,7 @@ import { useParams, Link, Navigate } from "react-router-dom";
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  ArrowLeft,
-  TrendingUp,
-  DollarSign,
-  Users,
-  Building2,
-  Megaphone,
-  Landmark,
-} from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import {
   useCandidate,
   useContributionsSummary,
@@ -48,8 +40,8 @@ export default function CandidateDetail() {
 
   if (candLoading) {
     return (
-      <div className="container py-20 font-mono text-xs text-muted-foreground text-center">
-        LOADING CANDIDATE...
+      <div className="container py-20 text-sm text-muted-foreground text-center">
+        Loading candidate…
       </div>
     );
   }
@@ -123,16 +115,19 @@ export default function CandidateDetail() {
       : 0;
 
   return (
-    <div className="min-h-[80vh] terminal-grid">
+    <div className="min-h-[80vh]">
       <div className="container py-8 space-y-6">
-        <Link to="/candidates">
-          <Button variant="ghost" size="sm" className="font-mono text-xs gap-1.5 rounded-sm h-8">
-            <ArrowLeft className="h-3.5 w-3.5" /> ALL CANDIDATES
-          </Button>
-        </Link>
+        {/* Breadcrumb */}
+        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-sm text-muted-foreground">
+          <Link to="/candidates" className="hover:text-foreground">
+            Candidates
+          </Link>
+          <ChevronRight className="h-3.5 w-3.5" />
+          <span className="text-foreground">{candidate.name}</span>
+        </nav>
 
         {/* Header card */}
-        <Card className="p-6 rounded-sm border-border">
+        <Card className="p-6">
           <div className="flex flex-col md:flex-row md:items-start gap-6">
             {candidate.photo_url ? (
               <img
@@ -143,11 +138,8 @@ export default function CandidateDetail() {
               />
             ) : (
               <div
-                className="w-28 h-28 md:w-32 md:h-32 rounded-full flex items-center justify-center font-display text-3xl shrink-0 border-[3px]"
-                style={{
-                  borderColor: partyColor(candidate.party),
-                  backgroundColor: "hsl(var(--muted))",
-                }}
+                className="w-28 h-28 md:w-32 md:h-32 rounded-full flex items-center justify-center font-display text-3xl shrink-0 border-[3px] bg-muted"
+                style={{ borderColor: partyColor(candidate.party) }}
               >
                 {candidate.name
                   .trim()
@@ -162,27 +154,29 @@ export default function CandidateDetail() {
             <div className="flex-1 space-y-2">
               <div className="flex items-center gap-2 flex-wrap">
                 <span
-                  className="font-mono text-[10px] px-1.5 py-0.5 rounded-sm tracking-widest"
+                  className="text-[11px] font-semibold px-1.5 py-0.5 rounded-sm"
                   style={{ backgroundColor: partyColor(candidate.party), color: "white" }}
                 >
                   {candidate.party ?? "—"}
                 </span>
-                <span className="font-mono text-xs text-muted-foreground tracking-widest">
-                  {partyLabel(candidate.party).toUpperCase()}
+                <span className="text-xs text-muted-foreground">
+                  {partyLabel(candidate.party)}
                 </span>
                 {(candidate.status === "withdrawn" ||
                   candidate.status === "dropped_out") && (
-                  <span className="font-mono text-[10px] tracking-[0.2em] uppercase px-1.5 py-0.5 rounded-sm bg-muted text-muted-foreground border border-border">
+                  <span className="text-[10px] px-1.5 py-0.5 rounded-sm bg-muted text-muted-foreground border">
                     Withdrawn
                   </span>
                 )}
               </div>
-              <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{candidate.name}</h1>
+              <h1 className="font-display text-3xl md:text-4xl font-bold tracking-tight">
+                {candidate.name}
+              </h1>
               {candidate.title && (
-                <p className="font-mono text-sm text-muted-foreground">{candidate.title}</p>
+                <p className="text-sm text-muted-foreground">{candidate.title}</p>
               )}
               {candidate.committee_name && (
-                <p className="font-mono text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                   Committee: {candidate.committee_name}
                 </p>
               )}
@@ -193,14 +187,14 @@ export default function CandidateDetail() {
             <div className="flex gap-4 md:gap-6">
               {(() => {
                 const pct = readCandidatePct(polling?.average, candidate.name);
-                return <Stat label="POLL AVG" value={pct !== null ? `${pct}%` : "—"} />;
+                return <Stat label="Poll average" value={pct !== null ? `${pct}%` : "—"} />;
               })()}
-              <Stat label="RAISED" value={formatCurrency(totals.totalRaised)} />
+              <Stat label="Raised" value={formatCurrency(totals.totalRaised)} />
             </div>
           </div>
           {totals.asOf && (
-            <div className="font-mono text-[10px] text-muted-foreground tracking-widest mt-4">
-              DATA AS OF {new Date(totals.asOf).toLocaleDateString()}
+            <div className="text-xs text-muted-foreground mt-4">
+              Data as of {new Date(totals.asOf).toLocaleDateString()}
             </div>
           )}
         </Card>
@@ -208,14 +202,10 @@ export default function CandidateDetail() {
         {/* Per-candidate polling trajectory (governor race only — the polls
             feed tracks the top-of-ticket matchup) */}
         {candidate.office === "GOVERNOR" && (
-        <Card className="p-6 rounded-sm border-border">
-          <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-            <h2 className="font-mono text-xs tracking-widest text-primary uppercase flex items-center gap-2">
-              <TrendingUp className="h-3.5 w-3.5" /> POLLING HISTORY
-            </h2>
-            <span className="font-mono text-[10px] text-muted-foreground tracking-wider">
-              SOURCE: 270TOWIN AGGREGATE
-            </span>
+        <Card className="p-6">
+          <div className="flex items-baseline justify-between mb-4 flex-wrap gap-2">
+            <h2 className="font-display text-xl font-semibold">Polling history</h2>
+            <span className="text-xs text-muted-foreground">Source: 270toWin aggregate</span>
           </div>
           <CandidatePollingChart
             candidate={{ slug: candidate.slug, name: candidate.name, party: candidate.party }}
@@ -224,8 +214,8 @@ export default function CandidateDetail() {
         )}
 
         {!hasFinanceData && (
-          <Card className="p-8 rounded-sm border-dashed border-border">
-            <p className="font-mono text-xs text-muted-foreground text-center">
+          <Card className="p-8 border-dashed">
+            <p className="text-sm text-muted-foreground text-center">
               No filings yet for this candidate. Data will appear after the next TEC sync.
             </p>
           </Card>
@@ -235,20 +225,17 @@ export default function CandidateDetail() {
           <>
             {/* Finance overview */}
             <div className="grid grid-cols-2 gap-3">
-              <FinanceStat icon={DollarSign} label="TOTAL RAISED" value={formatCurrency(totals.totalRaised)} />
+              <FinanceStat label="Total raised" value={formatCurrency(totals.totalRaised)} />
               <FinanceStat
-                icon={Users}
-                label="SMALL DONORS"
+                label="Small donors"
                 value={`${smallDollarPct}%`}
-                sub={`${totals.smallDollarCount.toLocaleString()} gifts < $200`}
+                sub={`${totals.smallDollarCount.toLocaleString()} gifts under $200`}
               />
             </div>
 
             {/* Funding source breakdown */}
-            <Card className="p-6 rounded-sm border-border space-y-4">
-              <h2 className="font-mono text-xs tracking-widest text-primary uppercase flex items-center gap-2">
-                <DollarSign className="h-3.5 w-3.5" /> FUNDING SOURCES
-              </h2>
+            <Card className="p-6 space-y-4">
+              <h2 className="font-display text-xl font-semibold">Where the money comes from</h2>
               <div className="space-y-3">
                 <SourceBar
                   label="Individual contributions"
@@ -279,43 +266,37 @@ export default function CandidateDetail() {
           </>
         )}
 
-        {/* Independent expenditures banner */}
+        {/* Outside spending banner */}
         {(ieSupporting > 0 || ieOpposing > 0) && (
-          <Card className="p-6 rounded-sm border-border">
+          <Card className="p-6">
             <div className="flex items-center justify-between flex-wrap gap-3">
               <div>
-                <h2 className="font-mono text-xs tracking-widest text-primary uppercase flex items-center gap-2">
-                  <Megaphone className="h-3.5 w-3.5" /> INDEPENDENT EXPENDITURES
-                </h2>
-                <p className="font-mono text-[11px] text-muted-foreground mt-1">
-                  Outside spending by IE committees targeting this candidate.
+                <h2 className="font-display text-xl font-semibold">Outside spending</h2>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Independent expenditures by committees targeting this candidate.
                 </p>
               </div>
               <div className="flex gap-6">
                 <div className="text-right">
-                  <div className="font-mono font-bold text-xl text-chart-5">
+                  <div className="font-mono font-semibold text-xl tabular-nums text-success">
                     {formatCurrency(ieSupporting)}
                   </div>
-                  <div className="font-mono text-[10px] text-muted-foreground tracking-widest">
-                    SUPPORTING
-                  </div>
+                  <div className="text-xs text-muted-foreground">Supporting</div>
                 </div>
                 <div className="text-right">
-                  <div className="font-mono font-bold text-xl text-destructive">
+                  <div className="font-mono font-semibold text-xl tabular-nums text-destructive">
                     {formatCurrency(ieOpposing)}
                   </div>
-                  <div className="font-mono text-[10px] text-muted-foreground tracking-widest">
-                    OPPOSING
-                  </div>
+                  <div className="text-xs text-muted-foreground">Opposing</div>
                 </div>
               </div>
             </div>
             <div className="mt-4">
               <Link
-                to="/independent-expenditures"
-                className="text-xs font-mono text-primary hover:underline"
+                to="/money/outside-spending"
+                className="text-sm text-primary hover:underline"
               >
-                VIEW ALL IE ACTIVITY →
+                All outside spending in the race →
               </Link>
             </div>
           </Card>
@@ -324,20 +305,18 @@ export default function CandidateDetail() {
         {/* Top donors / PACs / employers */}
         {hasFinanceData && (
           <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-3">
-            <Card className="p-4 md:p-6 rounded-sm border-border">
-              <h2 className="font-mono text-xs tracking-widest text-primary uppercase mb-4 flex items-center gap-2">
-                <Users className="h-3.5 w-3.5" /> TOP INDIVIDUAL DONORS
-              </h2>
+            <Card className="p-4 md:p-6">
+              <h2 className="font-display text-lg font-semibold mb-4">Top individual donors</h2>
               <div className="space-y-2">
                 {individualDonorsFiltered.length === 0 && (
-                  <div className="font-mono text-[11px] text-muted-foreground">
+                  <div className="text-sm text-muted-foreground">
                     No individual donor data yet.
                   </div>
                 )}
                 {individualDonorsFiltered.map((d, i) => (
                   <div
                     key={`ind-${d.contributor_last_name ?? ""}|${d.contributor_first_name ?? ""}|${i}`}
-                    className="flex items-center justify-between text-sm border-b border-border/50 pb-2 last:border-0 gap-2"
+                    className="flex items-center justify-between text-sm border-b border-border/60 pb-2 last:border-0 gap-2"
                   >
                     <div className="min-w-0 flex-1">
                       <div className="font-medium truncate">
@@ -345,44 +324,40 @@ export default function CandidateDetail() {
                           .filter(Boolean)
                           .join(" ") || "—"}
                       </div>
-                      <div className="font-mono text-[10px] text-muted-foreground tracking-widest">
+                      <div className="text-xs text-muted-foreground truncate">
                         {d.employer ?? d.occupation ?? "—"}
-                        {d.contribution_count > 1
-                          ? ` · ${d.contribution_count} GIFTS`
-                          : ""}
+                        {d.contribution_count > 1 ? ` · ${d.contribution_count} gifts` : ""}
                       </div>
                     </div>
-                    <div className="font-mono font-bold text-primary shrink-0 text-xs md:text-sm tabular-nums">
+                    <div className="font-mono font-semibold shrink-0 text-xs md:text-sm tabular-nums">
                       {formatCurrencyFull(Number(d.total_amount))}
                     </div>
                   </div>
                 ))}
                 {loans && loans.length > 0 && (
-                  <div className="font-mono text-[10px] text-muted-foreground pt-1">
+                  <div className="text-xs text-muted-foreground pt-1">
                     Loans listed separately →
                   </div>
                 )}
               </div>
             </Card>
-            <Card className="p-4 md:p-6 rounded-sm border-border">
-              <h2 className="font-mono text-xs tracking-widest text-primary uppercase mb-4 flex items-center gap-2">
-                <Building2 className="h-3.5 w-3.5" /> TOP PAC / COMMITTEE DONORS
-                <span className="ml-auto font-mono text-[10px] text-muted-foreground tabular-nums normal-case tracking-wider">
+            <Card className="p-4 md:p-6">
+              <h2 className="font-display text-lg font-semibold mb-4 flex items-baseline">
+                Top PAC & committee donors
+                <span className="ml-auto text-xs font-sans font-normal text-muted-foreground tabular-nums">
                   {(topPacDonors ?? []).length} total
                 </span>
               </h2>
               <div className="space-y-2">
                 {(topPacDonors ?? []).length === 0 && (
-                  <div className="font-mono text-[11px] text-muted-foreground">
-                    No PAC contributions yet.
-                  </div>
+                  <div className="text-sm text-muted-foreground">No PAC contributions yet.</div>
                 )}
                 {(topPacDonors ?? [])
                   .slice(pacPage * PAC_PAGE_SIZE, (pacPage + 1) * PAC_PAGE_SIZE)
                   .map((d, i) => (
                   <div
                     key={`pac-${d.contributor_last_name ?? ""}|${d.contributor_first_name ?? ""}|${i}`}
-                    className="flex items-center justify-between text-sm border-b border-border/50 pb-2 last:border-0 gap-2"
+                    className="flex items-center justify-between text-sm border-b border-border/60 pb-2 last:border-0 gap-2"
                   >
                     <div className="min-w-0 flex-1">
                       <div className="font-medium truncate">
@@ -390,62 +365,57 @@ export default function CandidateDetail() {
                           .filter(Boolean)
                           .join(" ") || "—"}
                       </div>
-                      <div className="font-mono text-[10px] text-muted-foreground tracking-widest">
-                        {contributorTypeLabel(d.contributor_type).toUpperCase()}
-                        {d.contribution_count > 1
-                          ? ` · ${d.contribution_count} GIFTS`
-                          : ""}
+                      <div className="text-xs text-muted-foreground truncate">
+                        {contributorTypeLabel(d.contributor_type)}
+                        {d.contribution_count > 1 ? ` · ${d.contribution_count} gifts` : ""}
                       </div>
                     </div>
-                    <div className="font-mono font-bold text-primary shrink-0 text-xs md:text-sm tabular-nums">
+                    <div className="font-mono font-semibold shrink-0 text-xs md:text-sm tabular-nums">
                       {formatCurrencyFull(Number(d.total_amount))}
                     </div>
                   </div>
                 ))}
               </div>
               {(topPacDonors ?? []).length > PAC_PAGE_SIZE && (
-                <div className="flex items-center justify-between mt-4 pt-3 border-t border-border/50">
+                <div className="flex items-center justify-between mt-4 pt-3 border-t border-border/60">
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="font-mono text-[11px] tracking-widest h-7 rounded-sm"
+                    className="text-xs h-7"
                     disabled={pacPage === 0}
                     onClick={() => setPacPage((p) => Math.max(0, p - 1))}
                   >
-                    ← PREV
+                    ← Previous
                   </Button>
-                  <div className="font-mono text-[10px] text-muted-foreground tracking-widest tabular-nums">
-                    PAGE {pacPage + 1} / {Math.max(1, Math.ceil((topPacDonors ?? []).length / PAC_PAGE_SIZE))}
+                  <div className="text-xs text-muted-foreground tabular-nums">
+                    Page {pacPage + 1} of{" "}
+                    {Math.max(1, Math.ceil((topPacDonors ?? []).length / PAC_PAGE_SIZE))}
                   </div>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="font-mono text-[11px] tracking-widest h-7 rounded-sm"
+                    className="text-xs h-7"
                     disabled={(pacPage + 1) * PAC_PAGE_SIZE >= (topPacDonors ?? []).length}
                     onClick={() => setPacPage((p) => p + 1)}
                   >
-                    NEXT →
+                    Next →
                   </Button>
                 </div>
               )}
             </Card>
-            <Card className="p-4 md:p-6 rounded-sm border-border">
-              <h2 className="font-mono text-xs tracking-widest text-primary uppercase mb-4 flex items-center gap-2">
-                <Building2 className="h-3.5 w-3.5" /> TOP EMPLOYERS
-              </h2>
+            <Card className="p-4 md:p-6">
+              <h2 className="font-display text-lg font-semibold mb-4">Top employers</h2>
               <div className="space-y-2">
                 {(topIndustries ?? []).length === 0 && (
-                  <div className="font-mono text-[11px] text-muted-foreground">
-                    No employer data yet.
-                  </div>
+                  <div className="text-sm text-muted-foreground">No employer data yet.</div>
                 )}
                 {(topIndustries ?? []).map((d, i) => (
                   <div
                     key={i}
-                    className="flex items-center justify-between text-sm border-b border-border/50 pb-2 last:border-0 gap-2"
+                    className="flex items-center justify-between text-sm border-b border-border/60 pb-2 last:border-0 gap-2"
                   >
                     <div className="font-medium truncate">{d.name}</div>
-                    <div className="font-mono font-bold text-primary shrink-0 text-xs md:text-sm tabular-nums">
+                    <div className="font-mono font-semibold shrink-0 text-xs md:text-sm tabular-nums">
                       {formatCurrency(d.amount)}
                     </div>
                   </div>
@@ -453,10 +423,10 @@ export default function CandidateDetail() {
               </div>
             </Card>
             {loans && loans.length > 0 && (
-              <Card className="p-4 md:p-6 rounded-sm border-border">
-                <h2 className="font-mono text-xs tracking-widest text-primary uppercase mb-4 flex items-center gap-2">
-                  <Landmark className="h-3.5 w-3.5" /> SELF-FUNDING & LOANS
-                  <span className="ml-auto font-mono text-[10px] text-muted-foreground tabular-nums">
+              <Card className="p-4 md:p-6">
+                <h2 className="font-display text-lg font-semibold mb-4 flex items-baseline">
+                  Self-funding & loans
+                  <span className="ml-auto text-xs font-sans font-normal text-muted-foreground tabular-nums">
                     {formatCurrencyFull(totalLoans)}
                   </span>
                 </h2>
@@ -464,7 +434,7 @@ export default function CandidateDetail() {
                   {loans.map((l, i) => (
                     <div
                       key={`loan-${l.contributor_last_name ?? ""}|${l.contributor_first_name ?? ""}|${i}`}
-                      className="flex items-center justify-between text-sm border-b border-border/50 pb-2 last:border-0 gap-2"
+                      className="flex items-center justify-between text-sm border-b border-border/60 pb-2 last:border-0 gap-2"
                     >
                       <div className="min-w-0 flex-1">
                         <div className="font-medium truncate">
@@ -472,21 +442,21 @@ export default function CandidateDetail() {
                             .filter(Boolean)
                             .join(" ") || "—"}
                         </div>
-                        <div className="font-mono text-[10px] text-muted-foreground tracking-widest">
-                          {l.source === "loan" ? "LOAN" : "SELF-FUNDED"}
+                        <div className="text-xs text-muted-foreground">
+                          {l.source === "loan" ? "Loan" : "Self-funded"}
                           {l.contribution_count > 1
-                            ? ` · ${l.contribution_count} ${l.source === "loan" ? "LOANS" : "GIFTS"}`
+                            ? ` · ${l.contribution_count} ${l.source === "loan" ? "loans" : "gifts"}`
                             : ""}
                         </div>
                       </div>
-                      <div className="font-mono font-bold text-primary shrink-0 text-xs md:text-sm tabular-nums">
+                      <div className="font-mono font-semibold shrink-0 text-xs md:text-sm tabular-nums">
                         {formatCurrencyFull(Number(l.total_amount))}
                       </div>
                     </div>
                   ))}
                 </div>
-                <div className="font-mono text-[10px] text-muted-foreground tracking-widest mt-3 pt-2 border-t border-border/50">
-                  Schedule B loans + candidate self-contributions
+                <div className="text-xs text-muted-foreground mt-3 pt-2 border-t border-border/60">
+                  Schedule B loans plus candidate self-contributions
                 </div>
               </Card>
             )}
@@ -495,34 +465,34 @@ export default function CandidateDetail() {
 
         {/* Recent IE transactions */}
         {ieRows && ieRows.length > 0 && (
-          <Card className="p-6 rounded-sm border-border">
-            <h2 className="font-mono text-xs tracking-widest text-primary uppercase mb-4 flex items-center gap-2">
-              <Megaphone className="h-3.5 w-3.5" /> RECENT IE ACTIVITY
+          <Card className="p-6">
+            <h2 className="font-display text-lg font-semibold mb-4">
+              Recent outside spending
             </h2>
             <div className="space-y-2">
               {ieRows.map((r) => (
                 <div
                   key={r.id}
-                  className="flex items-center justify-between text-sm border-b border-border/50 pb-2 last:border-0 gap-3"
+                  className="flex items-center justify-between text-sm border-b border-border/60 pb-2 last:border-0 gap-3"
                 >
                   <div className="min-w-0 flex-1">
                     <div className="font-medium truncate">{r.committee_name ?? "—"}</div>
-                    <div className="font-mono text-[10px] text-muted-foreground tracking-widest">
+                    <div className="text-xs text-muted-foreground truncate">
                       {r.expenditure_date ? new Date(r.expenditure_date).toLocaleDateString() : "—"}
                       {r.description ? ` · ${r.description}` : ""}
                     </div>
                   </div>
                   <div className="shrink-0 text-right">
                     <div
-                      className={`font-mono font-bold ${
-                        r.support_oppose === "S" ? "text-chart-5" : "text-destructive"
+                      className={`font-mono font-semibold tabular-nums ${
+                        r.support_oppose === "S" ? "text-success" : "text-destructive"
                       }`}
                     >
-                      {r.support_oppose === "S" ? "+" : "-"}
+                      {r.support_oppose === "S" ? "+" : "−"}
                       {formatCurrencyFull(r.amount)}
                     </div>
-                    <div className="font-mono text-[10px] text-muted-foreground tracking-widest">
-                      {r.support_oppose === "S" ? "SUPPORT" : "OPPOSE"}
+                    <div className="text-xs text-muted-foreground">
+                      {r.support_oppose === "S" ? "Support" : "Oppose"}
                     </div>
                   </div>
                 </div>
@@ -531,8 +501,8 @@ export default function CandidateDetail() {
           </Card>
         )}
 
-        <p className="text-[10px] font-mono text-muted-foreground text-center pt-2">
-          SOURCE: TEXAS ETHICS COMMISSION
+        <p className="text-xs text-muted-foreground text-center pt-2">
+          Source: Texas Ethics Commission, updated nightly.
         </p>
       </div>
     </div>
@@ -542,29 +512,26 @@ export default function CandidateDetail() {
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="text-center">
-      <div className="font-mono font-bold text-2xl text-primary">{value}</div>
-      <div className="font-mono text-[10px] text-muted-foreground tracking-widest">{label}</div>
+      <div className="font-display font-semibold text-2xl">{value}</div>
+      <div className="text-xs text-muted-foreground mt-0.5">{label}</div>
     </div>
   );
 }
 
 function FinanceStat({
-  icon: Icon,
   label,
   value,
   sub,
 }: {
-  icon: any;
   label: string;
   value: string;
   sub?: string;
 }) {
   return (
-    <Card className="p-4 rounded-sm border-border">
-      <Icon className="h-4 w-4 text-primary mb-2" />
-      <div className="font-mono font-bold text-xl">{value}</div>
-      <div className="font-mono text-[10px] text-muted-foreground tracking-widest">{label}</div>
-      {sub && <div className="font-mono text-[10px] text-muted-foreground mt-0.5">{sub}</div>}
+    <Card className="p-4">
+      <div className="font-mono font-semibold text-xl tabular-nums">{value}</div>
+      <div className="text-xs text-muted-foreground mt-0.5">{label}</div>
+      {sub && <div className="text-xs text-muted-foreground mt-0.5">{sub}</div>}
     </Card>
   );
 }
@@ -584,8 +551,8 @@ function SourceBar({
     <div className="space-y-1">
       <div className="flex items-center justify-between text-sm">
         <span>{label}</span>
-        <span className="font-mono">
-          <span className="font-bold">{formatCurrency(value)}</span>
+        <span className="font-mono tabular-nums">
+          <span className="font-semibold">{formatCurrency(value)}</span>
           <span className="text-muted-foreground ml-2">{pct}%</span>
         </span>
       </div>

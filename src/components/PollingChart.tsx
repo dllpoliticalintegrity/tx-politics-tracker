@@ -13,27 +13,6 @@ import { useCandidates } from "@/hooks/useCandidates";
 import { isGeneralMatchup, parsePollDate, useTxGovPolling, useTxGovRacePolls } from "@/hooks/usePolling";
 import { partyColor } from "@/lib/finance";
 
-// Color-blind-safe categorical palette based on Okabe-Ito (CUD) — each pair
-// distinguishable under deuteranopia, protanopia, and tritanopia. All hues
-// score >= 3:1 luminance ratio against the hsl(220 18% 7%) dark card bg
-// (WCAG AA non-text graphics). Party affinity preserved where possible
-// (Reps in warm oranges/vermilion; Dems across cool + one yellow + one
-// reddish-purple to keep all 8 Dems distinguishable from each other).
-const CANDIDATE_COLORS: Record<string, string> = {
-  // Republicans — warm family
-  "steve-hilton":         "#D55E00", // vermilion
-  "chad-bianco":          "#E69F00", // orange
-  // Democrats — cool family + yellow + reddish-purple
-  "katie-porter":         "#56B4E9", // sky blue
-  "tom-steyer":           "#CC79A7", // reddish purple
-  "eric-swalwell":        "#0072B2", // blue
-  "antonio-villaraigosa": "#009E73", // bluish green
-  "tony-thurmond":        "#B276B2", // light purple
-  "xavier-becerra":       "#F0E442", // yellow
-  "betty-yee":            "#7DCEA0", // light green
-  "matt-mahan":           "#BEBEBE", // neutral gray
-};
-
 // Trailing-window width for the rolling average (days).
 const WINDOW_DAYS = 30;
 
@@ -131,7 +110,7 @@ export default function PollingChart() {
         slug: cand.slug,
         name: cand.name,
         party: cand.party,
-        color: CANDIDATE_COLORS[cand.slug] ?? partyColor(cand.party),
+        color: partyColor(cand.party),
         photoUrl: cand.photo_url_thumb ?? cand.photo_url ?? null,
         withdrawn: cand.status === "withdrawn" || cand.status === "dropped_out",
       })),
@@ -147,14 +126,14 @@ export default function PollingChart() {
 
   if (isLoading) {
     return (
-      <div className="h-[420px] flex items-center justify-center font-mono text-xs text-muted-foreground">
-        LOADING POLLING...
+      <div className="h-[420px] flex items-center justify-center text-sm text-muted-foreground">
+        Loading polling…
       </div>
     );
   }
   if (!polling || !polling.average || data.length === 0) {
     return (
-      <div className="h-[120px] flex items-center justify-center font-mono text-xs text-muted-foreground">
+      <div className="h-[120px] flex items-center justify-center text-sm text-muted-foreground">
         No polling data yet.
       </div>
     );
@@ -170,13 +149,13 @@ export default function PollingChart() {
             tickFormatter={(d) =>
               new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric" })
             }
-            tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10, fontFamily: "JetBrains Mono" }}
+            tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11, fontFamily: "Inter" }}
             stroke="hsl(var(--border))"
             minTickGap={28}
           />
           <YAxis
             unit="%"
-            tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 10, fontFamily: "JetBrains Mono" }}
+            tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11, fontFamily: "Inter" }}
             stroke="hsl(var(--border))"
             domain={[0, "dataMax + 5"]}
             width={36}
@@ -202,11 +181,11 @@ export default function PollingChart() {
                     backgroundColor: "hsl(var(--card))",
                     border: "1px solid hsl(var(--border))",
                     borderRadius: 6,
-                    fontFamily: "JetBrains Mono",
+                    fontFamily: "Inter",
                     fontSize: 12,
                     padding: "10px 12px",
                     minWidth: 200,
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
                   }}
                 >
                   <div
@@ -280,12 +259,12 @@ export default function PollingChart() {
             }}
           />
           <Legend
-            wrapperStyle={{ fontFamily: "JetBrains Mono", fontSize: 10, lineHeight: "1.4", paddingTop: 4 }}
+            wrapperStyle={{ fontFamily: "Inter", fontSize: 11, lineHeight: "1.4", paddingTop: 4 }}
             iconSize={8}
             formatter={(value) => {
               const s = series.find((x) => x.slug === value);
               const label = s
-                ? `${s.name.split(" ").pop()} (${s.party ?? "—"})${s.withdrawn ? " · OUT" : ""}`
+                ? `${s.name.split(" ").pop()} (${s.party ?? "—"})${s.withdrawn ? " · out" : ""}`
                 : value;
               return (
                 <span

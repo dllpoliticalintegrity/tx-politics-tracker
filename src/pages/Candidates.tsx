@@ -1,4 +1,3 @@
-import { Users } from "lucide-react";
 import { useCandidates, useCandidateTotals } from "@/hooks/useCandidates";
 import { isGeneralMatchup, useTxGovPolling, useTxGovRacePolls } from "@/hooks/usePolling";
 import CandidateCard, { type CandidateCardStats } from "@/components/CandidateCard";
@@ -67,34 +66,33 @@ export default function Candidates() {
     );
 
   return (
-    <div className="min-h-[80vh] terminal-grid">
+    <div className="min-h-[80vh]">
       <section className="container pt-12 pb-6 space-y-3">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm border border-primary/20 bg-primary/5 text-primary font-mono text-xs tracking-wider">
-          <Users className="h-3.5 w-3.5" />
-          ALL CANDIDATES
-        </div>
-        <h1 className="font-display text-3xl md:text-4xl tracking-tight">
-          2026 <span className="text-primary">TX Governor</span> Candidates
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          2026 Texas Governor's race
+        </p>
+        <h1 className="font-display text-3xl md:text-4xl font-bold tracking-tight">
+          The candidates
         </h1>
-        <p className="text-sm text-muted-foreground font-mono">
-          Ranked by polling average, then total raised.
+        <p className="text-base text-muted-foreground">
+          Ranked by polling average, then by total raised.
         </p>
       </section>
 
       <section className="container pb-16">
         {isLoading && (
-          <div className="font-mono text-xs text-muted-foreground py-10 text-center">
-            LOADING CANDIDATES...
+          <div className="text-sm text-muted-foreground py-10 text-center">
+            Loading candidates…
           </div>
         )}
         {error && (
-          <div className="font-mono text-xs text-destructive py-10 text-center">
-            ERROR LOADING CANDIDATES
+          <div className="text-sm text-destructive py-10 text-center">
+            Something went wrong loading candidates. Try refreshing.
           </div>
         )}
         {!isLoading && !error && ranked.length === 0 && (
-          <div className="font-mono text-xs text-muted-foreground py-10 text-center">
-            NO CANDIDATES LOADED YET
+          <div className="text-sm text-muted-foreground py-10 text-center">
+            No candidates yet.
           </div>
         )}
         <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(300px,1fr))]">

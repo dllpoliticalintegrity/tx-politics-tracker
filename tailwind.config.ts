@@ -15,8 +15,8 @@ export default {
     extend: {
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],
-        mono: ["JetBrains Mono", "Fira Code", "monospace"],
-        orbitron: ["Orbitron", "JetBrains Mono", "monospace"],
+        mono: ["JetBrains Mono", "ui-monospace", "monospace"],
+        display: ["Fraunces", "Georgia", "Times New Roman", "serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -57,9 +57,6 @@ export default {
         dem: "hsl(var(--dem))",
         rep: "hsl(var(--rep))",
         ind: "hsl(var(--ind))",
-        "terminal-green": "hsl(var(--terminal-green))",
-        "terminal-amber": "hsl(var(--terminal-amber))",
-        "terminal-cyan": "hsl(var(--terminal-cyan))",
         chart: {
           "1": "hsl(var(--chart-1))",
           "2": "hsl(var(--chart-2))",
@@ -92,15 +89,15 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
-        "pulse-glow": {
-          "0%, 100%": { opacity: "1" },
-          "50%": { opacity: "0.6" },
+        ticker: {
+          from: { transform: "translateX(0)" },
+          to: { transform: "translateX(-50%)" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "pulse-glow": "pulse-glow 2s ease-in-out infinite",
+        ticker: "ticker 60s linear infinite",
       },
     },
   },

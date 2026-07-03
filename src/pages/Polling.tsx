@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Card } from "@/components/ui/card";
-import { TrendingUp, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import PollingChart from "@/components/PollingChart";
 import { useCandidates } from "@/hooks/useCandidates";
 import {
@@ -50,16 +50,16 @@ function groupPolls(rows: RacePollRow[]): PollGroup[] {
 }
 
 function matchupLabel(m: string): string {
-  if (m === "dem_primary") return "D PRIMARY";
-  if (m === "rep_primary") return "R PRIMARY";
-  return "GENERAL";
+  if (m === "dem_primary") return "D primary";
+  if (m === "rep_primary") return "R primary";
+  return "General";
 }
 
 function spreadOf(g: PollGroup): string {
   const ranked = Object.entries(g.pcts).sort((a, b) => b[1] - a[1]);
   if (ranked.length < 2) return "—";
   const diff = Math.round((ranked[0][1] - ranked[1][1]) * 10) / 10;
-  return diff === 0 ? "TIE" : `${ranked[0][0]} +${diff}`;
+  return diff === 0 ? "Tie" : `${ranked[0][0]} +${diff}`;
 }
 
 function fmtDate(iso: string): string {
@@ -98,29 +98,23 @@ export default function Polling() {
   }, [rankedCandidates, groups]);
 
   return (
-    <div className="min-h-[80vh] terminal-grid">
+    <div className="min-h-[80vh]">
       <section className="container pt-12 pb-6 space-y-3">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-sm border border-primary/20 bg-primary/5 text-primary font-mono text-xs tracking-wider">
-          <TrendingUp className="h-3.5 w-3.5" />
-          POLLING
-        </div>
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-          Polling // 2026 TX Governor
-        </h1>
-        <p className="text-sm text-muted-foreground font-mono">
-          270toWin aggregate and individual polls. Synced nightly.
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          2026 Texas Governor's race
+        </p>
+        <h1 className="font-display text-3xl md:text-4xl font-bold tracking-tight">Polling</h1>
+        <p className="text-base text-muted-foreground">
+          The 270toWin aggregate and every individual poll, updated nightly.
         </p>
       </section>
 
       <section className="container pb-6">
-        <Card className="p-4 md:p-6 rounded-sm border-border">
-          <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-            <h2 className="font-mono text-xs tracking-widest text-primary uppercase flex items-center gap-2">
-              <span className="inline-block w-2 h-2 rounded-full bg-primary" />
-              POLLING AVERAGE // TIME-SERIES
-            </h2>
-            <span className="font-mono text-[10px] text-muted-foreground tracking-wider">
-              {polling?.spread ? `LEADING: ${polling.spread.toUpperCase()}` : ""}
+        <Card className="p-4 md:p-6">
+          <div className="flex items-baseline justify-between mb-4 flex-wrap gap-2">
+            <h2 className="font-display text-xl md:text-2xl font-semibold">Polling average</h2>
+            <span className="text-xs text-muted-foreground">
+              {polling?.spread ? `Leading: ${polling.spread}` : ""}
             </span>
           </div>
           <PollingChart />
@@ -129,25 +123,25 @@ export default function Polling() {
 
       {avg && (
         <section className="container pb-6">
-          <Card className="p-4 md:p-6 rounded-sm border-border">
-            <h2 className="font-mono text-xs tracking-widest text-primary uppercase mb-4">
-              270toWin AVERAGE ({avg.Date || "latest"})
+          <Card className="p-4 md:p-6">
+            <h2 className="font-display text-lg font-semibold mb-4">
+              Current average{avg.Date ? ` (as of ${avg.Date})` : ""}
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
               {rankedCandidates.map(({ cand, avgPct }) => (
                 <div
                   key={cand.slug}
-                  className="border border-border rounded-sm p-3 flex items-center gap-3"
+                  className="border rounded-md p-3 flex items-center gap-3"
                 >
                   <span
-                    className="font-mono text-[10px] px-1.5 py-0.5 rounded-sm tracking-widest"
+                    className="text-[11px] font-semibold px-1.5 py-0.5 rounded-sm"
                     style={{ backgroundColor: partyColor(cand.party), color: "white" }}
                   >
                     {cand.party ?? "—"}
                   </span>
                   <div className="flex-1 min-w-0">
                     <div className="text-sm truncate">{cand.name}</div>
-                    <div className="font-mono font-bold text-primary">{avgPct}%</div>
+                    <div className="font-mono font-semibold tabular-nums">{avgPct}%</div>
                   </div>
                 </div>
               ))}
@@ -157,28 +151,28 @@ export default function Polling() {
       )}
 
       <section className="container pb-16">
-        <Card className="rounded-sm border-border overflow-hidden">
-          <div className="p-4 md:p-6 border-b border-border flex items-center justify-between flex-wrap gap-2">
-            <h2 className="font-mono text-xs tracking-widest text-primary uppercase">
-              ALL POLLS ({groups.length})
+        <Card className="overflow-hidden">
+          <div className="p-4 md:p-6 border-b flex items-baseline justify-between flex-wrap gap-2">
+            <h2 className="font-display text-lg font-semibold">
+              All polls <span className="text-muted-foreground font-normal">({groups.length})</span>
             </h2>
             <a
               href="https://www.270towin.com/2026-governor-polls/texas"
               target="_blank"
               rel="noreferrer noopener"
-              className="font-mono text-[11px] text-muted-foreground hover:text-primary inline-flex items-center gap-1"
+              className="text-xs text-muted-foreground hover:text-primary inline-flex items-center gap-1"
             >
-              VIEW ON 270toWin <ExternalLink className="h-3 w-3" />
+              View on 270toWin <ExternalLink className="h-3 w-3" />
             </a>
           </div>
           {(isLoading || pollsLoading) && (
-            <div className="p-10 font-mono text-xs text-muted-foreground text-center">
-              LOADING POLLS...
+            <div className="p-10 text-sm text-muted-foreground text-center">
+              Loading polls…
             </div>
           )}
           {error && (
-            <div className="p-10 font-mono text-xs text-destructive text-center">
-              ERROR LOADING POLLS
+            <div className="p-10 text-sm text-destructive text-center">
+              Something went wrong loading polls. Try refreshing.
             </div>
           )}
 
@@ -202,23 +196,23 @@ export default function Polling() {
                         g.pollster
                       )}
                     </span>
-                    <span className="font-mono text-[10px] text-muted-foreground whitespace-nowrap">
+                    <span className="text-xs text-muted-foreground whitespace-nowrap tabular-nums">
                       {fmtDate(g.field_end)}
                     </span>
                   </div>
-                  <div className="flex items-center flex-wrap gap-x-3 gap-y-1 font-mono text-xs">
-                    <span className="text-[9px] tracking-widest px-1.5 py-0.5 rounded-sm bg-muted/40 text-muted-foreground">
+                  <div className="flex items-center flex-wrap gap-x-3 gap-y-1 text-xs">
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-sm bg-muted text-muted-foreground">
                       {matchupLabel(g.matchup)}
                     </span>
                     {Object.entries(g.pcts)
                       .sort((a, b) => b[1] - a[1])
                       .map(([s, p]) => (
-                        <span key={s}>
+                        <span key={s} className="tabular-nums">
                           <span className="text-muted-foreground">{s}</span>{" "}
-                          <span className="font-bold">{p}%</span>
+                          <span className="font-semibold">{p}%</span>
                         </span>
                       ))}
-                    <span className="text-primary ml-auto">{spreadOf(g)}</span>
+                    <span className="text-muted-foreground ml-auto tabular-nums">{spreadOf(g)}</span>
                   </div>
                 </li>
               ))}
@@ -230,35 +224,25 @@ export default function Polling() {
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-border bg-muted/20">
-                    <th className="text-left px-4 py-2 font-mono text-[10px] tracking-widest text-muted-foreground">
-                      POLL
-                    </th>
-                    <th className="text-left px-4 py-2 font-mono text-[10px] tracking-widest text-muted-foreground">
-                      DATE
-                    </th>
-                    <th className="text-left px-4 py-2 font-mono text-[10px] tracking-widest text-muted-foreground">
-                      MATCHUP
-                    </th>
-                    <th className="text-left px-4 py-2 font-mono text-[10px] tracking-widest text-muted-foreground">
-                      N
-                    </th>
+                  <tr className="border-b bg-muted/40 text-xs text-muted-foreground">
+                    <th className="text-left px-4 py-2 font-medium">Poll</th>
+                    <th className="text-left px-4 py-2 font-medium">Date</th>
+                    <th className="text-left px-4 py-2 font-medium">Matchup</th>
+                    <th className="text-left px-4 py-2 font-medium">Sample</th>
                     {columnSurnames.map((s) => (
                       <th
                         key={s}
-                        className="text-right px-3 py-2 font-mono text-[10px] tracking-widest text-muted-foreground whitespace-nowrap"
+                        className="text-right px-3 py-2 font-medium whitespace-nowrap"
                       >
-                        {s.toUpperCase()}
+                        {s}
                       </th>
                     ))}
-                    <th className="text-left px-4 py-2 font-mono text-[10px] tracking-widest text-muted-foreground">
-                      SPREAD
-                    </th>
+                    <th className="text-left px-4 py-2 font-medium">Spread</th>
                   </tr>
                 </thead>
                 <tbody>
                   {groups.map((g) => (
-                    <tr key={g.key} className="border-b border-border/40 hover:bg-muted/10">
+                    <tr key={g.key} className="border-b border-border/60 hover:bg-muted/30">
                       <td className="px-4 py-2 font-medium">
                         {g.source_url ? (
                           <a
@@ -273,21 +257,21 @@ export default function Polling() {
                           g.pollster
                         )}
                       </td>
-                      <td className="px-4 py-2 font-mono text-xs text-muted-foreground whitespace-nowrap">
+                      <td className="px-4 py-2 text-xs text-muted-foreground whitespace-nowrap tabular-nums">
                         {fmtDate(g.field_end)}
                       </td>
-                      <td className="px-4 py-2 font-mono text-[10px] tracking-widest text-muted-foreground whitespace-nowrap">
+                      <td className="px-4 py-2 text-xs text-muted-foreground whitespace-nowrap">
                         {matchupLabel(g.matchup)}
                       </td>
-                      <td className="px-4 py-2 font-mono text-xs text-muted-foreground whitespace-nowrap">
+                      <td className="px-4 py-2 text-xs text-muted-foreground whitespace-nowrap tabular-nums">
                         {g.sample ?? "—"}
                       </td>
                       {columnSurnames.map((s) => (
-                        <td key={s} className="px-3 py-2 text-right font-mono">
+                        <td key={s} className="px-3 py-2 text-right font-mono tabular-nums">
                           {g.pcts[s] !== undefined ? `${g.pcts[s]}%` : "—"}
                         </td>
                       ))}
-                      <td className="px-4 py-2 font-mono text-xs text-muted-foreground whitespace-nowrap">
+                      <td className="px-4 py-2 text-xs text-muted-foreground whitespace-nowrap tabular-nums">
                         {spreadOf(g)}
                       </td>
                     </tr>
@@ -298,8 +282,8 @@ export default function Polling() {
           )}
 
           {!pollsLoading && groups.length === 0 && !error && (
-            <div className="p-10 font-mono text-xs text-muted-foreground text-center">
-              NO POLLS YET
+            <div className="p-10 text-sm text-muted-foreground text-center">
+              No polls yet.
             </div>
           )}
         </Card>

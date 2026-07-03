@@ -3,8 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 
 /**
  * Latest individual + PAC contributions across the cycle, joined to the
- * recipient candidate's name + party. Powers the top "Latest Contributions"
- * ticker on the beta dashboard.
+ * recipient candidate's name + party. Powers the "Latest gifts" ticker on
+ * the home page.
  */
 export type LatestContribution = {
   id: string;

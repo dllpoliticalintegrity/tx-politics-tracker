@@ -78,14 +78,14 @@ export default function CandidatePollingChart({ candidate }: Props) {
 
   if (isLoading) {
     return (
-      <div className="h-[220px] flex items-center justify-center font-mono text-xs text-muted-foreground">
-        LOADING POLLING...
+      <div className="h-[220px] flex items-center justify-center text-sm text-muted-foreground">
+        Loading polling…
       </div>
     );
   }
   if (rollingPoints.length < 2) {
     return (
-      <div className="h-[140px] flex items-center justify-center font-mono text-xs text-muted-foreground">
+      <div className="h-[140px] flex items-center justify-center text-sm text-muted-foreground">
         Not enough polls to chart {candidate.name}'s trend yet.
       </div>
     );
@@ -111,13 +111,13 @@ export default function CandidatePollingChart({ candidate }: Props) {
             tickFormatter={(d) =>
               new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric" })
             }
-            tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11, fontFamily: "JetBrains Mono" }}
+            tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11, fontFamily: "Inter" }}
             stroke="hsl(var(--border))"
           />
           <YAxis
             unit="%"
             domain={[0, yMax]}
-            tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11, fontFamily: "JetBrains Mono" }}
+            tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11, fontFamily: "Inter" }}
             stroke="hsl(var(--border))"
           />
           <Tooltip
@@ -140,10 +140,10 @@ export default function CandidatePollingChart({ candidate }: Props) {
                     backgroundColor: "hsl(var(--card))",
                     border: "1px solid hsl(var(--border))",
                     borderRadius: 6,
-                    fontFamily: "JetBrains Mono",
+                    fontFamily: "Inter",
                     fontSize: 12,
                     padding: "8px 10px",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
                     minWidth: 180,
                   }}
                 >
@@ -158,10 +158,10 @@ export default function CandidatePollingChart({ candidate }: Props) {
                   >
                     {dateLabel}
                   </div>
-                  <div style={{ color: "#fff", display: "flex", gap: 6, alignItems: "baseline" }}>
+                  <div style={{ display: "flex", gap: 6, alignItems: "baseline" }}>
                     <strong style={{ color, fontSize: 18 }}>{pct.toFixed(1)}%</strong>
                     <span style={{ color: "hsl(var(--muted-foreground))", fontSize: 10 }}>
-                      30D AVG · {samples} POLL{samples === 1 ? "" : "S"}
+                      30-day avg · {samples} poll{samples === 1 ? "" : "s"}
                     </span>
                   </div>
                 </div>
@@ -180,8 +180,8 @@ export default function CandidatePollingChart({ candidate }: Props) {
           <ReferenceLine y={0} stroke="hsl(var(--border))" />
         </AreaChart>
       </ResponsiveContainer>
-      <div className="font-mono text-[10px] tracking-widest text-muted-foreground mt-2">
-        30-DAY ROLLING AVERAGE · {rawPoints.length} POLLS
+      <div className="text-xs text-muted-foreground mt-2">
+        30-day rolling average · {rawPoints.length} polls
       </div>
     </div>
   );
