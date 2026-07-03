@@ -16,6 +16,7 @@ export type TxCandidate = {
   filer_ident: string;
   committee_filer_ident: string | null;
   committee_name: string | null;
+  office: string;
   status: string | null;
   featured: boolean;
 };
@@ -110,15 +111,16 @@ export type TxIeRow = {
 // Candidates
 // ---------------------------------------------------------------------------
 
-export function useCandidates() {
+export function useCandidates(office: string = "GOVERNOR") {
   return useQuery({
-    queryKey: ["tx_candidates"],
+    queryKey: ["tx_candidates", office],
     queryFn: async (): Promise<TxCandidate[]> => {
       const { data, error } = await (supabase as any)
         .from("tx_candidates")
         .select(
-          "id,slug,name,party,title,bio,photo_url,photo_url_medium,photo_url_large,photo_url_thumb,website,filer_ident,committee_filer_ident,committee_name,status,featured",
+          "id,slug,name,party,title,bio,photo_url,photo_url_medium,photo_url_large,photo_url_thumb,website,filer_ident,committee_filer_ident,committee_name,office,status,featured",
         )
+        .eq("office", office)
         .order("name");
       if (error) throw error;
       return (data ?? []) as TxCandidate[];
@@ -134,7 +136,7 @@ export function useCandidate(slug: string | undefined) {
       const { data, error } = await (supabase as any)
         .from("tx_candidates")
         .select(
-          "id,slug,name,party,title,bio,photo_url,photo_url_medium,photo_url_large,photo_url_thumb,website,filer_ident,committee_filer_ident,committee_name,status,featured",
+          "id,slug,name,party,title,bio,photo_url,photo_url_medium,photo_url_large,photo_url_thumb,website,filer_ident,committee_filer_ident,committee_name,office,status,featured",
         )
         .eq("slug", slug)
         .maybeSingle();
@@ -249,10 +251,18 @@ function normalizeNamePart(s: string | null | undefined): string {
     .trim();
 }
 
-export function useTopAggregatedDonors(limit = 50, kind: DonorKind = "all") {
+export function useTopAggregatedDonors(limit = 50, kind: DonorKind = "all", office = "GOVERNOR") {
   return useQuery({
-    queryKey: ["tx_top_aggregated_donors", limit, kind],
+    queryKey: ["tx_top_aggregated_donors", limit, kind, office],
     queryFn: async (): Promise<TxCrossCandidateDonor[]> => {
+      // The view spans every office we track; scope to this race's candidates.
+      const { data: cands, error: candErr } = await (supabase as any)
+        .from("tx_candidates")
+        .select("id")
+        .eq("office", office);
+      if (candErr) throw candErr;
+      const ids = ((cands ?? []) as { id: string }[]).map((c) => c.id);
+      if (!ids.length) return [];
       // Pull the top per-candidate rows from the existing tx_top_donors view
       // and re-aggregate client-side across candidates so the same donor
       // giving to multiple campaigns collapses into one row with a per-
@@ -262,6 +272,7 @@ export function useTopAggregatedDonors(limit = 50, kind: DonorKind = "all") {
         .select(
           "candidate_id,contributor_last_name,contributor_first_name,contributor_type,employer,occupation,city,state,contribution_count,total_amount,last_contribution_date",
         )
+        .in("candidate_id", ids)
         .order("total_amount", { ascending: false })
         .limit(10000);
       if (kind === "individual") q = q.eq("contributor_type", "INDIVIDUAL");
@@ -379,10 +390,19 @@ export type TxIeCrossCommitteeDonor = {
   splits: TxIeDonorSplit[];
 };
 
-export function useTopIeAggregatedDonors(limit = 50, kind: DonorKind = "all") {
+export function useTopIeAggregatedDonors(limit = 50, kind: DonorKind = "all", office = "GOVERNOR") {
   return useQuery({
-    queryKey: ["tx_top_ie_donors_aggregated", limit, kind],
+    queryKey: ["tx_top_ie_donors_aggregated", limit, kind, office],
     queryFn: async (): Promise<TxIeCrossCommitteeDonor[]> => {
+      // Committees are shared across races; keep only those with independent
+      // expenditures benefiting this office's candidates.
+      const { data: ieRows, error: ieErr } = await (supabase as any)
+        .from("tx_independent_expenditures")
+        .select("ie_filer_ident,tx_candidates!inner(office)")
+        .eq("tx_candidates.office", office);
+      if (ieErr) throw ieErr;
+      const idents = [...new Set(((ieRows ?? []) as any[]).map((r) => r.ie_filer_ident))];
+      if (!idents.length) return [];
       const [donorsRes, committeesRes] = await Promise.all([
         (() => {
           let q = (supabase as any)
@@ -390,6 +410,7 @@ export function useTopIeAggregatedDonors(limit = 50, kind: DonorKind = "all") {
             .select(
               "ie_filer_ident,contributor_last_name,contributor_first_name,contributor_type,employer,occupation,city,state,contribution_count,total_amount,last_contribution_date",
             )
+            .in("ie_filer_ident", idents)
             .order("total_amount", { ascending: false })
             .limit(10000);
           if (kind === "individual") q = q.eq("contributor_type", "INDIVIDUAL");
@@ -829,9 +850,9 @@ export function useIEForCandidate(candidateId: string | undefined, limit = 50) {
   });
 }
 
-export function useTopIECommittees(limit = 15) {
+export function useTopIECommittees(limit = 15, office = "GOVERNOR") {
   return useQuery({
-    queryKey: ["tx_ie_top_committees", limit],
+    queryKey: ["tx_ie_top_committees", limit, office],
     queryFn: async (): Promise<
       {
         filer_id: string;
@@ -844,7 +865,8 @@ export function useTopIECommittees(limit = 15) {
     > => {
       const { data, error } = await (supabase as any)
         .from("tx_independent_expenditures")
-        .select("ie_filer_ident,support_oppose,amount,tx_ie_committees(name)")
+        .select("ie_filer_ident,support_oppose,amount,tx_ie_committees(name),tx_candidates!inner(office)")
+        .eq("tx_candidates.office", office)
         .limit(10000);
       if (error) throw error;
       const totals = new Map<

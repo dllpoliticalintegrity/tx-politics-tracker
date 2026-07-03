@@ -1,13 +1,10 @@
 // Edge function: scrape 2026 Texas Governor polls from 270toWin and
 // upsert them into race_polls + race_polling (source='270towin').
 // Mirrors scripts/data-import/270towin/import-tx-gov-polls.py.
-// v3: redeploy trigger 2026-04-26.
+// build-tag: 270towin-v4 (deno_dom; linkedom's canvas dep breaks edge bundling)
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { parseHTML } from "https://esm.sh/linkedom@0.16.11";
-
-// Minimal Element shim so existing helpers keep their types.
-type Element = any;
+import { DOMParser, Element } from "https://deno.land/x/deno_dom@v0.1.46/deno-dom-wasm.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -103,7 +100,7 @@ type RawRow = {
 };
 
 function parsePolls(html: string): RawRow[] {
-  const doc = (parseHTML(html) as any).document;
+  const doc = new DOMParser().parseFromString(html, "text/html");
   if (!doc) return [];
   const rows: RawRow[] = [];
   const tables = Array.from(doc.querySelectorAll("table")) as Element[];

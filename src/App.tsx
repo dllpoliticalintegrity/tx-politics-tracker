@@ -15,6 +15,7 @@ import CandidateDetail from "./pages/CandidateDetail";
 import IndependentExpenditures from "./pages/IndependentExpenditures";
 import TopDonors from "./pages/TopDonors";
 import Polling from "./pages/Polling";
+import Statewide from "./pages/Statewide";
 import FAQ from "./pages/FAQ";
 import NotFound from "./pages/NotFound";
 import BetaDashboard from "./pages/beta/Dashboard";
@@ -48,6 +49,7 @@ function AppShell() {
         <Route path="/independent-expenditures" element={<IndependentExpenditures />} />
         <Route path="/top-donors" element={<TopDonors />} />
         <Route path="/polling" element={<Polling />} />
+        <Route path="/statewide" element={<Statewide />} />
         <Route path="/faq" element={<FAQ />} />
         <Route path="/beta" element={<BetaDashboard />} />
         <Route path="/beta/candidates" element={<BetaCandidates />} />

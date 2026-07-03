@@ -6,7 +6,7 @@ import {
   useCandidates,
   useCandidateTotals,
 } from "@/hooks/useCandidates";
-import { useTxGovPolling, useTxGovRacePolls } from "@/hooks/usePolling";
+import { isGeneralMatchup, useTxGovPolling, useTxGovRacePolls } from "@/hooks/usePolling";
 import PollingChart from "@/components/PollingChart";
 import PollingAveragesList from "@/components/PollingAveragesList";
 import CandidateCard, { type CandidateCardStats } from "@/components/CandidateCard";
@@ -19,7 +19,8 @@ export default function Index() {
   const { data: candidates, isLoading } = useCandidates();
   const { data: totalsMap } = useCandidateTotals();
   const { data: polling } = useTxGovPolling();
-  const { data: racePolls } = useTxGovRacePolls();
+  const { data: racePollsAll } = useTxGovRacePolls();
+  const racePolls = (racePollsAll ?? []).filter((r) => isGeneralMatchup(r.matchup));
 
   // ---------- Per-candidate polling stats ----------
   const today = new Date();

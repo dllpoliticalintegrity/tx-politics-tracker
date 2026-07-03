@@ -23,15 +23,16 @@ export type LatestContribution = {
 
 const PAC_TYPES = ["ENTITY"];
 
-export function useLatestContributions(limit = 20, minAmount = 30_000) {
+export function useLatestContributions(limit = 20, minAmount = 30_000, office = "GOVERNOR") {
   return useQuery({
-    queryKey: ["ca_latest_contributions", limit, minAmount],
+    queryKey: ["tx_latest_contributions", limit, minAmount, office],
     queryFn: async (): Promise<LatestContribution[]> => {
       const { data, error } = await (supabase as any)
         .from("tx_contributions")
         .select(
-          "id,amount,contribution_date,contributor_type,contributor_first_name,contributor_last_name,employer,city,state,candidate_id,tx_candidates(name,party)",
+          "id,amount,contribution_date,contributor_type,contributor_first_name,contributor_last_name,employer,city,state,candidate_id,tx_candidates!inner(name,party,office)",
         )
+        .eq("tx_candidates.office", office)
         .not("contribution_date", "is", null)
         .gte("amount", minAmount)
         .order("contribution_date", { ascending: false })

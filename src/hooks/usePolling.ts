@@ -116,6 +116,13 @@ export type RacePollRow = {
   matchup: string | null;
 };
 
+/** General-election rows only — primary-matchup polls would contaminate the
+ * head-to-head trend series and 90-day deltas. */
+export function isGeneralMatchup(m: string | null | undefined): boolean {
+  const s = (m ?? "general").toLowerCase();
+  return s === "general" || s.startsWith("h2h");
+}
+
 export function useTxGovRacePolls() {
   return useQuery({
     queryKey: ["race_polls", GOV_RACE_SLUG],

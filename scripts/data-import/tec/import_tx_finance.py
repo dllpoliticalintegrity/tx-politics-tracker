@@ -61,7 +61,9 @@ TEC_ZIP_URL = "https://prd.tecprd.ethicsefile.com/public/cf/public/TEC_CF_CSV.zi
 WORK_DIR = Path(os.environ.get("TEC_WORK_DIR", "/tmp/tec"))
 ZIP_PATH = WORK_DIR / "TEC_CF_CSV.zip"
 
-TARGET_OFFICE = "GOVERNOR"
+# Statewide offices this tracker follows. Discovery (--discover) takes an
+# --office flag; the DCE stage accepts a benefited candidate from any of these.
+TARGET_OFFICES = ("GOVERNOR", "LTGOVERNOR", "ATTYGEN")
 
 PRIMARY_DATE = date(2026, 3, 3)
 RUNOFF_DATE = date(2026, 5, 26)
@@ -211,16 +213,17 @@ def members_matching(zf: zipfile.ZipFile, pattern: str) -> List[str]:
 # ---------------------------------------------------------------------------
 
 
-def discover_governor_filers(zf: zipfile.ZipFile):
+def discover_governor_filers(zf: zipfile.ZipFile, office: str = "GOVERNOR"):
     """Print filers whose campaign treasurer appointment targets GOVERNOR and
     who filed a report covering activity in this cycle. filers.csv alone lists
     everyone who *ever* filed a gubernatorial CTA (~170 filers back to 2000),
     so cross-reference cover.csv for recent activity before curating seeds."""
     gov: Dict[str, dict] = {}
+    logger.info("discovering %s filers", office)
     for row in stream_csv(zf, "filers.csv"):
-        if (row.get("ctaSeekOfficeCd") or "").strip() == TARGET_OFFICE:
+        if (row.get("ctaSeekOfficeCd") or "").strip() == office:
             gov[norm_ident(row.get("filerIdent"))] = row
-    logger.info("%d filers with a GOVERNOR CTA on record", len(gov))
+    logger.info("%d filers with a %s CTA on record", len(gov), office)
 
     active: Dict[str, dict] = {}
     for row in stream_csv(zf, "cover.csv"):
@@ -235,7 +238,7 @@ def discover_governor_filers(zf: zipfile.ZipFile):
         cur["latest"] = max(cur["latest"], period_end)
         cur["raised"] += to_decimal(row.get("totalContribAmount")) or 0.0
 
-    print(f"\n{len(active)} GOVERNOR filers with reports covering {CYCLE_START} or later:\n")
+    print(f"\n{len(active)} {office} filers with reports covering {CYCLE_START} or later:\n")
     print(f"{'filerIdent':>10}  {'reports':>7}  {'latest period end':>17}  {'total contribs':>14}  name")
     for fid, info in sorted(active.items(), key=lambda kv: -kv[1]["raised"]):
         f = gov[fid]
@@ -519,7 +522,7 @@ def import_dce(sb, zf, seeds: Dict[str, SeedCandidate], targets: Dict[str, tuple
     writer = BatchWriter(sb, "tx_independent_expenditures", on_conflict="expend_info_id,expend_persent_id")
     unmatched = 0
     for row in stream_csv(zf, "cand.csv"):
-        if (row.get("candidateSeekOfficeCd") or "").strip() != TARGET_OFFICE:
+        if (row.get("candidateSeekOfficeCd") or "").strip() not in TARGET_OFFICES:
             continue
         if (row.get("infoOnlyFlag") or "").strip().upper() == "Y":
             continue
@@ -619,7 +622,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--skip-download", action="store_true", help="Reuse existing zip in WORK_DIR")
     parser.add_argument("--discover", action="store_true",
-                        help="List GOVERNOR filers active this cycle and exit (no DB needed)")
+                        help="List filers active this cycle for --office and exit (no DB needed)")
+    parser.add_argument("--office", default="GOVERNOR", choices=list(TARGET_OFFICES),
+                        help="Office for --discover (default GOVERNOR)")
     parser.add_argument(
         "--only",
         choices=["filings", "contributions", "expenditures", "loans", "ie", "ie-contributions"],
@@ -632,7 +637,7 @@ def main():
     zf = zipfile.ZipFile(ZIP_PATH)
 
     if args.discover:
-        discover_governor_filers(zf)
+        discover_governor_filers(zf, args.office)
         return
 
     url = os.environ.get("SUPABASE_URL")

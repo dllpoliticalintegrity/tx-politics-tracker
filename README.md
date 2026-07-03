@@ -1,7 +1,8 @@
 # Texas Politics Tracker
 
 Public-interest dashboard tracking money and polling in the **2026 Texas
-Governor's race** — campaign finance from the Texas Ethics Commission (TEC),
+Governor's race** — plus campaign finance for the other statewide races
+(Lt. Governor, Attorney General) — from the Texas Ethics Commission (TEC),
 polling from 270toWin, and direct-campaign-expenditure (outside) spending.
 
 Ported from our [ca-gov-polling](https://github.com/dllpoliticalintegrity/ca-gov-polling)
@@ -24,7 +25,8 @@ project; see `docs/tx-repo-bootstrap.md` for the port checklist and
 The TEC importer discovers active GOVERNOR filers with `--discover`, then
 fills `tx_filings`, `tx_contributions`, `tx_expenditures`, `tx_loans`,
 `tx_independent_expenditures` (DCE rows from `cand.csv`), and
-`tx_ie_contributions` for the candidates seeded in `tx_candidates`. Each
+`tx_ie_contributions` for the candidates seeded in `tx_candidates` — any
+office in `TARGET_OFFICES` (Governor, Lt. Governor, Attorney General). Each
 candidate carries two TEC filer accounts: their candidate/officeholder (COH)
 account plus their principal specific-purpose committee (e.g. Abbott is COH
 `19652`, war chest in SPAC `51153` "Texans for Greg Abbott"). Superseded
