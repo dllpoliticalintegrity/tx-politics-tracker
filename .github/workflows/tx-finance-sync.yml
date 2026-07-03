@@ -1,0 +1,64 @@
+name: TX finance sync
+
+on:
+  schedule:
+    # 12:00 UTC — TEC refreshes its bulk CSV daily around 10:35 UTC
+    - cron: "0 12 * * *"
+  workflow_dispatch:
+    inputs:
+      only:
+        description: "Single stage to run (filings|contributions|expenditures|loans|ie|ie-contributions). Blank = all."
+        required: false
+        default: ""
+
+concurrency:
+  group: tx-finance-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    # Skips cleanly (no red run) until the repo is configured. To enable:
+    # Settings → Secrets and variables → Actions →
+    #   1. Secrets: add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY for the
+    #      TX Supabase project (the secrets context isn't allowed in job-level
+    #      `if`, hence the variable gate below).
+    #   2. Variables: add FINANCE_SYNC_ENABLED = true
+    if: ${{ vars.FINANCE_SYNC_ENABLED == 'true' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: scripts/data-import/tec/requirements.txt
+
+      - name: Install deps
+        run: pip install -r scripts/data-import/tec/requirements.txt
+
+      - name: Run import
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          TEC_WORK_DIR: ${{ runner.temp }}/tec
+        run: |
+          cd scripts/data-import/tec
+          if [ -n "${{ github.event.inputs.only }}" ]; then
+            python import_tx_finance.py --only ${{ github.event.inputs.only }}
+          else
+            python import_tx_finance.py
+          fi
+
+      - name: Refresh materialized views
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          curl -fsS -X POST \
+            "${SUPABASE_URL}/rest/v1/rpc/refresh_tx_finance_views" \
+            -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
+            -H "Content-Type: application/json" \
+            -d '{}'
