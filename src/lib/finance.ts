@@ -26,6 +26,16 @@ export function partyColor(party: string | null | undefined): string {
   return PARTY_COLOR[partyKey(party)] ?? "hsl(var(--muted-foreground))";
 }
 
+export const OFFICE_LABEL: Record<string, string> = {
+  GOVERNOR: "Governor",
+  LTGOVERNOR: "Lt. Governor",
+  ATTYGEN: "Attorney General",
+};
+
+export function officeLabel(office: string | null | undefined): string {
+  return OFFICE_LABEL[office ?? ""] ?? (office ?? "");
+}
+
 export function partyLabel(party: string | null | undefined): string {
   return PARTY_LABEL[partyKey(party)] ?? "Other";
 }

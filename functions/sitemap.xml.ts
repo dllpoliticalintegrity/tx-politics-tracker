@@ -26,6 +26,7 @@ const STATIC_PATHS: Array<{
   { path: "/polling", priority: "0.9", changefreq: "daily" },
   { path: "/top-donors", priority: "0.8", changefreq: "daily" },
   { path: "/independent-expenditures", priority: "0.8", changefreq: "daily" },
+  { path: "/statewide", priority: "0.8", changefreq: "daily" },
   { path: "/faq", priority: "0.5", changefreq: "weekly" },
 ];
 

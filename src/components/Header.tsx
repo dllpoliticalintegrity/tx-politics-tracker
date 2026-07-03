@@ -13,6 +13,7 @@ const navItems = [
   { to: "/polling", label: "POLLING" },
   { to: "/independent-expenditures", label: "SUPER PAC SPENDING" },
   { to: "/top-donors", label: "TOP DONORS" },
+  { to: "/statewide", label: "STATEWIDE" },
   { to: "/faq", label: "FAQ" },
 ];
 

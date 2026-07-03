@@ -205,7 +205,9 @@ export default function CandidateDetail() {
           )}
         </Card>
 
-        {/* Per-candidate polling trajectory */}
+        {/* Per-candidate polling trajectory (governor race only — the polls
+            feed tracks the top-of-ticket matchup) */}
+        {candidate.office === "GOVERNOR" && (
         <Card className="p-6 rounded-sm border-border">
           <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
             <h2 className="font-mono text-xs tracking-widest text-primary uppercase flex items-center gap-2">
@@ -219,6 +221,7 @@ export default function CandidateDetail() {
             candidate={{ slug: candidate.slug, name: candidate.name, party: candidate.party }}
           />
         </Card>
+        )}
 
         {!hasFinanceData && (
           <Card className="p-8 rounded-sm border-dashed border-border">

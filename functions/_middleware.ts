@@ -107,6 +107,15 @@ const STATIC_ROUTES: Record<string, RouteMeta> = {
       </ul>
     `,
   },
+  "/statewide": {
+    title: "Statewide Races — Texas 2026 | Texas Politics Tracker",
+    description:
+      "Campaign finance for Texas's 2026 down-ballot statewide races — Lt. Governor and Attorney General — from Texas Ethics Commission filings.",
+    h1: "Texas Statewide Races, 2026",
+    body: `
+      <p>Money in Texas's other 2026 statewide executive races: Lt. Governor (Dan Patrick vs. Vikki Goodwin) and Attorney General (Mayes Middleton vs. Nathan Johnson), with per-candidate totals, donors, and filings from the Texas Ethics Commission's daily bulk data.</p>
+    `,
+  },
   "/faq": {
     title: "FAQ — How Texas Politics Tracker Works | Texas Politics Tracker",
     description:
