@@ -5,20 +5,6 @@ on:
     # Every 6 hours — polls drop throughout the day
     - cron: "0 */6 * * *"
   workflow_dispatch:
-    inputs:
-      scan_start:
-        description: "RCP scan start id"
-        required: false
-        default: "8600"
-      scan_end:
-        description: "RCP scan end id"
-        required: false
-        default: "8960"
-      primaries:
-        description: "Include primary polls"
-        type: boolean
-        required: false
-        default: true
 
 concurrency:
   group: polling-sync
@@ -27,29 +13,17 @@ concurrency:
 jobs:
   sync:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-          cache: pip
-          cache-dependency-path: scripts/data-import/rcp/requirements.txt
-
-      - name: Install deps
-        run: pip install supabase urllib3
-
-      - name: Run RCP polling import
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      # The import-towin-polling Supabase edge function scrapes 270toWin's
+      # Texas governor page and refreshes race_polls + the race_polling
+      # aggregate using the project's own service role — no secrets needed
+      # here. It fails loudly (non-2xx) if the scrape or upsert breaks.
+      - name: Trigger 270toWin import
         run: |
-          cd scripts/data-import/rcp
-          ARGS=()
-          ARGS+=(--scan-start "${{ github.event.inputs.scan_start || 8600 }}")
-          ARGS+=(--scan-end "${{ github.event.inputs.scan_end || 8960 }}")
-          if [ "${{ github.event.inputs.primaries || 'true' }}" = "true" ]; then
-            ARGS+=(--primaries)
-          fi
-          python import_polling.py "${ARGS[@]}"
+          RESP=$(curl -fsS -X POST \
+            "https://lohxdfrxnxuxjdvvyfjc.supabase.co/functions/v1/import-towin-polling" \
+            -H "Content-Type: application/json" \
+            -d '{}')
+          echo "$RESP"
+          echo "$RESP" | python3 -c "import json,sys; d=json.load(sys.stdin); sys.exit(0 if d.get('ok') else 1)"
