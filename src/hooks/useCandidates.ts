@@ -808,13 +808,22 @@ export function useExpenditureTotals(candidateId: string | undefined) {
 // Independent expenditures
 // ---------------------------------------------------------------------------
 
-export function useIEByCandidate() {
+export function useIEByCandidate(office = "GOVERNOR") {
   return useQuery({
-    queryKey: ["tx_ie_by_candidate"],
+    queryKey: ["tx_ie_by_candidate", office],
     queryFn: async (): Promise<TxIeByCandidate[]> => {
+      // The matview spans every office we track; scope to this race.
+      const { data: cands, error: candErr } = await (supabase as any)
+        .from("tx_candidates")
+        .select("id")
+        .eq("office", office);
+      if (candErr) throw candErr;
+      const ids = ((cands ?? []) as { id: string }[]).map((c) => c.id);
+      if (!ids.length) return [];
       const { data, error } = await (supabase as any)
         .from("tx_ie_by_candidate")
-        .select("*");
+        .select("*")
+        .in("candidate_id", ids);
       if (error) throw error;
       return (data ?? []) as TxIeByCandidate[];
     },
