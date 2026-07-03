@@ -10,7 +10,7 @@ import {
 } from "recharts";
 import { useMemo } from "react";
 import { useCandidates } from "@/hooks/useCandidates";
-import { parsePollDate, useTxGovPolling, useTxGovRacePolls } from "@/hooks/usePolling";
+import { isGeneralMatchup, parsePollDate, useTxGovPolling, useTxGovRacePolls } from "@/hooks/usePolling";
 import { partyColor } from "@/lib/finance";
 
 // Color-blind-safe categorical palette based on Okabe-Ito (CUD) — each pair
@@ -39,7 +39,8 @@ const WINDOW_DAYS = 30;
 
 export default function PollingChart() {
   const { data: polling, isLoading } = useTxGovPolling();
-  const { data: racePolls } = useTxGovRacePolls();
+  const { data: racePollsAll } = useTxGovRacePolls();
+  const racePolls = (racePollsAll ?? []).filter((r) => isGeneralMatchup(r.matchup));
   const { data: candidates } = useCandidates();
 
   const { series, data } = useMemo(() => {

@@ -12,12 +12,22 @@ export const PARTY_LABEL: Record<string, string> = {
   I: "Independent",
 };
 
+// Accepts either code ("D") or full name ("Democrat") — tx_candidates stores
+// full names.
+function partyKey(party: string | null | undefined): string {
+  const s = (party ?? "").trim().toUpperCase();
+  if (s.startsWith("D")) return "D";
+  if (s.startsWith("R")) return "R";
+  if (s.startsWith("I")) return "I";
+  return "";
+}
+
 export function partyColor(party: string | null | undefined): string {
-  return PARTY_COLOR[party ?? ""] ?? "hsl(var(--muted-foreground))";
+  return PARTY_COLOR[partyKey(party)] ?? "hsl(var(--muted-foreground))";
 }
 
 export function partyLabel(party: string | null | undefined): string {
-  return PARTY_LABEL[party ?? ""] ?? "Other";
+  return PARTY_LABEL[partyKey(party)] ?? "Other";
 }
 
 export function formatCurrency(n: number | null | undefined): string {

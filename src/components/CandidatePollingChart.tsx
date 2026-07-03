@@ -9,7 +9,7 @@ import {
   ReferenceLine,
 } from "recharts";
 import { useMemo } from "react";
-import { useTxGovRacePolls } from "@/hooks/usePolling";
+import { isGeneralMatchup, useTxGovRacePolls } from "@/hooks/usePolling";
 import { partyColor } from "@/lib/finance";
 
 // Same CUD-safe palette as the overview chart so colors stay consistent.
@@ -37,7 +37,8 @@ type Props = {
 };
 
 export default function CandidatePollingChart({ candidate }: Props) {
-  const { data: racePolls, isLoading } = useTxGovRacePolls();
+  const { data: racePollsAll, isLoading } = useTxGovRacePolls();
+  const racePolls = (racePollsAll ?? []).filter((r) => isGeneralMatchup(r.matchup));
   const surname = candidate.name.trim().split(/\s+/).pop() ?? "";
   const color =
     CANDIDATE_COLORS[candidate.slug] ?? partyColor(candidate.party) ?? "hsl(var(--primary))";

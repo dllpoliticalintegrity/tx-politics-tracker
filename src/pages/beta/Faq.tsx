@@ -193,7 +193,8 @@ function FaqContent() {
           <strong>Campaign finance:</strong> direct mirrors of the Texas Ethics Commission's daily bulk CSV export
           (contributions, expenditures, cover-sheet totals, direct-campaign-expenditure rows). <strong>Polling:</strong>{" "}
           270toWin's aggregated horse-race polls. <strong>Candidates:</strong> manually curated from TEC filings. Source
-          attribution is shown on every section's footer.
+          attribution is shown on every section's footer. <strong>Photos:</strong> Wikimedia Commons — Abbott (NASA,
+          public domain), Hinojosa (LBJ Library, public domain), White (Kikovelez, CC BY-SA 4.0).
         </Q>
         <Q q="How is the polling average computed?">
           A <strong>60-day trailing window</strong> of all public polls, averaged per-candidate, recomputed nightly. Older polls
