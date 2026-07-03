@@ -24,10 +24,10 @@ const STATIC_PATHS: Array<{
   { path: "/", priority: "1.0", changefreq: "daily" },
   { path: "/candidates", priority: "0.9", changefreq: "daily" },
   { path: "/polling", priority: "0.9", changefreq: "daily" },
-  { path: "/top-donors", priority: "0.8", changefreq: "daily" },
-  { path: "/independent-expenditures", priority: "0.8", changefreq: "daily" },
+  { path: "/money/donors", priority: "0.8", changefreq: "daily" },
+  { path: "/money/outside-spending", priority: "0.8", changefreq: "daily" },
   { path: "/statewide", priority: "0.8", changefreq: "daily" },
-  { path: "/faq", priority: "0.5", changefreq: "weekly" },
+  { path: "/about", priority: "0.5", changefreq: "weekly" },
 ];
 
 function xmlEscape(s: string): string {

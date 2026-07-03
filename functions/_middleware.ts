@@ -46,9 +46,9 @@ const STATIC_ROUTES: Record<string, RouteMeta> = {
       <ul>
         <li><a href="/candidates">All candidates and their funding</a></li>
         <li><a href="/polling">Polling averages</a></li>
-        <li><a href="/top-donors">Top donors across the race</a></li>
-        <li><a href="/independent-expenditures">Independent expenditures</a></li>
-        <li><a href="/faq">How this data is collected</a></li>
+        <li><a href="/money/donors">Top donors across the race</a></li>
+        <li><a href="/money/outside-spending">Independent expenditures</a></li>
+        <li><a href="/about">How this data is collected</a></li>
       </ul>
     `,
   },
@@ -61,9 +61,9 @@ const STATIC_ROUTES: Record<string, RouteMeta> = {
       <p>This page lists every declared candidate in the 2026 Texas Gubernatorial Race. Each entry shows total contributions, expenditures, current polling average, and links through to a detailed donor and finance profile.</p>
       <p>Filings are pulled nightly from the Texas Ethics Commission's public bulk data.</p>
       <ul>
-        <li><a href="/top-donors">Compare top donors across all candidates</a></li>
+        <li><a href="/money/donors">Compare top donors across all candidates</a></li>
         <li><a href="/polling">Polling averages</a></li>
-        <li><a href="/independent-expenditures">Independent-expenditure spending by committee</a></li>
+        <li><a href="/money/outside-spending">Independent-expenditure spending by committee</a></li>
       </ul>
     `,
   },
@@ -81,7 +81,7 @@ const STATIC_ROUTES: Record<string, RouteMeta> = {
       </ul>
     `,
   },
-  "/top-donors": {
+  "/money/donors": {
     title: "Top Donors — Texas Governor 2026 | Texas Politics Tracker",
     description:
       "The largest individual and PAC contributors to candidates in the 2026 Texas Governor's race, ranked by total dollars given. Data from the Texas Ethics Commission.",
@@ -90,11 +90,11 @@ const STATIC_ROUTES: Record<string, RouteMeta> = {
       <p>This page ranks the largest individual and PAC contributors across all 2026 Texas Gubernatorial candidates. Donors are aggregated by name and recipient committee, with industry and employer where reported.</p>
       <ul>
         <li><a href="/candidates">Candidate finance profiles</a></li>
-        <li><a href="/independent-expenditures">Independent-expenditure committees</a></li>
+        <li><a href="/money/outside-spending">Independent-expenditure committees</a></li>
       </ul>
     `,
   },
-  "/independent-expenditures": {
+  "/money/outside-spending": {
     title: "Independent Expenditures — Texas Governor 2026 | Texas Politics Tracker",
     description:
       "Independent expenditures supporting or opposing 2026 Texas Gubernatorial candidates, with committee-level detail and target candidates. Data from the Texas Ethics Commission.",
@@ -103,7 +103,7 @@ const STATIC_ROUTES: Record<string, RouteMeta> = {
       <p>Independent expenditures are spending by committees and groups not coordinated with a candidate's campaign — typically advertising for or against a candidate. This page tracks every IE committee active in the 2026 Texas Governor's race, with totals, target candidates, and individual-expenditure detail.</p>
       <ul>
         <li><a href="/candidates">Candidate finance profiles</a></li>
-        <li><a href="/top-donors">Largest contributors to candidates and committees</a></li>
+        <li><a href="/money/donors">Largest contributors to candidates and committees</a></li>
       </ul>
     `,
   },
@@ -116,11 +116,11 @@ const STATIC_ROUTES: Record<string, RouteMeta> = {
       <p>Money in Texas's other 2026 statewide executive races: Lt. Governor (Dan Patrick vs. Vikki Goodwin) and Attorney General (Mayes Middleton vs. Nathan Johnson), with per-candidate totals, donors, and filings from the Texas Ethics Commission's daily bulk data.</p>
     `,
   },
-  "/faq": {
-    title: "FAQ — How Texas Politics Tracker Works | Texas Politics Tracker",
+  "/about": {
+    title: "About & Methodology | Texas Politics Tracker",
     description:
-      "Frequently asked questions about Texas Politics Tracker — how we source campaign-finance data, how polling averages are computed, and what's included.",
-    h1: "Frequently Asked Questions",
+      "How Texas Politics Tracker works — where the campaign-finance data comes from, how polling averages are computed, and the campaign-finance rules for the 2026 Texas Governor's race.",
+    h1: "About Texas Politics Tracker",
     body: `
       <p>Texas Politics Tracker is a public-interest dashboard tracking money and polling in the 2026 Texas Gubernatorial Race. This page explains where our data comes from, how it's updated, and what's included.</p>
       <ul>
@@ -191,9 +191,9 @@ async function fetchCandidateMeta(
         ${bioFirst ? `<p>${escapeHtml(bioFirst)}</p>` : ""}
         <ul>
           <li><a href="/candidates">All candidates</a></li>
-          <li><a href="/top-donors">Top donors across the race</a></li>
+          <li><a href="/money/donors">Top donors across the race</a></li>
           <li><a href="/polling">Polling averages</a></li>
-          <li><a href="/independent-expenditures">Independent expenditures</a></li>
+          <li><a href="/money/outside-spending">Independent expenditures</a></li>
         </ul>
       `,
     };

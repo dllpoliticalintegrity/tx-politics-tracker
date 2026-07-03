@@ -1,6 +1,4 @@
 import { Card } from "@/components/ui/card";
-import { Activity } from "lucide-react";
-import { useEffect, useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   useCandidates,
@@ -10,6 +8,7 @@ import { isGeneralMatchup, useTxGovPolling, useTxGovRacePolls } from "@/hooks/us
 import PollingChart from "@/components/PollingChart";
 import PollingAveragesList from "@/components/PollingAveragesList";
 import CandidateCard, { type CandidateCardStats } from "@/components/CandidateCard";
+import ContributionsTicker from "@/components/ContributionsTicker";
 import { formatCurrency } from "@/lib/finance";
 
 const GENERAL_DATE = new Date("2026-11-03T00:00:00");
@@ -95,42 +94,50 @@ export default function Index() {
         (b.stats?.raised ?? 0) - (a.stats?.raised ?? 0),
     );
 
-  // ---------- Hero stats ----------
+  // ---------- Summary strip ----------
   const daysToGeneral = Math.max(
     0,
     Math.ceil((GENERAL_DATE.getTime() - today.getTime()) / DAY_MS),
   );
-  const totalCandidates = candidates?.length ?? 0;
-  const demCount = (candidates ?? []).filter((c) => c.party === "D").length;
-  const repCount = (candidates ?? []).filter((c) => c.party === "R").length;
   const totalRaised = [...(totalsMap?.values() ?? [])].reduce(
     (s, t) => s + t.raised,
     0,
   );
+  const leader = ranked[0] ?? null;
 
   return (
-    <div className="min-h-[80vh] terminal-grid">
-      {/* Hero wordmark */}
-      <section className="container pt-10 md:pt-12 pb-4 text-center space-y-3">
-        <div className="hidden md:inline-flex items-center gap-2 px-3 py-1 rounded-sm border border-primary/20 bg-primary/5 text-primary font-mono text-xs tracking-wider">
-          <Activity className="h-3.5 w-3.5" />
-          LIVE // 2026 TEXAS GUBERNATORIAL RACE
-        </div>
-        <h1 className="font-orbitron font-bold uppercase md:text-6xl leading-tight tracking-tight text-4xl">
-          TRACKING THE <span className="terminal-glow text-[#fdb417]">TEXAS</span> GOVERNOR'S RACE
+    <div className="min-h-[80vh]">
+      <ContributionsTicker />
+
+      {/* Hero */}
+      <section className="container pt-12 md:pt-16 pb-8 max-w-3xl text-center space-y-4">
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          2026 Texas Governor's race
+        </p>
+        <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tight leading-tight">
+          Who's winning the race for Texas Governor — and who's paying for it
         </h1>
-        <p className="text-sm md:text-base text-muted-foreground max-w-xl mx-auto font-mono">
-          Polling averages, campaign finance, and independent expenditures — synced nightly from
+        <p className="text-base text-muted-foreground max-w-xl mx-auto">
+          Polling averages, campaign finance, and outside spending, synced nightly from
           270toWin and the Texas Ethics Commission.
         </p>
       </section>
 
-      {/* Hero stat strip — 4 cards with green accent bar */}
-      <section className="container pt-4 pb-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <LiveCountdown target={GENERAL_DATE} />
-          <HeroStat
-            label="Total Raised (Cycle)"
+      {/* Summary strip */}
+      <section className="container pb-10">
+        <div className="grid grid-cols-3 divide-x rounded-lg border bg-card">
+          <SummaryStat
+            label="Days to the general"
+            value={String(daysToGeneral)}
+            sub="Tuesday, Nov 3, 2026"
+          />
+          <SummaryStat
+            label="Polling leader"
+            value={leader ? surnameOf(leader.c.name) : "—"}
+            sub={leader?.stats.pollPct != null ? `${leader.stats.pollPct}% average` : "No average yet"}
+          />
+          <SummaryStat
+            label="Raised this cycle"
             value={formatCurrency(totalRaised)}
             sub="Across all committees"
           />
@@ -138,24 +145,19 @@ export default function Index() {
       </section>
 
       {/* Polling chart */}
-      <section className="container pb-6">
-        <Card className="p-4 md:p-6 rounded-sm border-border">
-          <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-            <h2 className="font-mono text-xs tracking-widest text-primary uppercase flex items-center gap-2">
-              <span className="inline-block w-2 h-2 rounded-full bg-primary" />
-              POLLING AVERAGE // TIME-SERIES
-            </h2>
-            <div className="flex items-center gap-3 font-mono text-[10px] text-muted-foreground tracking-wider">
-              {polling?.spread && (
-                <span>LEADING: {polling.spread.toUpperCase()}</span>
-              )}
+      <section className="container pb-10">
+        <Card className="p-4 md:p-6">
+          <div className="flex items-baseline justify-between mb-4 flex-wrap gap-2">
+            <h2 className="font-display text-xl md:text-2xl font-semibold">Polling average</h2>
+            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+              {polling?.spread && <span>Leading: {polling.spread}</span>}
               <a
                 href="https://www.270towin.com/2026-governor-polls/texas"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary hover:underline"
               >
-                SOURCE: 270toWin ↗
+                Source: 270toWin ↗
               </a>
             </div>
           </div>
@@ -164,16 +166,16 @@ export default function Index() {
             <div className="md:col-span-2">
               <PollingChart />
             </div>
-            <div className="md:col-span-1 md:border-l md:border-border/60 md:pl-6">
+            <div className="md:col-span-1 md:border-l md:pl-6">
               <PollingAveragesList />
             </div>
           </div>
           {/* Mobile: tabbed view, list default */}
           <div className="md:hidden">
             <Tabs defaultValue="list" className="w-full">
-              <TabsList className="grid grid-cols-2 w-full h-8 rounded-sm font-mono text-[11px] tracking-wider mb-3">
-                <TabsTrigger value="list" className="rounded-sm">LIST</TabsTrigger>
-                <TabsTrigger value="chart" className="rounded-sm">CHART</TabsTrigger>
+              <TabsList className="grid grid-cols-2 w-full h-8 text-xs mb-3">
+                <TabsTrigger value="list">List</TabsTrigger>
+                <TabsTrigger value="chart">Chart</TabsTrigger>
               </TabsList>
               <TabsContent value="list" className="mt-0">
                 <PollingAveragesList />
@@ -187,19 +189,13 @@ export default function Index() {
       </section>
 
       {/* Field overview */}
-      <section className="container pb-16 pt-4">
-        <div className="flex items-baseline justify-between pb-2.5 border-b border-border/60 mb-5">
-          <h2 className="font-display text-xl md:text-2xl uppercase tracking-wide">
-            Field <span className="text-primary">Overview</span>
-          </h2>
-          <div className="font-mono text-[11px] tracking-[0.16em] uppercase text-muted-foreground">
-            Ranked by current poll average
-          </div>
+      <section className="container pb-16">
+        <div className="flex items-baseline justify-between pb-2.5 border-b mb-5">
+          <h2 className="font-display text-xl md:text-2xl font-semibold">The field</h2>
+          <div className="text-xs text-muted-foreground">Ranked by current poll average</div>
         </div>
         {isLoading && (
-          <div className="font-mono text-xs text-muted-foreground py-10 text-center">
-            LOADING...
-          </div>
+          <div className="text-sm text-muted-foreground py-10 text-center">Loading…</div>
         )}
         <div className="grid gap-4 grid-cols-[repeat(auto-fill,minmax(300px,1fr))]">
           {ranked.map(({ c, stats }, idx) => (
@@ -211,96 +207,28 @@ export default function Index() {
   );
 }
 
-function HeroStat({
+function surnameOf(name: string): string {
+  return name.trim().split(/\s+/).pop() ?? name;
+}
+
+function SummaryStat({
   label,
   value,
   sub,
-  accent,
 }: {
   label: string;
   value: string;
   sub?: string;
-  accent?: boolean;
 }) {
   return (
-    <div
-      className="relative overflow-hidden rounded-lg border bg-card px-4 py-4"
-      style={{ borderColor: "hsl(var(--border))" }}
-    >
-      <div className="absolute top-0 left-0 h-full w-[3px] bg-primary" />
-      <div className="font-mono font-bold text-[10px] tracking-[0.18em] uppercase text-muted-foreground mb-2">
+    <div className="px-4 py-4 md:px-6 text-center md:text-left">
+      <div className="text-[11px] font-medium uppercase tracking-[0.1em] text-muted-foreground mb-1.5">
         {label}
       </div>
-      <div
-        className={`font-display text-3xl md:text-4xl leading-none mb-1.5 ${
-          accent ? "text-primary" : ""
-        }`}
-      >
+      <div className="font-display text-2xl md:text-3xl font-semibold leading-none mb-1 truncate">
         {value}
       </div>
-      {sub && (
-        <div className="font-mono text-[11px] text-muted-foreground tracking-wide">{sub}</div>
-      )}
-    </div>
-  );
-}
-
-function LiveCountdown({ target }: { target: Date }) {
-  const [now, setNow] = useState(() => new Date());
-  useEffect(() => {
-    const id = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(id);
-  }, []);
-
-  const diff = Math.max(0, target.getTime() - now.getTime());
-  const days = Math.floor(diff / 86_400_000);
-  const hours = Math.floor((diff % 86_400_000) / 3_600_000);
-  const minutes = Math.floor((diff % 3_600_000) / 60_000);
-  const seconds = Math.floor((diff % 60_000) / 1000);
-  const pad = (n: number) => String(n).padStart(2, "0");
-
-  return (
-    <div
-      className="relative overflow-hidden rounded-lg border bg-card px-4 py-4"
-      style={{ borderColor: "hsl(var(--border))" }}
-    >
-      <div className="absolute top-0 left-0 h-full w-[3px] bg-primary" />
-      <div className="flex items-center justify-between mb-2">
-        <div className="font-mono font-bold text-[10px] tracking-[0.18em] uppercase text-muted-foreground">
-          General Election Countdown
-        </div>
-        <div className="flex items-center gap-1.5 font-mono text-[9px] tracking-[0.18em] uppercase text-primary">
-          <span className="relative flex h-1.5 w-1.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-primary" />
-          </span>
-          LIVE
-        </div>
-      </div>
-      <div className="grid grid-cols-4 gap-2 mb-2">
-        {[
-          { v: days, l: "Days" },
-          { v: hours, l: "Hrs" },
-          { v: minutes, l: "Min" },
-          { v: seconds, l: "Sec" },
-        ].map((u, i) => (
-          <div key={u.l} className="text-center">
-            <div
-              className={`font-display text-3xl leading-none tabular-nums ${
-                i === 0 ? "text-primary terminal-glow" : "text-foreground"
-              }`}
-            >
-              {i === 0 ? u.v : pad(u.v)}
-            </div>
-            <div className="font-mono text-[9px] tracking-[0.18em] uppercase text-muted-foreground mt-1">
-              {u.l}
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="font-mono text-[10px] text-muted-foreground tracking-wider text-center pt-1 border-t border-border/50">
-        TUE · JUN 2, 2026
-      </div>
+      {sub && <div className="text-xs text-muted-foreground">{sub}</div>}
     </div>
   );
 }

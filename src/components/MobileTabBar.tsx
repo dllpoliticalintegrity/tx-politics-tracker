@@ -1,13 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, Users, BarChart3, DollarSign, Wallet, HelpCircle } from "lucide-react";
+import { Home, Users, TrendingUp, DollarSign, Landmark } from "lucide-react";
 
 const items = [
   { to: "/", label: "Home", icon: Home },
   { to: "/candidates", label: "Candidates", icon: Users },
-  { to: "/polling", label: "Polling", icon: BarChart3 },
-  { to: "/independent-expenditures", label: "Super PAC", icon: DollarSign },
-  { to: "/top-donors", label: "Donors", icon: Wallet },
-  { to: "/faq", label: "FAQ", icon: HelpCircle },
+  { to: "/polling", label: "Polling", icon: TrendingUp },
+  { to: "/money", label: "Money", icon: DollarSign },
+  { to: "/statewide", label: "Statewide", icon: Landmark },
 ];
 
 export function MobileTabBar() {
@@ -17,7 +16,7 @@ export function MobileTabBar() {
 
   return (
     <nav
-      className="md:hidden fixed bottom-0 inset-x-0 z-50 border-t border-primary/10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80"
+      className="md:hidden fixed bottom-0 inset-x-0 z-50 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/85"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       aria-label="Primary"
     >
@@ -28,12 +27,13 @@ export function MobileTabBar() {
             <li key={to} className="flex-1">
               <Link
                 to={to}
-                className={`flex flex-col items-center justify-center gap-0.5 h-full font-mono text-[10px] tracking-wider transition-colors ${
-                  active ? "text-[#fdb417]" : "text-muted-foreground hover:text-foreground"
+                aria-current={active ? "page" : undefined}
+                className={`flex flex-col items-center justify-center gap-0.5 h-full text-[11px] transition-colors ${
+                  active ? "text-primary font-semibold" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <Icon className="h-4 w-4" />
-                <span className="uppercase">{label}</span>
+                <span>{label}</span>
               </Link>
             </li>
           );
