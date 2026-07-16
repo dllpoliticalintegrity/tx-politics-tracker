@@ -1,30 +1,38 @@
 # Multi-state politics tracker — draft plan (July 2026)
 
-Goal: generalize the Texas Politics Tracker into a **State Politics
-Tracker** that covers any state and lets readers switch between them,
-using [hderyke/state-level-campaign-finance](https://github.com/hderyke/state-level-campaign-finance)
-(SLCF) as the campaign-finance backbone for states beyond Texas.
+Goal: build a **State Politics Tracker** — a new site, in a **new repo**,
+that covers many states and lets readers switch between them, using
+[hderyke/state-level-campaign-finance](https://github.com/hderyke/state-level-campaign-finance)
+(SLCF) as the campaign-finance backbone.
 
-This doc is the working plan for the
-`claude/multi-state-politics-tracker-1fhk1w` branch. An interactive
-mock of the state-switching site lives next to this file in
-`multi-state-preview.html` (open it directly in a browser — it is
-self-contained and uses mock data).
+**Decision: the Texas Politics Tracker stays separate.** This repo, its
+Supabase project, the TEC importer, and texaspoliticstracker.com continue
+unchanged. The multi-state site launches beside it and the two cross-link
+(the Texas tile on the multi-state landing page points at
+texaspoliticstracker.com).
 
-## What we have vs. what SLCF gives us
+This doc and the interactive mock next to it (`multi-state-preview.html`
+— self-contained, open directly in a browser, mock data) are the draft;
+implementation happens in the new repo. They live on the
+`claude/multi-state-politics-tracker-1fhk1w` branch here only because
+this repo is where the format being reused was designed.
 
-Today's site is single-state by construction: `tx_*` tables, a TEC
-importer, TX-only routes, and copy that hardcodes "Texas" throughout.
-The stack itself (Vite/React/shadcn + Supabase + Cloudflare Pages) needs
-no changes to go multi-state.
+## What we're reusing vs. what SLCF gives us
+
+The new repo bootstraps from this codebase the same way this one
+bootstrapped from `ca-gov-polling` (see `docs/tx-repo-bootstrap.md` for
+the checklist pattern): keep the stack (Vite/React/shadcn + Supabase +
+Cloudflare Pages), the design system, the page formats (home hero,
+summary strip, polling chart, field cards, money hub), and generalize
+away everything TX-specific.
 
 The SLCF repo is a Python pipeline that scrapes each state's disclosure
 site and normalizes everything to one canonical format:
 
 - **Coverage**: 24 states complete (AL, AK, AZ, AR, CA, CO, CT, DE, FL,
   GA, HI, ID, IL, IN, IA, KS, KY, LA, MD, MA, MI, MN, MS, PA), Maine in
-  progress. Texas is *not* covered there — our existing TEC importer
-  stays the source for TX.
+  progress. Texas is *not* covered there — and doesn't need to be, since
+  the TX site keeps its own TEC importer.
 - **Canonical schema**: five tables per state — contributions,
   expenditures, candidates, committees, loans — written to
   `data/{State}/cleaned/*.csv`, per-state SQLite DBs, and a merged
@@ -37,7 +45,7 @@ independent/outside spending as a distinct concept in every state, and
 candidate curation (photos, slugs, featured flags — still editorial work
 per state, as `tx_candidates` is today).
 
-## Site architecture
+## Site architecture (new repo)
 
 ### State registry
 
@@ -45,48 +53,47 @@ One config module drives everything (`src/states/registry.ts`):
 
 ```ts
 export interface StateConfig {
-  code: string;            // "tx"
-  name: string;            // "Texas"
-  raceTitle: string;       // "2026 Texas Governor's race"
+  code: string;            // "mi"
+  name: string;            // "Michigan"
+  raceTitle: string;       // "2026 Michigan Governor's race"
   generalDate: string;     // "2026-11-03"
-  agency: { name: string; url: string };   // e.g. Texas Ethics Commission
+  agency: { name: string; url: string };   // e.g. MI Dept. of State
   pollingSourceUrl?: string;               // 270toWin state page
-  pipeline: "tec" | "slcf";                // which importer feeds it
-  status: "live" | "ready" | "planned";    // drives the switcher + landing
+  status: "live" | "ready" | "planned" | "external";
+  externalUrl?: string;    // status "external": TX → texaspoliticstracker.com
 }
 ```
 
-`status` meanings: **live** = dashboard published; **ready** = SLCF
-pipeline implemented, data can be imported but no curated dashboard yet;
-**planned** = no pipeline yet.
+`status` meanings: **live** = dashboard published here; **ready** = SLCF
+pipeline implemented, data importable but no curated dashboard yet;
+**planned** = no pipeline yet; **external** = tracked on a separate
+Political Integrity Project site (Texas; California too if
+ca-gov-polling is kept alive instead of folded in — decide at bootstrap).
 
 ### Routing
 
-State code becomes the first URL segment; existing TX routes become
-redirects so nothing breaks:
-
-- `/` — state picker landing (hero + 50-state grid). If the visitor has
-  a remembered state (localStorage), offer a one-click "Back to Texas"
-  rather than auto-redirecting, so the landing stays shareable.
-- `/:state` — state home (today's `Index`)
+- `/` — state picker landing (hero + 50-state grid). Remembered state
+  (localStorage) gets a one-click "Back to Michigan" affordance rather
+  than an auto-redirect, so the landing stays shareable.
+- `/:state` — state home (this repo's `Index` format)
 - `/:state/candidates`, `/:state/candidates/:slug`, `/:state/polling`,
   `/:state/money/donors`, `/:state/money/outside-spending`,
-  `/:state/statewide`, `/:state/about`
-- Legacy: `/candidates` → `/tx/candidates`, etc.
+  `/:state/about`
+- `external` states never get routes — their landing tiles and any
+  switcher entries link out.
 
 A `StateProvider` reads `:state` from the route, validates it against
 the registry (unknown → NotFound), and exposes `useStateConfig()`. All
-hooks (`useCandidates`, `usePolling`, …) take the state from context
-instead of hardcoding TX.
+data hooks take the state from context.
 
 ### Header / switcher
 
-The header logo becomes "State Politics Tracker"; next to it sits a
-state switcher (combobox with search — 24+ entries is too many for a
-plain dropdown). Switching preserves the current sub-page
-(`/tx/polling` → `/mi/polling`) and records the choice in localStorage.
-States with `status: "ready"` appear in the switcher under a "Coming
-soon" group; `planned` states appear only on the landing grid.
+Logo: "State Politics Tracker". Next to it, a state switcher (combobox
+with search — 24+ entries is too many for a plain dropdown). Switching
+preserves the current sub-page (`/mi/polling` → `/ga/polling`) and
+records the choice in localStorage. `ready` states appear under a
+"Coming soon" group; `external` states under "Separate sites" as
+outbound links; `planned` states appear only on the landing grid.
 
 ### SEO / functions
 
@@ -94,29 +101,27 @@ soon" group; `planned` states appear only on the landing grid.
 emit per-state titles, descriptions, and sitemap entries for `live`
 states only.
 
-## Data architecture
+## Data architecture (new repo)
 
-### Schema: one set of tables, keyed by state
+### Fresh Supabase project, state-keyed tables
 
-Rename `tx_*` → `cf_*` and add a `state` column (2-letter code) to every
-table, mirroring SLCF's canonical five tables plus our editorial layer:
+A separate site means a separate Supabase project — no `tx_*` → `cf_*`
+migration, no shared-database coupling, and no risk to the live TX site.
+Schema mirrors SLCF's canonical five tables plus the editorial layer,
+with `state` (2-letter code) on every row:
 
-- `cf_candidates` (was `tx_candidates`) — editorial: slug, name, party,
-  office, status, featured, headshot, **state**, plus per-pipeline filer
-  identifiers in a jsonb `filer_refs` column (TEC needs COH + SPAC pairs;
-  SLCF states use their own committee IDs).
-- `cf_filings`, `cf_contributions`, `cf_expenditures`, `cf_loans` —
-  superset of today's TX columns and SLCF's canonical columns; `state` +
-  `source` ("tec" | "slcf") on every row.
-- `cf_committees` — new, from SLCF's committees table (TEC rows fold in).
-- `cf_independent_expenditures`, `cf_ie_contributions` — keep, TX-only
-  until an SLCF state exposes equivalent data.
-- Polling tables gain `state` the same way.
+- `cf_candidates` — editorial: slug, name, party, office, status,
+  featured, headshot, **state**, and a jsonb `filer_refs` for the
+  state's committee/filer identifiers (some states need several per
+  candidate, like TX's COH + SPAC pairs).
+- `cf_filings`, `cf_contributions`, `cf_expenditures`, `cf_loans`,
+  `cf_committees` — direct mappings of the canonical columns.
+- `cf_independent_expenditures` — added per state as disclosure data
+  allows; not all states expose an IE equivalent.
+- Polling tables copied from this repo, plus `state`.
 
-Derived views (`refresh_tx_finance_views()` and friends) become
-state-parameterized or simply group by state. Migration path: create the
-`cf_*` tables, copy TX data across with `state = 'tx'`, repoint the
-frontend, drop `tx_*` after a release of soak time.
+Derived views (this repo's `refresh_tx_finance_views()` pattern) group
+by state from day one.
 
 ### Importer
 
@@ -126,48 +131,66 @@ New `scripts/data-import/slcf/import_slcf_finance.py`:
    states — the cleaned per-state CSVs are the interface, so we don't
    fork their scrapers.
 2. Map canonical columns → `cf_*` and upsert via the Supabase service
-   key, batched like the TEC importer.
+   key, batched like this repo's TEC importer.
 3. Match contributions/expenditures to curated `cf_candidates` through
    `filer_refs`, exactly as the TEC importer matches COH/SPAC accounts.
 
-A per-state GitHub Actions workflow matrix (like `tx-finance-sync.yml`)
-runs nightly for `live` states only.
+A per-state GitHub Actions workflow matrix (modeled on
+`tx-finance-sync.yml`) runs nightly for `live` states only.
 
 ### Polling
 
-`import-towin-polling` already targets a single 270toWin page; the URL
-moves into the registry (`pollingSourceUrl`) and the function loops over
-live states. States without a tracked governor's race simply hide the
-polling sections (the components already handle empty data).
+Port `import-towin-polling` and parameterize the 270toWin page URL from
+the registry, looping over live states. States without a tracked
+governor's race hide the polling sections (the components already
+handle empty data).
+
+## Keeping two repos honest
+
+The cost of the separate-repo decision is drift: this repo and the new
+one will share a design system and page formats with no mechanism
+keeping them aligned (ca-gov-polling → tx already drifted). Mitigations,
+cheapest first:
+
+1. Accept drift for app code, but treat **this repo's design tokens
+   (`src/index.css`, `tailwind.config.ts`) as the canonical source** —
+   copy changes forward deliberately, noting the sync in commit messages.
+2. If the sites converge visually over time, extract a tiny shared
+   package (tokens + a few components) — only if drift actually hurts;
+   don't pre-build it.
+3. TX joining the multi-state site later remains possible (port the TEC
+   importer, add a `tx` registry entry, retire the redirect) — nothing
+   in this design forecloses it.
 
 ## Rollout
 
-1. **Phase 0 — this draft**: plan + interactive preview
-   (`multi-state-preview.html`) to settle the switcher UX and landing
-   page before touching code.
-2. **Phase 1 — routing + registry, TX only**: introduce
-   `/:state` routes, `StateProvider`, registry with TX as the sole
-   `live` state, legacy redirects. Site looks identical; URLs change.
-3. **Phase 2 — schema + importer, pilot states**: `cf_*` migration,
-   SLCF importer, and 2–3 pilot states with clean 2026 governor races
-   and good SLCF data (suggest **FL, MI, GA**; PA/AZ next). Curate
-   candidates for each (the real per-state cost).
-4. **Phase 3 — open the switcher**: landing grid, switcher, per-state
-   SEO; announce.
+1. **Phase 0 — this draft**: plan + interactive preview to settle the
+   switcher UX and landing page before touching code.
+2. **Phase 1 — bootstrap the new repo**: copy this codebase, write a
+   `docs/`-style bootstrap checklist, strip TX copy/assets/data code,
+   add the registry, `/:state` routes, and `StateProvider`, stand up the
+   new Supabase project and Cloudflare Pages deployment. Ship with zero
+   live states (landing grid only, TX tile linking out).
+3. **Phase 2 — pilot states**: `cf_*` schema, SLCF importer, and 2–3
+   pilots with clean 2026 governor races and good SLCF data (suggest
+   **FL, MI, GA**; PA/AZ next). Curate candidates for each — the real
+   per-state cost.
+4. **Phase 3 — launch**: open the switcher, per-state SEO, cross-link
+   from texaspoliticstracker.com's header/footer; announce.
 5. **Phase 4 — scale**: remaining SLCF states as curation capacity
-   allows; contribute TX (and any missing states) upstream to SLCF so
-   the pipelines converge.
+   allows; contribute missing states upstream to SLCF so the pipelines
+   converge.
 
 ## Open questions
 
-- **Naming/domain**: "State Politics Tracker" is the working title;
-  does texaspoliticstracker.com stay as a redirect to `/tx`?
-- **One deployment vs. per-state**: this plan assumes one site, one
-  Supabase project. Row counts (24 states × contributions) may push us
-  to partition `cf_contributions` by state — decide during Phase 2 load
-  testing.
-- **Donations framing**: the donate panel copy is TX-specific
-  (`TxGovSpendStat`); needs a per-state or national variant.
+- **Name/domain for the new site**: "State Politics Tracker" is the
+  working title — statepoliticstracker.com or a Political Integrity
+  Project subdomain?
+- **California**: fold into the new site as a `live` SLCF state, or
+  keep ca-gov-polling as a second `external` site alongside Texas?
+- **Donations framing**: the donate panel copy here is TX-specific
+  (`TxGovSpendStat`); the new site needs a per-state or national
+  variant.
 - **SLCF freshness**: TEC refreshes daily; some SLCF scrapers are
   bulk/annual. Show a per-state "last synced" stamp so stale states are
   honest about it.

@@ -84,6 +84,7 @@
   .dot--live { background: var(--primary); }
   .dot--ready { background: hsl(35 85% 38%); }
   .dot--planned { background: var(--border); }
+  .dot--external { background: transparent; border: 2px solid var(--primary); width: 6px; height: 6px; }
   .state-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: 10px; padding-bottom: 64px; }
   .state-tile {
     background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
@@ -94,6 +95,8 @@
   .state-tile__status { font-size: 11px; color: var(--muted-foreground); display: flex; align-items: center; gap: 6px; }
   .state-tile--live { border-color: var(--primary); box-shadow: 0 1px 0 var(--primary); }
   .state-tile--live:hover { background: var(--accent); }
+  .state-tile--external { border-style: dashed; border-color: var(--primary); display: block; }
+  .state-tile--external:hover { background: var(--accent); }
   .state-tile--planned { opacity: 0.55; }
   button.state-tile { border-style: solid; }
 
@@ -193,6 +196,7 @@
   </div>
   <div class="legend">
     <span><span class="dot dot--live"></span> Dashboard live</span>
+    <span><span class="dot dot--external"></span> Tracked on a separate site</span>
     <span><span class="dot dot--ready"></span> Data pipeline ready — dashboard coming</span>
     <span><span class="dot dot--planned"></span> Not yet covered</span>
   </div>
@@ -274,24 +278,12 @@
 const PARTY_COLOR = { D: "hsl(213 60% 40%)", R: "hsl(4 66% 45%)", I: "hsl(32 80% 36%)" };
 const PARTY_NAME = { D: "Democrat", R: "Republican", I: "Independent" };
 
+/* Texas (and its live tracker) stays a separate site — see plan.md. */
+const EXTERNAL = {
+  TX: { name: "Texas", url: "https://texaspoliticstracker.com" },
+};
+
 const LIVE = {
-  tx: {
-    name: "Texas",
-    agency: { name: "Texas Ethics Commission", short: "TEC" },
-    pipeline: "TEC bulk CSV importer (this repo)",
-    candidates: [
-      { name: "Greg Abbott", party: "R", pct: 48.2, delta: 0.6, raised: 78.4e6 },
-      { name: "Gina Hinojosa", party: "D", pct: 40.6, delta: 1.8, raised: 11.2e6 },
-      { name: "Bobby Cole", party: "D", pct: 3.1, delta: -0.4, raised: 0.8e6 },
-    ],
-    donors: [
-      ["Lone Star Growth Fund PAC", "Abbott", 2.50e6],
-      ["Hartwell Energy Partners", "Abbott", 1.80e6],
-      ["Texans for Public Schools", "Hinojosa", 0.95e6],
-      ["Gulf Coast Builders Assn.", "Abbott", 0.85e6],
-      ["Working Texas Families", "Hinojosa", 0.62e6],
-    ],
-  },
   ca: {
     name: "California",
     agency: { name: "Cal-Access (Secretary of State)", short: "Cal-Access" },
@@ -399,8 +391,8 @@ const TODAY = new Date();
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul"];
 
 function statusOf(code) {
-  const c = code.toLowerCase();
-  if (LIVE[c]) return "live";
+  if (EXTERNAL[code]) return "external";
+  if (LIVE[code.toLowerCase()]) return "live";
   if (READY.includes(code)) return "ready";
   return "planned";
 }
@@ -427,15 +419,18 @@ function renderGrid() {
   grid.innerHTML = "";
   for (const [code, name] of ALL_STATES) {
     const st = statusOf(code);
-    const el = document.createElement(st === "live" ? "button" : "div");
+    const tag = st === "live" ? "button" : st === "external" ? "a" : "div";
+    const el = document.createElement(tag);
     el.className = `state-tile state-tile--${st}`;
     const statusLabel = st === "live" ? '<span class="dot dot--live"></span> Dashboard live'
+      : st === "external" ? '<span class="dot dot--external"></span> Separate site ↗'
       : st === "ready" ? '<span class="dot dot--ready"></span> Pipeline ready'
       : '<span class="dot dot--planned"></span> Not yet covered';
     el.innerHTML = `<div class="state-tile__code">${code}</div>
       <div class="state-tile__name">${name}</div>
       <div class="state-tile__status">${statusLabel}</div>`;
     if (st === "live") el.onclick = () => showState(code.toLowerCase());
+    if (st === "external") { el.href = EXTERNAL[code].url; el.target = "_blank"; el.rel = "noopener"; }
     grid.appendChild(el);
   }
 }
@@ -445,6 +440,7 @@ function renderSwitcher(current) {
   const sel = document.getElementById("switcher");
   sel.innerHTML = '<option value="">Choose a state…</option>';
   const gLive = document.createElement("optgroup"); gLive.label = "Live";
+  const gExt = document.createElement("optgroup"); gExt.label = "Separate sites";
   const gSoon = document.createElement("optgroup"); gSoon.label = "Coming soon";
   for (const [code, name] of ALL_STATES) {
     const st = statusOf(code);
@@ -452,12 +448,20 @@ function renderSwitcher(current) {
     const opt = document.createElement("option");
     opt.value = code.toLowerCase(); opt.textContent = name;
     if (st === "ready") { opt.disabled = true; gSoon.appendChild(opt); }
+    else if (st === "external") { opt.value = "ext:" + code; opt.textContent = name + " ↗"; gExt.appendChild(opt); }
     else gLive.appendChild(opt);
   }
-  sel.appendChild(gLive); sel.appendChild(gSoon);
+  sel.appendChild(gLive); sel.appendChild(gExt); sel.appendChild(gSoon);
   sel.value = current ?? "";
 }
-function onSwitch(v) { if (v && LIVE[v]) showState(v); }
+function onSwitch(v) {
+  if (v.startsWith("ext:")) {
+    window.open(EXTERNAL[v.slice(4)].url, "_blank", "noopener");
+    renderSwitcher(location.hash.replace(/^#\//, "") || null);
+    return;
+  }
+  if (v && LIVE[v]) showState(v);
+}
 
 /* ─── Dashboard ─── */
 function showState(code) {
