@@ -278,30 +278,14 @@
 const PARTY_COLOR = { D: "hsl(213 60% 40%)", R: "hsl(4 66% 45%)", I: "hsl(32 80% 36%)" };
 const PARTY_NAME = { D: "Democrat", R: "Republican", I: "Independent" };
 
-/* Texas (and its live tracker) stays a separate site — see plan.md. */
+/* Texas and California trackers stay separate sites — see plan.md.
+   CA links to the repo until its production URL is confirmed. */
 const EXTERNAL = {
   TX: { name: "Texas", url: "https://texaspoliticstracker.com" },
+  CA: { name: "California", url: "https://github.com/dllpoliticalintegrity/ca-gov-polling" },
 };
 
 const LIVE = {
-  ca: {
-    name: "California",
-    agency: { name: "Cal-Access (Secretary of State)", short: "Cal-Access" },
-    pipeline: "state-level-campaign-finance (SLCF)",
-    candidates: [
-      { name: "Katie Porter", party: "D", pct: 30.8, delta: 2.1, raised: 22.6e6 },
-      { name: "Chad Bianco", party: "R", pct: 21.4, delta: 1.2, raised: 9.8e6 },
-      { name: "Steve Hilton", party: "R", pct: 13.9, delta: -0.8, raised: 7.1e6 },
-      { name: "Xavier Becerra", party: "D", pct: 9.2, delta: 0.3, raised: 5.4e6 },
-    ],
-    donors: [
-      ["Pacific Progress Committee", "Porter", 3.10e6],
-      ["Golden State Law Enforcement PAC", "Bianco", 1.40e6],
-      ["Bay Area Tech Forward", "Porter", 1.25e6],
-      ["Central Valley Growers Fund", "Bianco", 0.90e6],
-      ["Californians for Opportunity", "Hilton", 0.85e6],
-    ],
-  },
   fl: {
     name: "Florida",
     agency: { name: "Florida Division of Elections", short: "FL DOE" },

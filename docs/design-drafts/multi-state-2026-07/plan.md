@@ -5,11 +5,20 @@ that covers many states and lets readers switch between them, using
 [hderyke/state-level-campaign-finance](https://github.com/hderyke/state-level-campaign-finance)
 (SLCF) as the campaign-finance backbone.
 
-**Decision: the Texas Politics Tracker stays separate.** This repo, its
-Supabase project, the TEC importer, and texaspoliticstracker.com continue
-unchanged. The multi-state site launches beside it and the two cross-link
-(the Texas tile on the multi-state landing page points at
-texaspoliticstracker.com).
+**Decisions:**
+
+- **The Texas Politics Tracker stays separate.** This repo, its Supabase
+  project, the TEC importer, and texaspoliticstracker.com continue
+  unchanged.
+- **The CA Governor tracker (ca-gov-polling) stays separate too.**
+- **The new repo is the single home for all other state data** — the
+  site, the SLCF importer, the curated candidate data, and the sync
+  workflows for every state it covers all live together in one repo.
+
+The multi-state site launches beside the two existing single-state
+sites, and they cross-link: the Texas and California tiles on the
+multi-state landing page point at the existing sites, and those sites
+link back to the hub from their header/footer.
 
 This doc and the interactive mock next to it (`multi-state-preview.html`
 — self-contained, open directly in a browser, mock data) are the draft;
@@ -32,7 +41,9 @@ site and normalizes everything to one canonical format:
 - **Coverage**: 24 states complete (AL, AK, AZ, AR, CA, CO, CT, DE, FL,
   GA, HI, ID, IL, IN, IA, KS, KY, LA, MD, MA, MI, MN, MS, PA), Maine in
   progress. Texas is *not* covered there — and doesn't need to be, since
-  the TX site keeps its own TEC importer.
+  the TX site keeps its own TEC importer. California *is* covered, but
+  the new site won't publish a CA dashboard while ca-gov-polling remains
+  the CA home — CA stays `external` in the registry.
 - **Canonical schema**: five tables per state — contributions,
   expenditures, candidates, committees, loans — written to
   `data/{State}/cleaned/*.csv`, per-state SQLite DBs, and a merged
@@ -67,8 +78,7 @@ export interface StateConfig {
 `status` meanings: **live** = dashboard published here; **ready** = SLCF
 pipeline implemented, data importable but no curated dashboard yet;
 **planned** = no pipeline yet; **external** = tracked on a separate
-Political Integrity Project site (Texas; California too if
-ca-gov-polling is kept alive instead of folded in — decide at bootstrap).
+Political Integrity Project site (Texas and California).
 
 ### Routing
 
@@ -186,8 +196,8 @@ cheapest first:
 - **Name/domain for the new site**: "State Politics Tracker" is the
   working title — statepoliticstracker.com or a Political Integrity
   Project subdomain?
-- **California**: fold into the new site as a `live` SLCF state, or
-  keep ca-gov-polling as a second `external` site alongside Texas?
+- **CA external URL**: the preview links the California tile to the
+  ca-gov-polling GitHub repo; swap in the CA site's production domain.
 - **Donations framing**: the donate panel copy here is TX-specific
   (`TxGovSpendStat`); the new site needs a per-state or national
   variant.
