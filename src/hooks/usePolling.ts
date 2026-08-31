@@ -29,19 +29,21 @@ async function fetchRacePolling(slug: string): Promise<PollingBundle | null> {
   if (raceErr) throw raceErr;
   if (!race) return null;
 
-  // Only use 270toWin data; RCP has been deprecated.
+  // FiftyPlusOne is the source of record; 270toWin is kept as a fallback
+  // until the fiftyplusone importer has populated (RCP is long deprecated).
   const { data: rows, error } = await (supabase as any)
     .from("race_polling")
     .select("source,rcp_url,source_url,last_updated,spread,raw_data")
     .eq("race_id", race.race_id)
-    .eq("source", "270towin");
+    .in("source", ["fiftyplusone", "270towin"]);
   if (error) throw error;
   if (!rows || rows.length === 0) return null;
 
-  const pick = rows[0];
+  const pick =
+    rows.find((r: { source: string }) => r.source === "fiftyplusone") ?? rows[0];
 
-  // 270toWin aggregator stores { all_candidates: [...] }; RCP stores an array
-  // of poll rows with an "RCP Average" entry. Normalize both to PollRow[].
+  // Both aggregators store { all_candidates: [...] }; legacy RCP stored an
+  // array of poll rows with an "RCP Average" entry. Normalize both to PollRow[].
   const raw = pick.raw_data;
   let average: PollRow | null = null;
   let polls: PollRow[] = [];
@@ -56,7 +58,7 @@ async function fetchRacePolling(slug: string): Promise<PollingBundle | null> {
   } else if (raw && Array.isArray(raw.all_candidates)) {
     // Synthesize a single "average" row keyed by surname → pct so the
     // existing readCandidatePct helper continues to work.
-    const avgRow: PollRow = { Poll: "270toWin Average", Date: "", Sample: "", MoE: "" };
+    const avgRow: PollRow = { Poll: "Polling Average", Date: "", Sample: "", MoE: "" };
     for (const c of raw.all_candidates as Array<{ name: string; avg_pct: number }>) {
       const surname = c.name.trim().split(/\s+/).pop() ?? "";
       avgRow[surname] = String(c.avg_pct);
@@ -101,8 +103,8 @@ export function useTxGovPolling() {
 }
 
 /**
- * Per-poll rows from the 270toWin importer (one row per candidate per poll).
- * Used by the trend chart so we don't depend on RCP's "raw_data" array.
+ * Per-poll rows from the FiftyPlusOne importer (one row per candidate per
+ * poll). Used by the trend chart so we don't depend on RCP's "raw_data" array.
  */
 export type RacePollRow = {
   candidate_name: string;
@@ -136,13 +138,18 @@ export function useTxGovRacePolls() {
       const { data, error } = await (supabase as any)
         .from("race_polls")
         .select(
-          "candidate_name,candidate_party,pct,pollster,field_end,sample_size,sample_kind,source_url,matchup",
+          "candidate_name,candidate_party,pct,pollster,field_end,sample_size,sample_kind,source_url,matchup,source",
         )
         .eq("race_id", race.race_id)
-        .eq("source", "270towin")
+        .in("source", ["fiftyplusone", "270towin"])
         .order("field_end", { ascending: false });
       if (error) throw error;
-      return (data ?? []) as RacePollRow[];
+      // Prefer FiftyPlusOne rows; fall back to 270toWin only when the
+      // fiftyplusone importer hasn't populated yet (never mix sources —
+      // the same poll would show up twice).
+      const rows = (data ?? []) as (RacePollRow & { source: string })[];
+      const fpo = rows.filter((r) => r.source === "fiftyplusone");
+      return (fpo.length > 0 ? fpo : rows) as RacePollRow[];
     },
   });
 }

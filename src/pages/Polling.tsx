@@ -105,7 +105,7 @@ export default function Polling() {
         </p>
         <h1 className="font-display text-3xl md:text-4xl font-bold tracking-tight">Polling</h1>
         <p className="text-base text-muted-foreground">
-          The 270toWin aggregate and every individual poll, updated nightly.
+          The FiftyPlusOne feed and every individual poll, updated nightly.
         </p>
       </section>
 
@@ -157,12 +157,12 @@ export default function Polling() {
               All polls <span className="text-muted-foreground font-normal">({groups.length})</span>
             </h2>
             <a
-              href="https://www.270towin.com/2026-governor-polls/texas"
+              href="https://fiftyplusone.news/polls/governor/general/texas"
               target="_blank"
               rel="noreferrer noopener"
               className="text-xs text-muted-foreground hover:text-primary inline-flex items-center gap-1"
             >
-              View on 270toWin <ExternalLink className="h-3 w-3" />
+              View on FiftyPlusOne <ExternalLink className="h-3 w-3" />
             </a>
           </div>
           {(isLoading || pollsLoading) && (

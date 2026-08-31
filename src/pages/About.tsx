@@ -102,14 +102,14 @@ export default function About() {
           <p>
             <strong className="text-foreground">Polling</strong> comes from{" "}
             <a
-              href="https://www.270towin.com/2026-governor-polls/texas"
+              href="https://fiftyplusone.news/polls/governor/general/texas"
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary hover:underline"
             >
-              270toWin's
+              FiftyPlusOne's
             </a>{" "}
-            Texas governor page — both the published average and the individual polls behind it.
+            Texas governor feed — the individual polls behind their published average.
           </p>
           <p>
             <strong className="text-foreground">Outside spending</strong> is built from TEC
