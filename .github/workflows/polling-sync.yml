@@ -15,14 +15,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      # The import-towin-polling Supabase edge function scrapes 270toWin's
-      # Texas governor page and refreshes race_polls + the race_polling
-      # aggregate using the project's own service role — no secrets needed
-      # here. It fails loudly (non-2xx) if the scrape or upsert breaks.
-      - name: Trigger 270toWin import
+      # The import-fiftyplusone-polling Supabase edge function pulls
+      # FiftyPlusOne's CSV API (governor_general) and refreshes race_polls +
+      # the race_polling aggregate using the project's own service role — no
+      # secrets needed here. It fails loudly (non-2xx) if the fetch or upsert
+      # breaks.
+      - name: Trigger FiftyPlusOne import
         run: |
           RESP=$(curl -fsS -X POST \
-            "https://lohxdfrxnxuxjdvvyfjc.supabase.co/functions/v1/import-towin-polling" \
+            "https://lohxdfrxnxuxjdvvyfjc.supabase.co/functions/v1/import-fiftyplusone-polling" \
             -H "Content-Type: application/json" \
             -d '{}')
           echo "$RESP"

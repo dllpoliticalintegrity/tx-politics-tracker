@@ -30,7 +30,7 @@ export default function Index() {
   if (polling && candidates) {
     for (const c of candidates) {
       const surname = c.name.trim().split(/\s+/).pop() ?? "";
-      // Collect all per-poll rows for this candidate from the 270toWin backfill.
+      // Collect all per-poll rows for this candidate from the polls importer.
       const rawSeries = (racePolls ?? [])
         .filter((r) => (r.candidate_name.trim().split(/\s+/).pop() ?? "") === surname)
         .map((r) => {
@@ -119,7 +119,7 @@ export default function Index() {
         </h1>
         <p className="text-base text-muted-foreground max-w-xl mx-auto">
           Polling averages, campaign finance, and outside spending, synced nightly from
-          270toWin and the Texas Ethics Commission.
+          FiftyPlusOne and the Texas Ethics Commission.
         </p>
       </section>
 
@@ -152,12 +152,12 @@ export default function Index() {
             <div className="flex items-center gap-3 text-xs text-muted-foreground">
               {polling?.spread && <span>Leading: {polling.spread}</span>}
               <a
-                href="https://www.270towin.com/2026-governor-polls/texas"
+                href="https://fiftyplusone.news/polls/governor/general/texas"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary hover:underline"
               >
-                Source: 270toWin ↗
+                Source: FiftyPlusOne ↗
               </a>
             </div>
           </div>

@@ -3,7 +3,7 @@
 Public-interest dashboard tracking money and polling in the **2026 Texas
 Governor's race** — plus campaign finance for the other statewide races
 (Lt. Governor, Attorney General) — from the Texas Ethics Commission (TEC),
-polling from 270toWin, and direct-campaign-expenditure (outside) spending.
+polling from FiftyPlusOne, and direct-campaign-expenditure (outside) spending.
 
 Ported from our [ca-gov-polling](https://github.com/dllpoliticalintegrity/ca-gov-polling)
 project; see `docs/tx-repo-bootstrap.md` for the port checklist and
@@ -20,7 +20,7 @@ project; see `docs/tx-repo-bootstrap.md` for the port checklist and
 | What | Where | Source |
 |---|---|---|
 | Campaign finance | `scripts/data-import/tec/import_tx_finance.py` | TEC bulk CSV (~1 GB, refreshed daily) |
-| Polling | `supabase/functions/import-towin-polling` + `scripts/data-import/270towin/` | 270toWin Texas governor page |
+| Polling | `supabase/functions/import-fiftyplusone-polling` | FiftyPlusOne CSV API (`governor_general`) |
 
 The TEC importer discovers active GOVERNOR filers with `--discover`, then
 fills `tx_filings`, `tx_contributions`, `tx_expenditures`, `tx_loans`,

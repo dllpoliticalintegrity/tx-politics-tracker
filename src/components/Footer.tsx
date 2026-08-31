@@ -46,7 +46,7 @@ export function Footer() {
         </div>
         <div className="pt-6 border-t text-xs text-muted-foreground space-y-1">
           <p>
-            Updated nightly from the Texas Ethics Commission and 270toWin. Data is presented
+            Updated nightly from the Texas Ethics Commission and FiftyPlusOne. Data is presented
             as filed; corrections and amendments appear after the next sync.
           </p>
           <p>© 2026 Political Integrity Project</p>
