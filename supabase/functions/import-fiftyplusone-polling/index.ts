@@ -34,7 +34,9 @@ const SOURCE = "fiftyplusone";
 const RACE_SLUG = "texas-governor-2026";
 const FPO_PAGE_URL = "https://fiftyplusone.news/polls/governor/general/texas";
 const CSV_BASE = "https://fiftyplusone.news/api/csv";
-const FILES = ["governor_general", "governor_primary"];
+// The primaries are over (March 3 primary, May 26 runoff), so only the
+// general-election file is pulled.
+const FILES = ["governor_general"];
 const FEED_STATE = "Texas";
 const FEED_OFFICE = "Governor";
 const FEED_CYCLE = "2026";
@@ -106,30 +108,22 @@ const lastName = (name: string | null | undefined): string => {
   return t.length ? t[t.length - 1] : "";
 };
 
-// Same matchup vocabulary the 270toWin importer wrote and the frontend's
-// isGeneralMatchup() expects: general / h2h:a-b / dem_primary / rep_primary.
-function classifyMatchup(
-  stage: string | null,
-  party: string | null,
-  candidateCount: number,
-  candidateLasts: string[],
-): string {
+// Primary-style stages, skipped outright — the primaries are over and only
+// general matchups feed the site.
+function isPrimaryStage(stage: string | null): boolean {
   const s = (stage || "").toLowerCase().trim();
-  const p = (party || "").toUpperCase().trim();
-
-  if (
+  return (
     s.startsWith("primary") ||
     s === "caucus" ||
     s === "jungle primary" ||
     s === "top two primary" ||
     s === "top four primary"
-  ) {
-    if (p === "DEM") return "dem_primary";
-    if (p === "REP") return "rep_primary";
-    return "general"; // jungle primary etc. with no single party
-  }
+  );
+}
 
-  // general / runoff / general runoff
+// Same matchup vocabulary the 270toWin importer wrote and the frontend's
+// isGeneralMatchup() expects: general / h2h:a-b.
+function classifyMatchup(candidateCount: number, candidateLasts: string[]): string {
   if (candidateCount === 2) {
     const names = candidateLasts
       .filter((n) => n)
@@ -173,10 +167,10 @@ Deno.serve(async (req) => {
     if (raceErr || !race) throw new Error(`race not found: ${raceErr?.message}`);
     const race_id = race.race_id as string;
 
-    // Roster: every governor candidate we file, INCLUDING eliminated/withdrawn
-    // ones -- primary polls are history and their candidates must still
-    // resolve. Layered matching: cleaned full name first, then a last name
-    // that is unique within the roster (ambiguous last names are skipped).
+    // Roster: every governor candidate we file (any status -- early general
+    // polls can include since-eliminated names). Layered matching: cleaned
+    // full name first, then a last name that is unique within the roster
+    // (ambiguous last names are skipped).
     const { data: cands, error: candErr } = await supabase
       .from("tx_candidates")
       .select("name,party")
@@ -237,6 +231,7 @@ Deno.serve(async (req) => {
 
       for (const qRows of byQuestion.values()) {
         const head = qRows[0];
+        if (isPrimaryStage(head.stage)) continue;
         const fieldEnd = (head.end_date || "").slice(0, 10);
         if (!fieldEnd || fieldEnd < cutoffIso) continue;
 
@@ -263,15 +258,8 @@ Deno.serve(async (req) => {
         }
         if (inRace.length === 0) continue;
 
-        // Question party: consistent for primaries (all candidates one party);
-        // null for general (mixed), which is what classifyMatchup expects.
-        const partySet = new Set(
-          inRace.map((r) => (r.row.party || "").toUpperCase().trim()).filter(Boolean),
-        );
-        const questionParty = partySet.size === 1 ? [...partySet][0] : null;
-
         const lasts = inRace.map((r) => lastName(r.row.candidate_name || r.row.answer));
-        const matchup = classifyMatchup(head.stage, questionParty, inRace.length, lasts);
+        const matchup = classifyMatchup(inRace.length, lasts);
 
         const pollster = head.display_name || head.pollster || "Unknown";
         const fieldStart = (head.start_date || "").slice(0, 10) || null;

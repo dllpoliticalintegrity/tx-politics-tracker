@@ -20,7 +20,7 @@ project; see `docs/tx-repo-bootstrap.md` for the port checklist and
 | What | Where | Source |
 |---|---|---|
 | Campaign finance | `scripts/data-import/tec/import_tx_finance.py` | TEC bulk CSV (~1 GB, refreshed daily) |
-| Polling | `supabase/functions/import-fiftyplusone-polling` | FiftyPlusOne CSV API (`governor_general` + `governor_primary`) |
+| Polling | `supabase/functions/import-fiftyplusone-polling` | FiftyPlusOne CSV API (`governor_general`) |
 
 The TEC importer discovers active GOVERNOR filers with `--discover`, then
 fills `tx_filings`, `tx_contributions`, `tx_expenditures`, `tx_loans`,
