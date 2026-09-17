@@ -130,10 +130,16 @@ officeholder committees with decades of history).
 - **reportTypeCd1..10 drift** between ReadMe and actual `cover.csv` — parse by
   header, and don't be surprised by other minor drifts.
 - **Correction affidavits** (`formTypeCd = COR*`) carry no transactions; ignore.
-- **Dedup across report types**: daily pre-election reports (`DAILYCCOH`) vs
-  8-day/semiannual reports may overlap the same transactions, similar to our
-  CA F497-vs-F460 dedup. Needs the same empirical check once data is loaded;
-  the `infoOnlyFlag` may already handle it.
+- **Dedup across report types — resolved 2026-09.** Special pre-election
+  ("daily", formerly Telegram) and special session reports live in separate
+  files (`cover_t`/`cover_ss`, `cont_t`/`cont_ss`, `expn_t`) precisely because
+  their transactions are re-reported on the next regular report; `infoOnlyFlag`
+  does NOT cover this. `cand.csv` (DCE rows) is one file and DOES include the
+  special-report rows, which is how outside spending got double-counted before
+  the fix. The importer now flags `special`, and
+  `refresh_tx_special_supersession()` marks a special row `rereported` once a
+  non-superseded regular report from the same filer covers its date; every
+  view excludes `rereported` rows (migration `20260917230000`).
 - **Sharding**: filtering ~7.4 GB of contribution CSVs for a couple dozen
   filers is I/O-bound but simple; full run should stay well under an hour, in
   line with the CA importer.

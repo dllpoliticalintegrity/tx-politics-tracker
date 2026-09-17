@@ -40,8 +40,13 @@ office in `TARGET_OFFICES` (Governor, Lt. Governor, Attorney General). Each
 candidate carries two TEC filer accounts: their candidate/officeholder (COH)
 account plus their principal specific-purpose committee (e.g. Abbott is COH
 `19652`, war chest in SPAC `51153` "Texans for Greg Abbott"). Superseded
-reports (`infoOnlyFlag = 'Y'`) are skipped at import. After an import, run
-`select refresh_tx_finance_views();`.
+reports (`infoOnlyFlag = 'Y'`) are skipped at import. Special pre-election
+("daily", 48-hour) and special session reports are imported from TEC's
+separate `_t` / `_ss` files flagged `special`; because their transactions are
+re-reported on the next regular report, `refresh_tx_special_supersession()`
+marks them `rereported` once that report lands and every view excludes those
+rows. After an import, run `select refresh_tx_finance_views();` (which does
+that first).
 
 ## Editing candidates (names, headshots, links)
 

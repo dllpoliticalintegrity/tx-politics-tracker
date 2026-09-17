@@ -403,7 +403,8 @@ export function useTopIeAggregatedDonors(limit = 50, kind: DonorKind = "all", of
       const { data: ieRows, error: ieErr } = await (supabase as any)
         .from("tx_independent_expenditures")
         .select("ie_filer_ident,tx_candidates!inner(office)")
-        .eq("tx_candidates.office", office);
+        .eq("tx_candidates.office", office)
+        .eq("rereported", false);
       if (ieErr) throw ieErr;
       const idents = [...new Set(((ieRows ?? []) as any[]).map((r) => r.ie_filer_ident))];
       if (!idents.length) return [];
@@ -504,6 +505,7 @@ export function useTopIndustries(candidateId: string | undefined, limit = 10) {
         .from("tx_contributions")
         .select("employer,amount")
         .eq("candidate_id", candidateId)
+        .eq("rereported", false)
         .not("employer", "is", null)
         .order("amount", { ascending: false })
         .limit(5000);
@@ -757,7 +759,7 @@ export function useCandidateTotals() {
     queryFn: async (): Promise<Map<string, CandidateTotals>> => {
       const [summaries, expn] = await Promise.all([
         (supabase as any).from("tx_contributions_summary").select("candidate_id,total_raised"),
-        (supabase as any).from("tx_expenditures").select("candidate_id,amount"),
+        (supabase as any).from("tx_expenditures").select("candidate_id,amount").eq("rereported", false),
       ]);
       if (summaries.error) throw summaries.error;
       if (expn.error) throw expn.error;
@@ -797,7 +799,8 @@ export function useExpenditureTotals(candidateId: string | undefined) {
       const { data, error } = await (supabase as any)
         .from("tx_expenditures")
         .select("amount")
-        .eq("candidate_id", candidateId);
+        .eq("candidate_id", candidateId)
+        .eq("rereported", false);
       if (error) throw error;
       const totalSpent = (data ?? []).reduce(
         (s: number, r: { amount: number }) => s + Number(r.amount ?? 0),
@@ -845,6 +848,7 @@ export function useIEForCandidate(candidateId: string | undefined, limit = 50) {
           "id,ie_filer_ident,target_candidate_id,support_oppose,amount,expenditure_date,description,cycle,tx_ie_committees(name)",
         )
         .eq("target_candidate_id", candidateId)
+        .eq("rereported", false)
         .order("expenditure_date", { ascending: false })
         .limit(limit);
       if (error) throw error;
@@ -880,6 +884,7 @@ export function useTopIECommittees(limit = 15, office = "GOVERNOR") {
         .from("tx_independent_expenditures")
         .select("ie_filer_ident,support_oppose,amount,tx_ie_committees(name),tx_candidates!inner(office)")
         .eq("tx_candidates.office", office)
+        .eq("rereported", false)
         .limit(10000);
       if (error) throw error;
       const totals = new Map<

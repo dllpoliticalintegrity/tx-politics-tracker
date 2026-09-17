@@ -71,8 +71,9 @@ export default function MoneyRiver() {
         <h1 className="font-display text-3xl md:text-4xl font-bold tracking-tight">River</h1>
         <p className="text-base text-muted-foreground max-w-2xl">
           Every itemized contribution, campaign expenditure, loan and outside expenditure the
-          Texas Ethics Commission has on file for the candidates we track, newest first. Filter by
-          race, type or candidate; the URL carries your filters so a view can be shared.
+          Texas Ethics Commission has on file for the candidates we track, newest first, including
+          48-hour special pre-election reports as they land. Filter by race, type or candidate; the
+          URL carries your filters so a view can be shared.
         </p>
       </section>
 
@@ -217,6 +218,14 @@ function RiverLine({ row }: { row: RiverRow }) {
             {RIVER_KIND_LABEL[row.kind]}
           </span>
           <span>{officeLabel(row.office)}</span>
+          {row.special && (
+            <span
+              className="px-1.5 py-px rounded-sm border border-primary/40 text-primary font-semibold uppercase tracking-wide"
+              title="Filed on a 48-hour special pre-election report; will be re-listed on the filer's next regular report"
+            >
+              48-hour report
+            </span>
+          )}
           {row.detail && <span className="truncate max-w-[32rem]">{row.detail}</span>}
         </div>
       </div>

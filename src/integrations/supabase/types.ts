@@ -1076,7 +1076,9 @@ export type Database = {
           occupation: string | null
           out_of_state_pac: boolean
           report_info_ident: number
+          rereported: boolean
           source_form_type: string | null
+          special: boolean
           state: string | null
           updated_at: string
           zip: string | null
@@ -1098,7 +1100,9 @@ export type Database = {
           occupation?: string | null
           out_of_state_pac?: boolean
           report_info_ident: number
+          rereported?: boolean
           source_form_type?: string | null
+          special?: boolean
           state?: string | null
           updated_at?: string
           zip?: string | null
@@ -1120,7 +1124,9 @@ export type Database = {
           occupation?: string | null
           out_of_state_pac?: boolean
           report_info_ident?: number
+          rereported?: boolean
           source_form_type?: string | null
+          special?: boolean
           state?: string | null
           updated_at?: string
           zip?: string | null
@@ -1168,7 +1174,9 @@ export type Database = {
           payee_type: string | null
           payee_zip: string | null
           report_info_ident: number
+          rereported: boolean
           source_form_type: string | null
+          special: boolean
           updated_at: string
         }
         Insert: {
@@ -1189,7 +1197,9 @@ export type Database = {
           payee_type?: string | null
           payee_zip?: string | null
           report_info_ident: number
+          rereported?: boolean
           source_form_type?: string | null
+          special?: boolean
           updated_at?: string
         }
         Update: {
@@ -1210,7 +1220,9 @@ export type Database = {
           payee_type?: string | null
           payee_zip?: string | null
           report_info_ident?: number
+          rereported?: boolean
           source_form_type?: string | null
+          special?: boolean
           updated_at?: string
         }
         Relationships: [
@@ -1253,6 +1265,7 @@ export type Database = {
           received_dt: string | null
           report_info_ident: number
           report_types: string | null
+          special: boolean
           superseded: boolean
           total_contribs: number | null
           total_expend: number | null
@@ -1275,6 +1288,7 @@ export type Database = {
           received_dt?: string | null
           report_info_ident: number
           report_types?: string | null
+          special?: boolean
           superseded?: boolean
           total_contribs?: number | null
           total_expend?: number | null
@@ -1297,6 +1311,7 @@ export type Database = {
           received_dt?: string | null
           report_info_ident?: number
           report_types?: string | null
+          special?: boolean
           superseded?: boolean
           total_contribs?: number | null
           total_expend?: number | null
@@ -1387,7 +1402,9 @@ export type Database = {
           occupation: string | null
           out_of_state_pac: boolean
           report_info_ident: number
+          rereported: boolean
           source_form_type: string | null
+          special: boolean
           state: string | null
           updated_at: string
           zip: string | null
@@ -1408,7 +1425,9 @@ export type Database = {
           occupation?: string | null
           out_of_state_pac?: boolean
           report_info_ident: number
+          rereported?: boolean
           source_form_type?: string | null
+          special?: boolean
           state?: string | null
           updated_at?: string
           zip?: string | null
@@ -1429,7 +1448,9 @@ export type Database = {
           occupation?: string | null
           out_of_state_pac?: boolean
           report_info_ident?: number
+          rereported?: boolean
           source_form_type?: string | null
+          special?: boolean
           state?: string | null
           updated_at?: string
           zip?: string | null
@@ -1457,6 +1478,8 @@ export type Database = {
           id: string
           ie_filer_ident: string
           report_info_ident: number
+          rereported: boolean
+          special: boolean
           support_oppose: string
           target_candidate_id: string | null
           updated_at: string
@@ -1473,6 +1496,8 @@ export type Database = {
           id?: string
           ie_filer_ident: string
           report_info_ident: number
+          rereported?: boolean
+          special?: boolean
           support_oppose?: string
           target_candidate_id?: string | null
           updated_at?: string
@@ -1489,6 +1514,8 @@ export type Database = {
           id?: string
           ie_filer_ident?: string
           report_info_ident?: number
+          rereported?: boolean
+          special?: boolean
           support_oppose?: string
           target_candidate_id?: string | null
           updated_at?: string
@@ -1784,6 +1811,7 @@ export type Database = {
           kind: string | null
           office: string | null
           report_info_ident: number | null
+          special: boolean | null
           support_oppose: string | null
           txn_date: string | null
         }
@@ -1840,6 +1868,7 @@ export type Database = {
       get_user_id_by_email: { Args: { lookup_email: string }; Returns: string }
       refresh_cf_finance_views: { Args: never; Returns: undefined }
       refresh_tx_finance_views: { Args: never; Returns: undefined }
+      refresh_tx_special_supersession: { Args: never; Returns: undefined }
       replace_poll_import_unmatched: {
         Args: { p_rows: Json; p_source: string }
         Returns: number

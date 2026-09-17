@@ -33,6 +33,7 @@ export function useLatestContributions(limit = 20, minAmount = 30_000, office = 
           "id,amount,contribution_date,contributor_type,contributor_first_name,contributor_last_name,employer,city,state,candidate_id,tx_candidates!inner(name,party,office)",
         )
         .eq("tx_candidates.office", office)
+        .eq("rereported", false)
         .not("contribution_date", "is", null)
         .gte("amount", minAmount)
         .order("contribution_date", { ascending: false })

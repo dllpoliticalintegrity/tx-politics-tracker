@@ -29,6 +29,8 @@ export type RiverRow = {
   support_oppose: string | null;
   cycle: string | null;
   imported_at: string | null;
+  /** From a special pre-election (48-hour) report that no regular report has re-listed yet. */
+  special: boolean;
 };
 
 export type RiverFilters = {
