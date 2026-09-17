@@ -1,2 +1,0 @@
-rcp
-supabase

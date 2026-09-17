@@ -92,10 +92,13 @@ Current `ca_*` references in `src/` (from a grep on 2026-07-02):
 
 ## 4. Polling data sources
 
-- `scripts/data-import/rcp/` and `scripts/data-import/270towin/` plus the
-  `import-rcp-polling` / `import-towin-polling` edge functions are
-  race-agnostic in mechanism but CA-configured — point them at the TX
-  governor race pages and reseed `races`.
+- All polling comes from FiftyPlusOne via the
+  `import-fiftyplusone-polling` edge function (scheduled by
+  `.github/workflows/polling-sync.yml`). The CA-era RealClearPolitics and
+  270toWin importers were retired in 2026-09 (migration
+  `20260917210000_fiftyplusone_only_polling.sql` purged their rows); do not
+  reintroduce a second source — the frontend filters on
+  `source = 'fiftyplusone'` only.
 
 ## 5. Verification (before shipping numbers)
 
