@@ -96,7 +96,9 @@ Current `ca_*` references in `src/` (from a grep on 2026-07-02):
   `import-fiftyplusone-polling` edge function (scheduled by
   `.github/workflows/polling-sync.yml`). The CA-era RealClearPolitics and
   270toWin importers were retired in 2026-09 (migration
-  `20260917210000_fiftyplusone_only_polling.sql` purged their rows); do not
+  `20260917210000_fiftyplusone_only_polling.sql` purged their Texas rows;
+  other states' 270toWin rows in the shared project belong to the
+  multi-state tracker and are left alone); do not
   reintroduce a second source — the frontend filters on
   `source = 'fiftyplusone'` only.
 

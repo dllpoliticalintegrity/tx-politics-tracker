@@ -13,6 +13,10 @@ project; see `docs/tx-repo-bootstrap.md` for the port checklist and
 
 - Vite + React + TypeScript + shadcn-ui + Tailwind CSS
 - Supabase (Postgres + edge functions); schema in `supabase/migrations/`
+  — **the project is shared with the multi-state governor tracker**, which
+  keeps its own races (and their 270toWin polling) in the same `races` /
+  `race_polling` / `race_polls` tables. Data fixes here must be scoped to
+  Texas races (`races.state = 'Texas'`); never purge by source alone.
 - Cloudflare Pages functions (`functions/`) for SEO middleware + sitemap
 
 ## Data pipelines
