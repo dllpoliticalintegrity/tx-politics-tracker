@@ -44,8 +44,9 @@ reports (`infoOnlyFlag = 'Y'`) are skipped at import. Special pre-election
 ("daily", 48-hour) and special session reports are imported from TEC's
 separate `_t` / `_ss` files flagged `special`; because their transactions are
 re-reported on the next regular report, `refresh_tx_special_supersession()`
-marks them `rereported` once that report lands and every view excludes those
-rows. After an import, run `select refresh_tx_finance_views();` (which does
+marks them `rereported` once that report lands — and does the same for rows
+whose own report was later superseded by a correction — and every view
+excludes those rows. After an import, run `select refresh_tx_finance_views();` (which does
 that first).
 
 ## Editing candidates (names, headshots, links)

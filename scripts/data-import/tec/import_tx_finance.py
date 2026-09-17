@@ -29,7 +29,10 @@ cont_t/cont_ss, expn_t) because the same transactions are re-reported on the
 filer's next regular report. We import them flagged special = true; the
 database's refresh_tx_special_supersession() (run by refresh_tx_finance_views
 after every import) marks a special row rereported once a regular report
-covering its date exists, and every view excludes rereported rows. cand.csv
+covering its date exists — and likewise any row whose own report has since
+been superseded (infoOnlyFlag = 'Y'; we skip those rows on import, but rows
+imported before the correction landed would otherwise linger) — and every
+view excludes rereported rows. cand.csv
 (DCE benefited-candidate rows) is a single file that already contains the
 special-report rows, so those are flagged by reportInfoIdent membership in the
 special cover sheets.

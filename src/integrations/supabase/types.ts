@@ -1566,6 +1566,7 @@ export type Database = {
           loan_date: string | null
           loan_info_id: number
           report_info_ident: number
+          rereported: boolean
           updated_at: string
         }
         Insert: {
@@ -1582,6 +1583,7 @@ export type Database = {
           loan_date?: string | null
           loan_info_id: number
           report_info_ident: number
+          rereported?: boolean
           updated_at?: string
         }
         Update: {
@@ -1598,6 +1600,7 @@ export type Database = {
           loan_date?: string | null
           loan_info_id?: number
           report_info_ident?: number
+          rereported?: boolean
           updated_at?: string
         }
         Relationships: [

@@ -129,7 +129,14 @@ officeholder committees with decades of history).
   complete; the TEC docs indicate it is.
 - **reportTypeCd1..10 drift** between ReadMe and actual `cover.csv` — parse by
   header, and don't be surprised by other minor drifts.
-- **Correction affidavits** (`formTypeCd = COR*`) carry no transactions; ignore.
+- **Correction affidavits** (`formTypeCd = COR*`): a corrected report is
+  refiled in full under a `COR*` form type (e.g. `CORCOH`) WITH all its
+  transactions, and the original report gets `infoOnlyFlag = 'Y'`. The
+  importer skips flagged rows going forward, but rows imported while the
+  original was live stay in the tables — so `refresh_tx_special_supersession()`
+  also marks any row `rereported` whose report is superseded in `tx_filings`
+  (migration `20260917235000`; Bobby Cole's 8-day report had 1,766 such
+  contribution rows double-counted before it).
 - **Dedup across report types — resolved 2026-09.** Special pre-election
   ("daily", formerly Telegram) and special session reports live in separate
   files (`cover_t`/`cover_ss`, `cont_t`/`cont_ss`, `expn_t`) precisely because
