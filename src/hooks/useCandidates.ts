@@ -13,6 +13,10 @@ export type TxCandidate = {
   photo_url_large: string | null;
   photo_url_thumb: string | null;
   website: string | null;
+  twitter_user: string | null;
+  instagram_user: string | null;
+  facebook_user: string | null;
+  youtube_user: string | null;
   filer_ident: string;
   committee_filer_ident: string | null;
   committee_name: string | null;
@@ -118,7 +122,7 @@ export function useCandidates(office: string = "GOVERNOR") {
       const { data, error } = await (supabase as any)
         .from("tx_candidates")
         .select(
-          "id,slug,name,party,title,bio,photo_url,photo_url_medium,photo_url_large,photo_url_thumb,website,filer_ident,committee_filer_ident,committee_name,office,status,featured",
+          "id,slug,name,party,title,bio,photo_url,photo_url_medium,photo_url_large,photo_url_thumb,website,twitter_user,instagram_user,facebook_user,youtube_user,filer_ident,committee_filer_ident,committee_name,office,status,featured",
         )
         .eq("office", office)
         .order("name");
@@ -136,7 +140,7 @@ export function useCandidate(slug: string | undefined) {
       const { data, error } = await (supabase as any)
         .from("tx_candidates")
         .select(
-          "id,slug,name,party,title,bio,photo_url,photo_url_medium,photo_url_large,photo_url_thumb,website,filer_ident,committee_filer_ident,committee_name,office,status,featured",
+          "id,slug,name,party,title,bio,photo_url,photo_url_medium,photo_url_large,photo_url_thumb,website,twitter_user,instagram_user,facebook_user,youtube_user,filer_ident,committee_filer_ident,committee_name,office,status,featured",
         )
         .eq("slug", slug)
         .maybeSingle();

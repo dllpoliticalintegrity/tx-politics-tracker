@@ -33,6 +33,18 @@ account plus their principal specific-purpose committee (e.g. Abbott is COH
 reports (`infoOnlyFlag = 'Y'`) are skipped at import. After an import, run
 `select refresh_tx_finance_views();`.
 
+## Editing candidates (names, headshots, links)
+
+The `tx_candidates` rows the site renders — display name, slug, party,
+office, status, headshot URLs, website and social handles, TEC filer
+accounts — are edited from the org's admin console
+([data-diamine](https://github.com/dllpoliticalintegrity/data-diamine)):
+product dropdown → **TX Politics Tracker** → **Candidates**. The console
+writes through its `tx-tracker-admin` edge function, which holds this
+project's service-role key; nothing in this repo needs to change for a
+content edit, and the site picks the change up on its next load. The seed
+migrations under `supabase/migrations/` are the initial roster only.
+
 ## Local development
 
 ```sh

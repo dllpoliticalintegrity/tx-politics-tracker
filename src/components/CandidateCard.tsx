@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import Sparkline from "@/components/Sparkline";
 import type { TxCandidate } from "@/hooks/useCandidates";
-import { formatCurrency, partyColor, partyLabel } from "@/lib/finance";
+import { formatCurrency, officeLabel, partyColor, partyLabel } from "@/lib/finance";
 
 export type CandidateCardStats = {
   pollPct: number | null;
@@ -80,7 +80,7 @@ export default function CandidateCard({ candidate: c, stats, rank }: Props) {
               {c.name}
             </div>
             <div className="text-xs text-muted-foreground mt-0.5">
-              {partyLabel(party)} · Governor
+              {partyLabel(party)} · {officeLabel(c.office)}
             </div>
           </div>
         </div>
