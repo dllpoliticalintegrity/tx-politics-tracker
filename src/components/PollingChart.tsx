@@ -10,7 +10,7 @@ import {
 } from "recharts";
 import { useMemo } from "react";
 import { useCandidates } from "@/hooks/useCandidates";
-import { isGeneralMatchup, parsePollDate, useTxGovPolling, useTxGovRacePolls } from "@/hooks/usePolling";
+import { isGeneralMatchup, useTxGovPolling, useTxGovRacePolls } from "@/hooks/usePolling";
 import { partyColor } from "@/lib/finance";
 
 // Trailing-window width for the rolling average (days).
@@ -28,7 +28,7 @@ export default function PollingChart() {
     // Today (ISO) — we never plot beyond this.
     const todayIso = new Date().toISOString().slice(0, 10);
 
-    // Candidates actually averaged by RCP, sorted by their current avg %
+    // Candidates carried in the FiftyPlusOne average, sorted by their current avg %
     const avg = polling.average;
     const withPct = candidates
       .map((c) => {
@@ -39,42 +39,25 @@ export default function PollingChart() {
       .filter((x) => x.avgPct > 0)
       .sort((a, b) => b.avgPct - a.avgPct);
 
-    // Normalize each poll into {iso, values: {surname -> pct}}; drop polls with unparseable
-    // dates or dates beyond today. Prefer per-poll rows from race_polls (polls importer);
-    // fall back to the legacy RCP raw_data array.
+    // Normalize each poll into {iso, values: {surname -> pct}} from the
+    // per-poll race_polls rows; drop polls with dates beyond today.
     type NormalizedPoll = { iso: string; values: Record<string, number> };
     const normalized: NormalizedPoll[] = [];
-    if (racePolls && racePolls.length > 0) {
-      const byKey = new Map<string, NormalizedPoll>();
-      for (const r of racePolls) {
-        const iso = (r.field_end ?? "").slice(0, 10);
-        if (!iso || iso > todayIso) continue;
-        const surname = r.candidate_name.trim().split(/\s+/).pop() ?? "";
-        const key = `${iso}|${r.pollster}`;
-        let entry = byKey.get(key);
-        if (!entry) {
-          entry = { iso, values: {} };
-          byKey.set(key, entry);
-        }
-        if (Number.isFinite(r.pct)) entry.values[surname] = Number(r.pct);
+    const byKey = new Map<string, NormalizedPoll>();
+    for (const r of racePolls) {
+      const iso = (r.field_end ?? "").slice(0, 10);
+      if (!iso || iso > todayIso) continue;
+      const surname = r.candidate_name.trim().split(/\s+/).pop() ?? "";
+      const key = `${iso}|${r.pollster}`;
+      let entry = byKey.get(key);
+      if (!entry) {
+        entry = { iso, values: {} };
+        byKey.set(key, entry);
       }
-      for (const e of byKey.values()) {
-        if (Object.keys(e.values).length > 0) normalized.push(e);
-      }
-    } else {
-      for (const poll of polling.polls) {
-        const iso = parsePollDate(poll.Date);
-        if (!iso || iso === "0000-00-00" || iso > todayIso) continue;
-        const values: Record<string, number> = {};
-        for (const { surname } of withPct) {
-          const v = poll[surname];
-          if (v !== undefined && v !== "") {
-            const n = Number(v);
-            if (Number.isFinite(n)) values[surname] = n;
-          }
-        }
-        if (Object.keys(values).length > 0) normalized.push({ iso, values });
-      }
+      if (Number.isFinite(r.pct)) entry.values[surname] = Number(r.pct);
+    }
+    for (const e of byKey.values()) {
+      if (Object.keys(e.values).length > 0) normalized.push(e);
     }
     normalized.sort((a, b) => a.iso.localeCompare(b.iso));
     if (normalized.length === 0) return { series: [], data: [] };

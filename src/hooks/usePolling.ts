@@ -1,6 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
+/**
+ * All polling on this site comes from FiftyPlusOne
+ * (supabase/functions/import-fiftyplusone-polling). The importer writes two
+ * things per run: a `race_polling` snapshot (source = 'fiftyplusone') whose
+ * raw_data.all_candidates carries the current average per candidate, and
+ * one `race_polls` row per candidate per poll for the trend chart. Nothing
+ * here reads any other source.
+ */
+export const POLL_SOURCE = "fiftyplusone";
+
+/** A surname → pct map, e.g. { Abbott: "48.2", Hinojosa: "41.5" }. */
 export type PollRow = {
   Poll: string;
   Date: string;
@@ -11,11 +22,10 @@ export type PollRow = {
 };
 
 export type PollingBundle = {
-  rcp_url: string | null;
+  source_url: string | null;
   last_updated: string | null;
   spread: string | null;
-  average: PollRow | null; // row where Poll === "RCP Average"
-  polls: PollRow[]; // everything except the average, sorted by Date desc
+  average: PollRow | null;
 };
 
 const GOV_RACE_SLUG = "texas-governor-2026";
@@ -29,70 +39,34 @@ async function fetchRacePolling(slug: string): Promise<PollingBundle | null> {
   if (raceErr) throw raceErr;
   if (!race) return null;
 
-  // FiftyPlusOne is the source of record; 270toWin is kept as a fallback
-  // until the fiftyplusone importer has populated (RCP is long deprecated).
-  const { data: rows, error } = await (supabase as any)
+  const { data: row, error } = await (supabase as any)
     .from("race_polling")
-    .select("source,rcp_url,source_url,last_updated,spread,raw_data")
+    .select("source_url,last_updated,spread,raw_data")
     .eq("race_id", race.race_id)
-    .in("source", ["fiftyplusone", "270towin"]);
+    .eq("source", POLL_SOURCE)
+    .maybeSingle();
   if (error) throw error;
-  if (!rows || rows.length === 0) return null;
+  if (!row) return null;
 
-  const pick =
-    rows.find((r: { source: string }) => r.source === "fiftyplusone") ?? rows[0];
-
-  // Both aggregators store { all_candidates: [...] }; legacy RCP stored an
-  // array of poll rows with an "RCP Average" entry. Normalize both to PollRow[].
-  const raw = pick.raw_data;
+  // Synthesize a single "average" row keyed by surname → pct so
+  // readCandidatePct can look a candidate up by name.
+  const raw = row.raw_data;
   let average: PollRow | null = null;
-  let polls: PollRow[] = [];
-
-  if (Array.isArray(raw)) {
-    average = raw.find((r: PollRow) => r.Poll === "RCP Average") ?? null;
-    polls = raw
-      .filter((r: PollRow) => r.Poll !== "RCP Average")
-      .sort((a: PollRow, b: PollRow) =>
-        parsePollDate(b.Date).localeCompare(parsePollDate(a.Date)),
-      );
-  } else if (raw && Array.isArray(raw.all_candidates)) {
-    // Synthesize a single "average" row keyed by surname → pct so the
-    // existing readCandidatePct helper continues to work.
+  if (raw && Array.isArray(raw.all_candidates)) {
     const avgRow: PollRow = { Poll: "Polling Average", Date: "", Sample: "", MoE: "" };
     for (const c of raw.all_candidates as Array<{ name: string; avg_pct: number }>) {
       const surname = c.name.trim().split(/\s+/).pop() ?? "";
       avgRow[surname] = String(c.avg_pct);
     }
     average = avgRow;
-    polls = []; // trend chart will read from race_polls separately
   }
 
   return {
-    rcp_url: pick.rcp_url ?? pick.source_url ?? null,
-    last_updated: pick.last_updated,
-    spread: pick.spread,
+    source_url: row.source_url ?? null,
+    last_updated: row.last_updated,
+    spread: row.spread,
     average,
-    polls,
   };
-}
-
-/**
- * Normalize RCP's date strings into a sortable ISO-ish string.
- * Handles: "4/15", "3/9 - 4/15", "April 15", "4/15/2026".
- * Defaults year to 2026. Returns the *end* of the range.
- */
-export function parsePollDate(d: string | undefined | null): string {
-  if (!d) return "0000-00-00";
-  const raw = d.trim();
-  const rangeEnd = raw.includes("-") ? raw.split("-").pop()!.trim() : raw;
-  const mdY = rangeEnd.match(/^(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?$/);
-  if (mdY) {
-    const mm = mdY[1].padStart(2, "0");
-    const dd = mdY[2].padStart(2, "0");
-    const yy = mdY[3] ? (mdY[3].length === 2 ? `20${mdY[3]}` : mdY[3]) : "2026";
-    return `${yy}-${mm}-${dd}`;
-  }
-  return rangeEnd;
 }
 
 export function useTxGovPolling() {
@@ -102,10 +76,7 @@ export function useTxGovPolling() {
   });
 }
 
-/**
- * Per-poll rows from the FiftyPlusOne importer (one row per candidate per
- * poll). Used by the trend chart so we don't depend on RCP's "raw_data" array.
- */
+/** Per-poll rows from the FiftyPlusOne importer (one row per candidate per poll). */
 export type RacePollRow = {
   candidate_name: string;
   candidate_party: string | null;
@@ -138,25 +109,20 @@ export function useTxGovRacePolls() {
       const { data, error } = await (supabase as any)
         .from("race_polls")
         .select(
-          "candidate_name,candidate_party,pct,pollster,field_end,sample_size,sample_kind,source_url,matchup,source",
+          "candidate_name,candidate_party,pct,pollster,field_end,sample_size,sample_kind,source_url,matchup",
         )
         .eq("race_id", race.race_id)
-        .in("source", ["fiftyplusone", "270towin"])
+        .eq("source", POLL_SOURCE)
         .order("field_end", { ascending: false });
       if (error) throw error;
-      // Prefer FiftyPlusOne rows; fall back to 270toWin only when the
-      // fiftyplusone importer hasn't populated yet (never mix sources —
-      // the same poll would show up twice).
-      const rows = (data ?? []) as (RacePollRow & { source: string })[];
-      const fpo = rows.filter((r) => r.source === "fiftyplusone");
-      return (fpo.length > 0 ? fpo : rows) as RacePollRow[];
+      return (data ?? []) as RacePollRow[];
     },
   });
 }
 
 /**
- * Extracts per-candidate pct from a poll row by matching on the candidate's surname.
- * RCP uses last-name-only keys (e.g. "Porter", "Hilton").
+ * Extracts per-candidate pct from the average row by matching on the
+ * candidate's surname (the keys the importer writes).
  */
 export function readCandidatePct(row: PollRow | null | undefined, fullName: string): number | null {
   if (!row) return null;

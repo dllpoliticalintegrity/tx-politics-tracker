@@ -12,8 +12,5 @@ verify_jwt = false
 [functions.request-signup]
 verify_jwt = false
 
-[functions.import-towin-polling]
-verify_jwt = false
-
 [functions.import-fiftyplusone-polling]
 verify_jwt = false

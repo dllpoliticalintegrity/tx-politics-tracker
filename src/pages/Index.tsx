@@ -82,7 +82,7 @@ export default function Index() {
   }
 
   // Rank candidates: by poll % desc, then by total raised.
-  // Hide candidates who aren't carried in the RCP polling averages — the hero
+  // Hide candidates who aren't carried in the FiftyPlusOne average — the hero
   // grid is labelled "ranked by polling," so minor candidates with no poll
   // data would be rank-ordered arbitrarily and confuse the reader.
   const ranked = (candidates ?? [])

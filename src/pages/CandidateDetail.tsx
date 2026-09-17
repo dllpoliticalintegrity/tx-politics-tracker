@@ -2,7 +2,7 @@ import { useParams, Link, Navigate } from "react-router-dom";
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, ExternalLink } from "lucide-react";
 import {
   useCandidate,
   useContributionsSummary,
@@ -22,6 +22,7 @@ import {
   partyLabel,
   contributorTypeLabel,
 } from "@/lib/finance";
+import { candidateSocialLinks } from "@/lib/socialLinks";
 
 export default function CandidateDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -76,6 +77,7 @@ export default function CandidateDetail() {
   const ieOpposing = Number(ieForThis?.total_opposing ?? 0);
 
   const hasFinanceData = totals.totalRaised > 0 || totalSpent > 0;
+  const socialLinks = candidateSocialLinks(candidate);
 
   // Names that appear in loans — filtered out of the individual donors list
   // so that loans (Schedule B) and outright gifts (Schedule A) don't
@@ -182,6 +184,24 @@ export default function CandidateDetail() {
               )}
               {candidate.bio && (
                 <p className="text-sm text-muted-foreground max-w-2xl pt-2">{candidate.bio}</p>
+              )}
+              {socialLinks.length > 0 && (
+                <ul className="flex flex-wrap gap-x-4 gap-y-1 pt-2 text-xs">
+                  {socialLinks.map((l) => (
+                    <li key={l.key}>
+                      <a
+                        href={l.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground underline-offset-4 hover:underline"
+                      >
+                        <span className="font-semibold">{l.label}</span>
+                        <span className="font-mono">{l.handle}</span>
+                        <ExternalLink className="h-3 w-3" aria-hidden />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
               )}
             </div>
             <div className="flex gap-4 md:gap-6">
