@@ -26,6 +26,12 @@ project; see `docs/tx-repo-bootstrap.md` for the port checklist and
 | Campaign finance | `scripts/data-import/tec/import_tx_finance.py` | TEC bulk CSV (~1 GB, refreshed daily) |
 | Polling | `supabase/functions/import-fiftyplusone-polling` | FiftyPlusOne CSV API (`governor_general`) |
 
+The **River** tab (`/money/river`) reads the `tx_money_river` view: every
+itemized contribution, expenditure, loan and outside expenditure for tracked
+candidates in one feed, newest first, paginated and filterable by race /
+type / candidate. It is a plain (non-materialized) view, so it is live the
+moment an import lands.
+
 The TEC importer discovers active GOVERNOR filers with `--discover`, then
 fills `tx_filings`, `tx_contributions`, `tx_expenditures`, `tx_loans`,
 `tx_independent_expenditures` (DCE rows from `cand.csv`), and
