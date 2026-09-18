@@ -78,7 +78,7 @@ export function Header() {
             <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           </Button>
           <Button asChild size="sm" className="h-8 px-3 text-sm gap-1.5">
-            <a href={DONATE_URL}>
+            <a href={DONATE_URL} target="_blank" rel="noopener noreferrer">
               <Heart className="h-3.5 w-3.5" />
               Donate
             </a>
@@ -110,7 +110,7 @@ export function Header() {
                 {theme === "dark" ? "Light mode" : "Dark mode"}
               </Button>
               <Button asChild className="w-full justify-start gap-2 text-sm mt-2">
-                <a href={DONATE_URL} onClick={() => setOpen(false)}>
+                <a href={DONATE_URL} target="_blank" rel="noopener noreferrer" onClick={() => setOpen(false)}>
                   <Heart className="h-4 w-4" />
                   Donate
                 </a>
