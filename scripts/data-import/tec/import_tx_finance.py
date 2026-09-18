@@ -5,9 +5,13 @@ TEC → Supabase importer for TX Governor 2026 campaign finance.
 Downloads the Texas Ethics Commission bulk CSV dump, filters to the
 candidates seeded in `tx_candidates`, and upserts:
   - tx_filings                 (cover.csv — report metadata + cover-sheet totals,
-                                including unitemized amounts and cash on hand)
-  - tx_contributions           (contribs_##.csv, filtered to our filers)
-  - tx_expenditures            (expend_##.csv, filtered to our filers)
+                                including unitemized amounts and cash on hand;
+                                plus cover_t/cover_ss.csv special-report cover
+                                sheets, flagged special = true)
+  - tx_contributions           (contribs_##.csv, filtered to our filers; plus
+                                cont_t/cont_ss.csv special-report rows)
+  - tx_expenditures            (expend_##.csv, filtered to our filers; plus
+                                expn_t.csv special-report rows)
   - tx_loans                   (loans.csv)
   - tx_ie_committees + tx_independent_expenditures
                                (cand.csv — direct campaign expenditures that
@@ -18,6 +22,20 @@ Unlike CAL-ACCESS, TEC data needs no amendment chains or name-regex committee
 matching: rows carry infoOnlyFlag='Y' when their report has been superseded
 (we skip those), and DCE records identify the benefited candidate and office
 sought as structured fields.
+
+Special pre-election ("daily", formerly Telegram) and special session reports
+are the one wrinkle: TEC keeps their rows in separate files (cover_t/cover_ss,
+cont_t/cont_ss, expn_t) because the same transactions are re-reported on the
+filer's next regular report. We import them flagged special = true; the
+database's refresh_tx_special_supersession() (run by refresh_tx_finance_views
+after every import) marks a special row rereported once a regular report
+covering its date exists — and likewise any row whose own report has since
+been superseded (infoOnlyFlag = 'Y'; we skip those rows on import, but rows
+imported before the correction landed would otherwise linger) — and every
+view excludes rereported rows. cand.csv
+(DCE benefited-candidate rows) is a single file that already contains the
+special-report rows, so those are flagged by reportInfoIdent membership in the
+special cover sheets.
 
 Env vars (required unless --discover):
   SUPABASE_URL
@@ -73,6 +91,12 @@ GENERAL_DATE = date(2026, 11, 3)
 CYCLE_START = date(2025, 1, 1)
 
 BATCH_SIZE = 500
+
+# Special pre-election / special session report files. TEC stores these apart
+# from the regular shards; they may be absent from a given dump.
+SPECIAL_COVER_FILES = ("cover_t.csv", "cover_ss.csv")
+SPECIAL_CONTRIB_FILES = ("cont_t.csv", "cont_ss.csv")
+SPECIAL_EXPEND_FILES = ("expn_t.csv",)
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -196,6 +220,30 @@ def stream_csv(zf: zipfile.ZipFile, member: str) -> Iterator[dict]:
         text = io.TextIOWrapper(raw, encoding="utf-8", errors="replace", newline="")
         reader = csv.DictReader(text)
         yield from reader
+
+
+def optional_members(zf: zipfile.ZipFile, names: tuple) -> List[str]:
+    """The special-report files that are actually in this dump."""
+    present = [n for n in names if n in zf.namelist()]
+    missing = [n for n in names if n not in zf.namelist()]
+    if missing:
+        logger.info("special-report files absent from dump (fine): %s", ", ".join(missing))
+    return present
+
+
+def load_special_report_ids(zf: zipfile.ZipFile) -> set:
+    """reportInfoIdent of every special pre-election / special session report
+    in the dump (all filers — the files are small). cand.csv rows carry no
+    marker of their own, so this is how DCE rows get their special flag."""
+    ids = set()
+    for member in optional_members(zf, SPECIAL_COVER_FILES):
+        for row in stream_csv(zf, member):
+            try:
+                ids.add(int(row["reportInfoIdent"]))
+            except (KeyError, ValueError):
+                continue
+    logger.info("special-report cover sheets in dump: %d", len(ids))
+    return ids
 
 
 def members_matching(zf: zipfile.ZipFile, pattern: str) -> List[str]:
@@ -353,7 +401,9 @@ def import_filings(sb, zf: zipfile.ZipFile, filer_idents: set) -> None:
     cash on hand (contribsMaintainedAmount) — TEC's equivalent of the
     CAL-ACCESS SMRY_CD stage, with no separate file needed."""
     writer = BatchWriter(sb, "tx_filings", on_conflict="report_info_ident")
-    for row in stream_csv(zf, "cover.csv"):
+    sources = [("cover.csv", False)] + [(m, True) for m in optional_members(zf, SPECIAL_COVER_FILES)]
+    for member, special in sources:
+      for row in stream_csv(zf, member):
         fid = norm_ident(row.get("filerIdent"))
         if fid not in filer_idents:
             continue
@@ -379,6 +429,7 @@ def import_filings(sb, zf: zipfile.ZipFile, filer_idents: set) -> None:
             "total_expend": to_decimal(row.get("totalExpendAmount")),
             "loan_balance": to_decimal(row.get("loanBalanceAmount")),
             "cash_on_hand": to_decimal(row.get("contribsMaintainedAmount")),
+            "special": special,
         })
     writer.flush()
     logger.info("tx_filings: upserted %d reports", writer.total)
@@ -408,7 +459,10 @@ def import_contributions(
     idents = set(ident_to_candidate) if ident_to_candidate is not None else set(seeds)
     writer = BatchWriter(sb, table, on_conflict="report_info_ident,contribution_info_id")
     skipped_precycle = 0
-    for row in iter_transaction_rows(zf, members_matching(zf, r"contribs_\d+\.csv"), idents):
+    sources = [(members_matching(zf, r"contribs_\d+\.csv"), False),
+               (optional_members(zf, SPECIAL_CONTRIB_FILES), True)]
+    for members, special in sources:
+      for row in iter_transaction_rows(zf, members, idents):
         iso = parse_tec_date(row.get("contributionDt"))
         cycle = classify_cycle(iso)
         if cycle == "pre-cycle":
@@ -432,6 +486,7 @@ def import_contributions(
             "out_of_state_pac": (row.get("contributorOosPacFlag") or "").strip().upper() == "Y",
             "cycle": cycle,
             "source_form_type": (row.get("formTypeCd") or "").strip(),
+            "special": special,
         }
         if ident_to_candidate is not None:
             # tx_ie_contributions keys the committee by ie_filer_ident and has
@@ -448,7 +503,10 @@ def import_contributions(
 def import_expenditures(sb, zf, seeds: Dict[str, SeedCandidate]):
     writer = BatchWriter(sb, "tx_expenditures", on_conflict="report_info_ident,expend_info_id")
     skipped_precycle = 0
-    for row in iter_transaction_rows(zf, members_matching(zf, r"expend_\d+\.csv"), set(seeds)):
+    sources = [(members_matching(zf, r"expend_\d+\.csv"), False),
+               (optional_members(zf, SPECIAL_EXPEND_FILES), True)]
+    for members, special in sources:
+      for row in iter_transaction_rows(zf, members, set(seeds)):
         iso = parse_tec_date(row.get("expendDt"))
         cycle = classify_cycle(iso)
         if cycle == "pre-cycle":
@@ -473,6 +531,7 @@ def import_expenditures(sb, zf, seeds: Dict[str, SeedCandidate]):
             "description": (row.get("expendDescr") or "").strip() or None,
             "cycle": cycle,
             "source_form_type": (row.get("formTypeCd") or "").strip(),
+            "special": special,
         })
     writer.flush()
     logger.info("tx_expenditures: upserted %d rows (%d pre-cycle skipped)", writer.total, skipped_precycle)
@@ -504,7 +563,8 @@ def import_loans(sb, zf, seeds: Dict[str, SeedCandidate]):
     logger.info("tx_loans: upserted %d rows", writer.total)
 
 
-def import_dce(sb, zf, seeds: Dict[str, SeedCandidate], targets: Dict[str, tuple]) -> set:
+def import_dce(sb, zf, seeds: Dict[str, SeedCandidate], targets: Dict[str, tuple],
+               special_report_ids: Optional[set] = None) -> set:
     """cand.csv → tx_ie_committees + tx_independent_expenditures.
 
     Texas's independent-expenditure analog: a CAND record names the candidate
@@ -554,6 +614,7 @@ def import_dce(sb, zf, seeds: Dict[str, SeedCandidate], targets: Dict[str, tuple
             "description": (row.get("expendDescr") or "").strip() or None,
             "category_code": (row.get("expendCatCd") or "").strip() or None,
             "cycle": cycle,
+            "special": int(row["reportInfoIdent"]) in (special_report_ids or set()),
         })
     for fid, name in committees.items():
         upsert_batch(sb, "tx_ie_committees", [{"filer_ident": fid, "name": name}], on_conflict="filer_ident")
@@ -655,9 +716,11 @@ def main():
         sys.exit(1)
     targets = load_ie_targets(sb)
 
+    special_report_ids = load_special_report_ids(zf)
+
     ie_filers: set = set()
     if args.only in (None, "ie"):
-        ie_filers = import_dce(sb, zf, seeds, targets)
+        ie_filers = import_dce(sb, zf, seeds, targets, special_report_ids)
         ie_filers |= import_spac_links(sb, zf, seeds)
 
     if args.only in (None, "filings"):

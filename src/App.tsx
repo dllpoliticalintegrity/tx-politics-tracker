@@ -13,6 +13,7 @@ import Candidates from "./pages/Candidates";
 import CandidateDetail from "./pages/CandidateDetail";
 import IndependentExpenditures from "./pages/IndependentExpenditures";
 import TopDonors from "./pages/TopDonors";
+import MoneyRiver from "./pages/MoneyRiver";
 import Polling from "./pages/Polling";
 import Statewide from "./pages/Statewide";
 import About from "./pages/About";
@@ -39,6 +40,7 @@ function AppShell() {
         <Route path="/money" element={<Navigate to="/money/donors" replace />} />
         <Route path="/money/donors" element={<TopDonors />} />
         <Route path="/money/outside-spending" element={<IndependentExpenditures />} />
+        <Route path="/money/river" element={<MoneyRiver />} />
         <Route path="/polling" element={<Polling />} />
         <Route path="/statewide" element={<Statewide />} />
         <Route path="/about" element={<About />} />
