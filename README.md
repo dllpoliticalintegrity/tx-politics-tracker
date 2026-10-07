@@ -49,6 +49,20 @@ whose own report was later superseded by a correction — and every view
 excludes those rows. After an import, run `select refresh_tx_finance_views();` (which does
 that first).
 
+## Moving onto the multi-state hub
+
+Since October 2026 this site is being replaced by
+[state-politics-tracker](https://github.com/dllpoliticalintegrity/state-politics-tracker)
+running in single-state mode for Texas, so the Texas pages share one UI with
+every other state (see that repo's `docs/plan.md`, "Texas joins the hub").
+The data pipelines here keep running unchanged: a nightly pg_cron job
+(`publish_texas_to_cf()`, 14:30 UTC — after the TEC sync and
+`refresh_tx_finance_views()`) copies `tx_candidates` and every settled
+(`rereported = false`) `tx_*` finance row into the hub's state-keyed `cf_*`
+tables. If you change a `tx_*` column, check that function too. New UI work
+belongs in the hub repo; until the domain cut-over, only fixes the live site
+can't wait for belong here.
+
 ## Editing candidates (names, headshots, links)
 
 The `tx_candidates` rows the site renders — display name, slug, party,
