@@ -1,5 +1,14 @@
 # Texas Politics Tracker
 
+> **Retired (October 2026).** texaspoliticstracker.com is served by
+> [state-politics-tracker](https://github.com/dllpoliticalintegrity/state-politics-tracker)
+> in single-state mode, so Texas shares one UI with every other state. The
+> TEC importer, the FiftyPlusOne polling function and their workflows moved
+> there too (`scripts/data-import/tec/`, `tx-finance-sync.yml`,
+> `supabase/functions/import-fiftyplusone-polling`, `polling-sync.yml`); this
+> repo's workflows were removed. Make changes in that repo — this one is kept
+> for history only. The notes below describe the site as it was.
+
 Public-interest dashboard tracking money and polling in the **2026 Texas
 Governor's race** — plus campaign finance for the other statewide races
 (Lt. Governor, Attorney General) — from the Texas Ethics Commission (TEC),
@@ -51,17 +60,11 @@ that first).
 
 ## Moving onto the multi-state hub
 
-Since October 2026 this site is being replaced by
-[state-politics-tracker](https://github.com/dllpoliticalintegrity/state-politics-tracker)
-running in single-state mode for Texas, so the Texas pages share one UI with
-every other state (see that repo's `docs/plan.md`, "Texas joins the hub").
-The data pipelines here keep running unchanged: a nightly pg_cron job
-(`publish_texas_to_cf()`, 14:30 UTC — after the TEC sync and
-`refresh_tx_finance_views()`) copies `tx_candidates` and every settled
-(`rereported = false`) `tx_*` finance row into the hub's state-keyed `cf_*`
-tables. If you change a `tx_*` column, check that function too. New UI work
-belongs in the hub repo; until the domain cut-over, only fixes the live site
-can't wait for belong here.
+See that repo's `docs/plan.md`, "Texas joins the hub". The `tx_*` tables are
+still Texas's staging layer: a nightly pg_cron job (`publish_texas_to_cf()`,
+14:30 UTC — after the TEC sync and `refresh_tx_finance_views()`) copies
+`tx_candidates` and every settled (`rereported = false`) `tx_*` finance row
+into the hub's state-keyed `cf_*` tables, which the site reads.
 
 ## Editing candidates (names, headshots, links)
 
